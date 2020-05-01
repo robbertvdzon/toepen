@@ -11,16 +11,16 @@ data class SpelData (
 )
 
 data class Speler(
-        var id: String,
-        var naam: String,
+        var id: String = "",
+        var naam: String = "",
         var kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList(),
-        var gespeeldeKaart: Kaart?,
-        var totaalLucifers:Int,
-        var ingezetteLucifers: Int,
-        var gepast: Boolean, // gepast na een toep
-        var toepKeuze: Toepkeuze,
-        var actiefInSpel: Boolean, // zit nog in het spel (is niet af)
-        var wilMeedoen: Boolean // bij nieuwe tafel indeling, deze speler mee laten doen
+        var gespeeldeKaart: Kaart? = null,
+        var totaalLucifers:Int = 0,
+        var ingezetteLucifers: Int =0,
+        var gepast: Boolean = false, // gepast na een toep
+        var toepKeuze: Toepkeuze = Toepkeuze.GEEN_KEUZE,
+        var actiefInSpel: Boolean = true, // zit nog in het spel (is niet af)
+        var wilMeedoen: Boolean = false // bij nieuwe tafel indeling, deze speler mee laten doen
 ) {
     fun berekenScore(startKaart: Kaart):Int {
         if (gespeeldeKaart==null) return 0
@@ -30,11 +30,11 @@ data class Speler(
 }
 
 data class Tafel(
-        var alleKaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList(),
         var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var opkomer: Speler? = null,
         var huidigeSpeler: Speler? = null,
         var toeper: Speler? = null,
+        var inzet: Int = 0,
         var slagWinnaar: Speler? = null,
         var tafelWinnaar:Speler? = null
 )

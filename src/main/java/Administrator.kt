@@ -48,6 +48,9 @@ object Administrator {
                 it.wilMeedoen = nieuweSpelerData.wilMeedoen
             }
         }
+        mutableGebruikersList.forEach{
+            Context.spelData.alleSpelers.add(it)
+        }
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 

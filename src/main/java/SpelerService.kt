@@ -1,7 +1,7 @@
 import java.util.*
 
 object SpelerService {
-    fun nieuweSpel(speler:Speler){
+    fun nieuwSpel(speler:Speler){
         speler.actiefInSpel = true
         speler.kaarten = emptyList<Kaart>().toMutableList()
         speler.gespeeldeKaart = null
@@ -31,6 +31,7 @@ object SpelerService {
         val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
+        if (tafel.toeper!=null) return CommandResult(CommandStatus.FAILED,"Nog niet iedereen heeft zijn toep keuze opgegeven")
         if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om een kaart te spelen")
         if (speler.gespeeldeKaart!=null) return CommandResult(CommandStatus.FAILED,"Je hebt al een kaart gespeeld")
         if (!speler.kaarten.contains(kaart)) return CommandResult(CommandStatus.FAILED,"Deze kaart zit niet in de hand")
@@ -53,10 +54,11 @@ object SpelerService {
         val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
-        if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om een kaart te spelen")
+        if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om te toepen")
         if (speler.gespeeldeKaart!=null) return CommandResult(CommandStatus.FAILED,"Je hebt al een kaart gespeeld")
-        if (speler.totaalLucifers<=speler.ingezetteLucifers) return CommandResult(CommandStatus.FAILED,"Je hebt te weinig lucifers om te toepen")
-        speler.ingezetteLucifers++
+        if (speler.totaalLucifers<=tafel.inzet) return CommandResult(CommandStatus.FAILED,"Je hebt te weinig lucifers om te toepen")
+        tafel.inzet++
+        speler.ingezetteLucifers = tafel.inzet
         speler.toepKeuze = Toepkeuze.TOEP
         TafelService.toep(tafel, speler)
         return CommandResult(CommandStatus.SUCCEDED,"")
@@ -66,9 +68,10 @@ object SpelerService {
         val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
-        if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om een kaart te spelen")
+        if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om mee te gaan")
         if (speler.toepKeuze!=Toepkeuze.GEEN_KEUZE) return CommandResult(CommandStatus.FAILED,"Je hebt al een toepkeuze doorgegeven")
-        if (speler.totaalLucifers>speler.ingezetteLucifers) speler.ingezetteLucifers++
+        speler.ingezetteLucifers = tafel.inzet
+        if (speler.ingezetteLucifers>speler.totaalLucifers) speler.ingezetteLucifers=speler.totaalLucifers
         speler.toepKeuze = Toepkeuze.MEE
         TafelService.vervolgSpel(tafel)
         return CommandResult(CommandStatus.SUCCEDED,"")
@@ -78,9 +81,10 @@ object SpelerService {
         val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
-        if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om een kaart te spelen")
+        if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om te passen")
         if (speler.toepKeuze!=Toepkeuze.GEEN_KEUZE) return CommandResult(CommandStatus.FAILED,"Je hebt al een toepkeuze doorgegeven")
         speler.totaalLucifers -= speler.ingezetteLucifers
+        speler.ingezetteLucifers = 0
         speler.toepKeuze = Toepkeuze.PAS
         speler.gepast = true
         TafelService.vervolgSpel(tafel)
