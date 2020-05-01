@@ -5,7 +5,6 @@ object Context {
 data class SpelData (
         var alleSpelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var aantalTafels: Int = 1,
-        var aantalKaartenInDeck: Int = 20,
         var tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
         val opmerkingen: MutableList<Opmerking> = emptyList<Opmerking>().toMutableList()
 )

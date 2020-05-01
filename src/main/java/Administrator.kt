@@ -59,11 +59,6 @@ object Administrator {
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
-    fun setAantalKaartenInDeck(aantalKaartenInDeck:Int):CommandResult{
-        Context.spelData.aantalKaartenInDeck = aantalKaartenInDeck
-        return CommandResult(CommandStatus.SUCCEDED,"")
-    }
-
     fun clearOpmerkingen():CommandResult{
         Context.spelData.opmerkingen.clear()
         return CommandResult(CommandStatus.SUCCEDED,"")

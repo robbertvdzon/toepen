@@ -48,10 +48,6 @@ class SetAantalTafelsCommand(val aantalTafels:Int): Command(){
     override fun process():CommandResult = Administrator.setAantalTafels(aantalTafels)
 }
 
-class SetAantalKaartenInDeckCommand(val aantalKaarten:Int): Command(){
-    override fun process():CommandResult = Administrator.setAantalKaartenInDeck(aantalKaarten)
-}
-
 class ClearOpmerkingenCommand(val aantalKaarten:Int): Command(){
     override fun process():CommandResult = Administrator.clearOpmerkingen()
 }
