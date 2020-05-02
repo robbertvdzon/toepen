@@ -24,6 +24,7 @@ object SpelerService {
     fun nieuweSlag(speler:Speler){
         if (speler.actiefInSpel) {
             speler.gespeeldeKaart = null
+            speler.gepast = false
         }
     }
 

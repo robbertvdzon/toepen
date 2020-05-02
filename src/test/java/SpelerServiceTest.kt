@@ -112,15 +112,15 @@ class SpelerServiceTest {
         // tweede speler kan spelen
         assertThat(SpelerService.speelKaart(speler2, speler2Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
 
-        // speler 3 en 4 ook spelen
+        // speler 3 en 4 kunnen ook spelen
         assertThat(SpelerService.speelKaart(speler3, speler3Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
         assertThat(SpelerService.speelKaart(speler4, speler4Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
 
-        // rond afgelopen, niemand mag meer inzetten
-        assertThat(SpelerService.speelKaart(speler1, speler1Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om een kaart te spelen"))
+        // ronde afgelopen, niemand mag meer inzetten
+        assertThat(SpelerService.speelKaart(speler1, speler1Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je hebt al een kaart gespeeld"))
         assertThat(SpelerService.speelKaart(speler2, speler2Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om een kaart te spelen"))
         assertThat(SpelerService.speelKaart(speler3, speler3Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om een kaart te spelen"))
-        assertThat(SpelerService.speelKaart(speler4, speler4Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je hebt al een kaart gespeeld"))
+        assertThat(SpelerService.speelKaart(speler4, speler4Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om een kaart te spelen"))
 
         // speler 1 heeft gewonnen, en alleen hij mag de slag pakken
         assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je hebt deze slag niet gewonnen"))

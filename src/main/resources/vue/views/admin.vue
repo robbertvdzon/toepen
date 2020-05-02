@@ -122,6 +122,11 @@
                         this.speldata = json
                     )
                     .catch(() => alert("Error while fetching opdracht"));
+
+                // gebruik websockets voor de volgende updates
+                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
+                ws.onmessage = msg => this.speldata = JSON.parse(msg.data);
+                ws.onclose = () => alert("WebSocket connection closed");
             },
             checkresult: function (res) {
                 if (res.data.status=="FAILED") {

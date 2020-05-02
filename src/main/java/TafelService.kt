@@ -9,6 +9,7 @@ object TafelService{
                 if (iedereenGepast){
                     // einde deze ronde!
                     tafel.slagWinnaar = tafel.spelers.firstOrNull { it.toepKeuze==Toepkeuze.TOEP }
+                    tafel.huidigeSpeler = tafel.slagWinnaar
                     eindeSlag(tafel)
                 }
                 else{
@@ -25,6 +26,7 @@ object TafelService{
             val alleSpelersHebbenKaartIngezet = tafel.spelers.all { it.gespeeldeKaart!=null || !it.actiefInSpel || it.gepast}
             if (alleSpelersHebbenKaartIngezet){
                 tafel.slagWinnaar = zoekSlagWinnaar(tafel)
+                tafel.huidigeSpeler = tafel.slagWinnaar
             }
             else{
                 tafel.huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel, tafel.huidigeSpeler)
