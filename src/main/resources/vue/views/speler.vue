@@ -54,7 +54,7 @@
                        <td>{{speler.gepast}}</td>
                        <td>{{speler.toepKeuze}}</td>
                        <td>{{speler.gespeeldeKaart}}</td>
-                       <td v-if="speler.naam==tafel.huidigeSpeler.naam"><---------</td>
+                       <td v-if="tafel.huidigeSpeler!=null && (speler.naam==tafel.huidigeSpeler.naam)"><---------</td>
                    </tr>
                    </tbody>
                </table>
