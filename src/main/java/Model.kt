@@ -1,10 +1,9 @@
-object Context {
+object SpelContext {
     var spelData = SpelData()
 }
 
 data class SpelData (
         var alleSpelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
-        var aantalTafels: Int = 1,
         var tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
         val opmerkingen: MutableList<Opmerking> = emptyList<Opmerking>().toMutableList()
 )
@@ -29,6 +28,7 @@ data class Speler(
 }
 
 data class Tafel(
+        val tafelNr: Int,
         var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var opkomer: Speler? = null,
         var huidigeSpeler: Speler? = null,

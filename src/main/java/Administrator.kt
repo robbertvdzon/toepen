@@ -8,21 +8,21 @@ object Administrator {
     fun loadData():CommandResult {
         val json = File("speldata.dat").readText(Charsets.UTF_8)
         val spelData = objectMapper.readValue<SpelData>(json, SpelData::class.java)
-        Context.spelData = spelData
+        SpelContext.spelData = spelData
         return CommandResult(CommandStatus.SUCCEDED, "")
     }
 
     fun saveData():CommandResult{
-        val json = objectMapper.writeValueAsString(Context.spelData)
+        val json = objectMapper.writeValueAsString(SpelContext.spelData)
         File("speldata.dat").writeText(json)
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
-    fun maakNieuweTafels():CommandResult{
-        val spelData = Context.spelData
+    fun maakNieuweTafels(aantalTafels:Int):CommandResult{
+        val spelData = SpelContext.spelData
         val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
         spelersDieMeedoen.shuffle()
-        val tafels = (1..spelData.aantalTafels).map{Tafel()}
+        val tafels = (1..aantalTafels).map{Tafel(it)}
         while (spelersDieMeedoen.isNotEmpty()){
             tafels.forEach{
                 if (spelersDieMeedoen.isNotEmpty()){
@@ -38,7 +38,7 @@ object Administrator {
     fun updateGebruikers(gebruikers:List<Speler>):CommandResult{
         val gebruikersMap =  gebruikers.map{it.id to it}.toMap()
         val mutableGebruikersList = gebruikers.toMutableList()
-        Context.spelData.alleSpelers.forEach{
+        SpelContext.spelData.alleSpelers.forEach{
             val nieuweSpelerData = gebruikersMap[it.id]
             if (nieuweSpelerData!=null) {
                 mutableGebruikersList.remove(nieuweSpelerData)
@@ -49,18 +49,13 @@ object Administrator {
             }
         }
         mutableGebruikersList.forEach{
-            Context.spelData.alleSpelers.add(it)
+            SpelContext.spelData.alleSpelers.add(it)
         }
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
-    fun setAantalTafels(aantalTafels:Int):CommandResult{
-        Context.spelData.aantalTafels = aantalTafels
-        return CommandResult(CommandStatus.SUCCEDED,"")
-    }
-
     fun clearOpmerkingen():CommandResult{
-        Context.spelData.opmerkingen.clear()
+        SpelContext.spelData.opmerkingen.clear()
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 

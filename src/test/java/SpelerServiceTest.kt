@@ -12,9 +12,8 @@ class SpelerServiceTest {
         val speler4 = maakSpeler("Speler4", "004")
         val speler5 = maakSpeler("Speler5", "005")
         Administrator.updateGebruikers(listOf(speler1, speler2, speler3, speler4, speler5))
-        Administrator.setAantalTafels(2)
-        Administrator.maakNieuweTafels()
-        val tafels = Context.spelData.tafels
+        Administrator.maakNieuweTafels(2)
+        val tafels = SpelContext.spelData.tafels
         assertThat(tafels).hasSize(2);
         assertThat(tafels[0].spelers).hasSize(3)
         assertThat(tafels[0].opkomer).isNotNull()
@@ -68,12 +67,12 @@ class SpelerServiceTest {
         SpelerService.nieuweRonde(speler3, listOf(speler3Kaart1, speler3Kaart2, speler3Kaart3, speler3Kaart4).toMutableList())
         SpelerService.nieuweRonde(speler4, listOf(speler4Kaart1, speler4Kaart2, speler4Kaart3, speler4Kaart4).toMutableList())
 
-        val tafel = Tafel()
+        val tafel = Tafel(1)
         tafel.spelers = listOf(speler1, speler2, speler3, speler4).toMutableList()
         tafel.opkomer = speler1
         tafel.huidigeSpeler = speler1
         tafel.inzet = 1
-        Context.spelData.tafels = listOf(tafel).toMutableList()
+        SpelContext.spelData.tafels = listOf(tafel).toMutableList()
 
         // in deze test: iedereen begint met 6 punten
         speler1.totaalLucifers = 7
@@ -89,12 +88,14 @@ class SpelerServiceTest {
         assertThat(SpelerService.toep(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te toepen"))
         assertThat(SpelerService.toep(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te toepen"))
         assertThat(SpelerService.toep(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te toepen"))
-        assertThat(SpelerService.gaMeeMetToep(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om mee te gaan"))
-        assertThat(SpelerService.gaMeeMetToep(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om mee te gaan"))
-        assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om mee te gaan"))
-        assertThat(SpelerService.pas(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te passen"))
-        assertThat(SpelerService.pas(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te passen"))
-        assertThat(SpelerService.pas(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te passen"))
+        assertThat(SpelerService.gaMeeMetToep(speler1)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.gaMeeMetToep(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.gaMeeMetToep(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.pas(speler1)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.pas(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.pas(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.pas(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
         assertThat(SpelerService.pakSlag(speler1)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je hebt deze slag niet gewonnen"))
         assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je hebt deze slag niet gewonnen"))
         assertThat(SpelerService.pakSlag(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je hebt deze slag niet gewonnen"))

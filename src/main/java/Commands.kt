@@ -36,16 +36,12 @@ class SaveDataCommand(): Command(){
     override fun process():CommandResult = Administrator.saveData()
 }
 
-class MaakNieuweTafelsCommand(): Command(){
-    override fun process():CommandResult = Administrator.maakNieuweTafels()
+class MaakNieuweTafelsCommand(private val aantal:Int): Command(){
+    override fun process():CommandResult = Administrator.maakNieuweTafels(aantal)
 }
 
 class UpdateGebruikersCommand(val gebruikers:List<Speler>): Command(){
     override fun process():CommandResult = Administrator.updateGebruikers(gebruikers)
-}
-
-class SetAantalTafelsCommand(val aantalTafels:Int): Command(){
-    override fun process():CommandResult = Administrator.setAantalTafels(aantalTafels)
 }
 
 class ClearOpmerkingenCommand(val aantalKaarten:Int): Command(){

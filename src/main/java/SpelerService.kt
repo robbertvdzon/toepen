@@ -28,7 +28,7 @@ object SpelerService {
     }
 
     fun speelKaart(speler:Speler, kaart:Kaart):CommandResult{
-        val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
         if (tafel.toeper!=null) return CommandResult(CommandStatus.FAILED,"Nog niet iedereen heeft zijn toep keuze opgegeven")
@@ -42,7 +42,7 @@ object SpelerService {
     }
 
     fun pakSlag(speler:Speler):CommandResult{
-        val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
         if (tafel.slagWinnaar!=speler) return CommandResult(CommandStatus.FAILED,"Je hebt deze slag niet gewonnen")
@@ -51,7 +51,7 @@ object SpelerService {
     }
 
     fun toep(speler:Speler):CommandResult{
-        val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
         if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om te toepen")
@@ -65,9 +65,10 @@ object SpelerService {
     }
 
     fun gaMeeMetToep(speler:Speler):CommandResult{
-        val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
+        if (tafel.toeper==null) return CommandResult(CommandStatus.FAILED,"Er is niet getoept")
         if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om mee te gaan")
         if (speler.toepKeuze!=Toepkeuze.GEEN_KEUZE) return CommandResult(CommandStatus.FAILED,"Je hebt al een toepkeuze doorgegeven")
         speler.ingezetteLucifers = tafel.inzet
@@ -78,9 +79,10 @@ object SpelerService {
     }
 
     fun pas(speler:Speler):CommandResult{
-        val tafel = Context.spelData.tafels.find { it.spelers.contains(speler) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
+        if (tafel.toeper==null) return CommandResult(CommandStatus.FAILED,"Er is niet getoept")
         if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om te passen")
         if (speler.toepKeuze!=Toepkeuze.GEEN_KEUZE) return CommandResult(CommandStatus.FAILED,"Je hebt al een toepkeuze doorgegeven")
         speler.totaalLucifers -= speler.ingezetteLucifers
@@ -93,11 +95,8 @@ object SpelerService {
 
     fun nieuweOpmerking(speler:Speler, opmerking: String):CommandResult{
         val opmerking = Opmerking(speler.naam, Date().toString(),opmerking)
-        Context.spelData.opmerkingen.add(opmerking)
+        SpelContext.spelData.opmerkingen.add(opmerking)
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
-
-
 }
-
