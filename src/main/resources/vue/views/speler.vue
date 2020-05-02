@@ -81,7 +81,6 @@
 </template>
 
 <script>
-
     Vue.component("speler", {
         template: "#speler",
         data: () => ({
@@ -120,12 +119,19 @@
             },
             load: function (event) {
                 this.id = this.$javalin.pathParams["id"];
+                // initieel de gegevens ophalen
                 fetch(`/api/speldata`)
                     .then(res => res.json())
                     .then(json =>
                         this.loadedData(json)
                     )
                     .catch(() => alert("Error while fetching opdracht"));
+
+                // gebruik websockets voor de volgende updates
+                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
+                ws.onmessage = msg => this.loadedData(JSON.parse(msg.data));
+                ws.onclose = () => alert("WebSocket connection closed");
+
             },
             checkresult: function (res) {
                 if (res.data.status=="FAILED") {
@@ -154,4 +160,5 @@
             },
         }
     });
+
 </script>
