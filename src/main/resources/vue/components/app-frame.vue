@@ -1,6 +1,7 @@
 <template id="app-frame">
     <div class="app-frame">
         <header>
+            <img src="/cards.png" height="100px" >
             <div class="headerdiv">
                 Vriendjes Toep Toernooi
             </div>
