@@ -50,7 +50,7 @@ object Administrator {
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
-    fun maakNieuweTafels(aantalTafels:Int, startscore:Int):CommandResult{
+    fun maakNieuweTafels(aantalTafels:Int, startscore:Int, vulTafelsAanMetMonkeysTot:Int):CommandResult{
         val spelData = SpelContext.spelData
         val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
         spelersDieMeedoen.shuffle()
@@ -62,9 +62,27 @@ object Administrator {
                 }
             }
         }
+
+        // vul aan met monkeys
+        if (vulTafelsAanMetMonkeysTot>0) {
+            tafels.forEach {
+                while (it.spelers.size<vulTafelsAanMetMonkeysTot){
+                    it.spelers.add(newMonkey())
+                }
+
+            }
+        }
+
         spelData.tafels = tafels.toMutableList()
         spelData.tafels.forEach{TafelService.nieuwSpel(it, startscore)}
         return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    private fun newMonkey(): Speler {
+        val speler = Speler()
+        speler.id = "monkey"+(10000..99999).random()
+        speler.naam = speler.id
+        return speler
     }
 
     fun updateGebruikers(gebruikers:List<Speler>):CommandResult{
