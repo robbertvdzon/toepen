@@ -1,7 +1,9 @@
 <template id="app-frame">
     <div class="app-frame">
         <header>
-            <span><h1>Toepen met de vriendjes!</h1></span>
+            <div class="headerdiv">
+                Vriendjes Toep Toernooi
+            </div>
         </header>
         <slot></slot>
     </div>

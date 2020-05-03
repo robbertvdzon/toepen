@@ -15,7 +15,7 @@
 #tabs a {
     position: relative;
     background: #ddd;
-    background-image: linear-gradient(#068eff, #49b1ff, #068eff);
+    background-image: linear-gradient(#086904, #077802, #086904);
 
     padding: .7em 3.5em;
     float: left;
@@ -46,7 +46,7 @@
     bottom: 0;
     width: 1em;
     background: #ddd;
-    background-image: linear-gradient(#068eff, #49b1ff, #068eff);
+    background-image: linear-gradient(#086904, #077802, #086904);
     box-shadow: 2px 2px 2px rgba(0,0,0,.4);
     transform: skew(10deg);
     border-radius: 0 5px 0 0;
@@ -59,7 +59,7 @@
 }
 
 #content {
-    background: #49b1ff;
+    background: #086904;
     padding: 2em;
     position: relative;
     z-index: 2;

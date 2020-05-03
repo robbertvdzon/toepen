@@ -1,14 +1,36 @@
 h1 {
-  font-family: 'Dancing Script', cursive;
+  /*font-family: 'Dancing Script', cursive;*/
+  font-family: 'Ultra', serif;
   font-size: 40px;
   font-weight: normal;
   color: white;
   margin-bottom: 0px;
 }
 
+.headerdiv{
+    font-family: 'Ultra', serif;
+    font-size: 50px;
+    text-align: center;
+    width: 100%;
+}
+
+.kaartenblack{
+    font-size: 34px;
+    /*background-color: white;*/
+    font-family: 'Titillium Web', sans-serif;
+    color: black;
+}
+
+.kaartenred{
+    font-size: 34px;
+    /*background-color: white;*/
+    font-family: 'Titillium Web', sans-serif;
+    color: red;
+}
+
 body {
   font-size: 14px;
-  background-image: linear-gradient(#49b1ff, #8bd0ff, #49b1ff);
+  background-image: linear-gradient(#086904, #077802, #086904);
   font-family: 'Titillium Web', sans-serif;
   color: white;
 }
@@ -18,7 +40,7 @@ div {
 }
 
 button {
-  background-image: linear-gradient(#068eff, #49b1ff, #068eff);
+  background-image: linear-gradient(#086904, #077802, #086904);
   border: none;
   color: white;
   padding: 15px 32px;

@@ -1,6 +1,18 @@
 <template id="speler">
     <app-frame>
        <opdracht-tabs-frame></opdracht-tabs-frame>
+
+        <div class="kaartenblack">
+        &clubs;A
+            <br>
+        &spades;H
+        </div>
+        <div class="kaartenred">
+        &diams;7
+            <br>
+        &hearts;V
+        </div>
+
        <div id="content">
            <div v-if="error">
                ERROR: {{error}}
@@ -81,6 +93,8 @@
 </template>
 
 <script>
+
+
     Vue.component("speler", {
         template: "#speler",
         data: () => ({
@@ -130,7 +144,7 @@
                 // gebruik websockets voor de volgende updates
                 let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
                 ws.onmessage = msg => this.loadedData(JSON.parse(msg.data));
-                ws.onclose = () => alert("WebSocket connection closed");
+                ws.onclose = () => location.reload();;
 
             },
             checkresult: function (res) {
