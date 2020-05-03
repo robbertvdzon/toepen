@@ -18,11 +18,12 @@ object Toepen {
     @JvmStatic
     fun main(args: Array<String>) {
         CommandQueue.processCommands()
+        Administrator.loadData()
 
-        val spelers = (1..40).map { maakInitieleSpeler(""+(10000..99999).random()) }
-        val command = UpdateGebruikersCommand(spelers)
-        val res = CommandQueue.addNewCommand(command)
-        log.info(res.toString())
+//        val spelers = (1..40).map { maakInitieleSpeler(""+(10000..99999).random()) }
+//        val command = UpdateGebruikersCommand(spelers)
+//        val res = CommandQueue.addNewCommand(command)
+//        log.info(res.toString())
 
 
         val app = Javalin.create { config ->
@@ -37,7 +38,7 @@ object Toepen {
         app.get("/api/speldata", { this.getSpeldata(it) })
         app.post("/api/load", { this.loadData(it) })
         app.post("/api/save", { this.saveData(it) })
-        app.post("/api/maaktafels", { this.maakTafels(it) })
+        app.post("/api/maaktafels/:aantaltafels/:startscore", { this.maakTafels(it) })
         app.post("/api/speelkaart/:id", { this.speelkaart(it) })
         app.post("/api/pakslag/:id", { this.pakSlag(it) })
         app.post("/api/toep/:id", { this.toep(it) })
@@ -87,8 +88,9 @@ object Toepen {
 
     private fun maakTafels(ctx: Context) {
         log.info("maakTafels")
-        val aantalTafels = ctx.body<Int>()
-        ctx.json(CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantalTafels)))
+        val aantaltafels = ctx.pathParam("aantaltafels").toInt()
+        val startscore = ctx.pathParam("startscore").toInt()
+        ctx.json(CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantaltafels, startscore)))
         broadcastMessage()
     }
 

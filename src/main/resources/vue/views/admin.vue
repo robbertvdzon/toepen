@@ -29,6 +29,11 @@
                <td>&nbsp;:&nbsp;</td>
                <td><input v-model="aantalTafels"></td>
            </tr>
+           <tr>
+               <td>Startscore</td>
+               <td>&nbsp;:&nbsp;</td>
+               <td><input v-model="aantalStartLucifers"></td>
+           </tr>
        </table>
 
         <span>
@@ -104,7 +109,8 @@
         template: "#admin",
         data: () => ({
             speldata: null,
-            aantalTafels: 1
+            aantalTafels: 1,
+            aantalStartLucifers: 15
         }),
         created() {
             this.load()
@@ -138,7 +144,7 @@
                     .then(res => this.checkresult(res))
             },
             maakTafels: function (event) {
-                axios.post(`/api/maaktafels`,this.aantalTafels)
+                axios.post(`/api/maaktafels/`+this.aantalTafels+`/`+this.aantalStartLucifers,null)
                     .then(res => this.checkresult(res))
             },
 

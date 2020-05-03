@@ -1,11 +1,11 @@
 import java.util.*
 
 object SpelerService {
-    fun nieuwSpel(speler:Speler){
+    fun nieuwSpel(speler:Speler, startscore:Int){
         speler.actiefInSpel = true
         speler.kaarten = emptyList<Kaart>().toMutableList()
         speler.gespeeldeKaart = null
-        speler.totaalLucifers = 15
+        speler.totaalLucifers = startscore
         speler.ingezetteLucifers = 0
         speler.gepast = false
         speler.toepKeuze = Toepkeuze.GEEN_KEUZE
@@ -24,7 +24,6 @@ object SpelerService {
     fun nieuweSlag(speler:Speler){
         if (speler.actiefInSpel) {
             speler.gespeeldeKaart = null
-            speler.gepast = false
             speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         }
     }

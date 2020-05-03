@@ -12,6 +12,8 @@
                         <tr>
                             <td>Speeltafel:{{tafel.tafelNr}}</td>
                             <td>Speler:{{speler.naam}}</td>
+                            <td>slagwinnaar:{{getSlagWinnaar()}}</td>
+                            <td>spelwinnaar:{{getSpelWinnaar()}}</td>
                         </tr>
                     </table>
                 </h2>
@@ -230,7 +232,18 @@
                 if (this.tafel.toeper == null) return false;
                 if (this.speler.toepKeuze != "GEEN_KEUZE") return false;
                 return (this.tafel.huidigeSpeler.naam == this.speler.naam)
-            }
+            },
+            getSlagWinnaar: function (){
+                if (this.tafel == null) return "-";
+                if (this.tafel.slagWinnaar == null) return "-";
+                return this.tafel.slagWinnaar.naam;
+
+            },
+            getSpelWinnaar: function (){
+                if (this.tafel == null) return "-";
+                if (this.tafel.tafelWinnaar == null) return "-";
+                return this.tafel.tafelWinnaar.naam;
+            },
         }
     });
 </script>

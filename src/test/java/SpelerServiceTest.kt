@@ -12,7 +12,7 @@ class SpelerServiceTest {
         val speler4 = maakSpeler("Speler4", "004")
         val speler5 = maakSpeler("Speler5", "005")
         Administrator.updateGebruikers(listOf(speler1, speler2, speler3, speler4, speler5))
-        Administrator.maakNieuweTafels(2)
+        Administrator.maakNieuweTafels(2, 15)
         val tafels = SpelContext.spelData.tafels
         assertThat(tafels).hasSize(2);
         assertThat(tafels[0].spelers).hasSize(3)
@@ -57,10 +57,10 @@ class SpelerServiceTest {
         val speler4Kaart3 = Kaart(SCHOPPEN, 11)
         val speler4Kaart4 = Kaart(RUITEN, 10)
 
-        SpelerService.nieuwSpel(speler1)
-        SpelerService.nieuwSpel(speler2)
-        SpelerService.nieuwSpel(speler3)
-        SpelerService.nieuwSpel(speler4)
+        SpelerService.nieuwSpel(speler1, 15)
+        SpelerService.nieuwSpel(speler2, 15)
+        SpelerService.nieuwSpel(speler3, 15)
+        SpelerService.nieuwSpel(speler4, 15)
 
         SpelerService.nieuweRonde(speler1, listOf(speler1Kaart1, speler1Kaart2, speler1Kaart3, speler1Kaart4).toMutableList())
         SpelerService.nieuweRonde(speler2, listOf(speler2Kaart1, speler2Kaart2, speler2Kaart3, speler2Kaart4).toMutableList())

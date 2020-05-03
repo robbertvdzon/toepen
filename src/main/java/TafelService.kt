@@ -115,10 +115,10 @@ object TafelService{
         tafel.inzet = 1
     }
 
-    fun nieuwSpel(tafel:Tafel){
+    fun nieuwSpel(tafel:Tafel, startscore:Int){
         tafel.huidigeSpeler = tafel.spelers.firstOrNull()
         tafel.opkomer = tafel.spelers.firstOrNull()
-        tafel.spelers.forEach{SpelerService.nieuwSpel(it)}
+        tafel.spelers.forEach{SpelerService.nieuwSpel(it, startscore)}
         nieuweRonde(tafel)
 
     }
