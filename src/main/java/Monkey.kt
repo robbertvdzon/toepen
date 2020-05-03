@@ -21,8 +21,9 @@ object Monkey {
         println("Speel monkey:"+speler.naam)
         while (tafel.huidigeSpeler==speler){
             if (tafel.slagWinnaar==speler){
-                Thread.sleep(2000)// wacht 2 seconde voordat je hem pakt zodat iedereen de slag kan zien
                 CommandQueue.addNewCommand(PakSlagCommand(speler))
+                Toepen.broadcastMessage()
+                Thread.sleep(2000)// wacht 2 seconde voordat hij verder gaat
 
             }
             if ((0..2).random()==0){

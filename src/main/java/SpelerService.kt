@@ -65,7 +65,7 @@ object SpelerService {
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
         if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om te toepen")
-        if (speler.gespeeldeKaart!=null) return CommandResult(CommandStatus.FAILED,"Je hebt al een kaart gespeeld")
+        if (speler.toepKeuze==Toepkeuze.TOEP) return CommandResult(CommandStatus.FAILED,"Je hebt al getoept")
         if (speler.totaalLucifers<=tafel.inzet) return CommandResult(CommandStatus.FAILED,"Je hebt te weinig lucifers om te toepen")
         tafel.inzet++
         speler.ingezetteLucifers = tafel.inzet
