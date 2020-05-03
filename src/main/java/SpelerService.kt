@@ -25,6 +25,7 @@ object SpelerService {
         if (speler.actiefInSpel) {
             speler.gespeeldeKaart = null
             speler.gepast = false
+            speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         }
     }
 
