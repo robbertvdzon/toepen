@@ -75,7 +75,13 @@ object TafelService{
     fun zoekSlagWinnaar(tafel:Tafel):Speler?{
         val startKaart = tafel.opkomer?.gespeeldeKaart
         if (startKaart==null) return null
-        return tafel.spelers.filter { it.actiefInSpel && !it.gepast}.maxBy { it.berekenScore(startKaart) }
+        val winnaar = tafel.spelers.filter { it.actiefInSpel && !it.gepast}.maxBy { it.berekenScore(startKaart) }
+        if (winnaar?.gepast?:false){
+            // oei, diegene die gepast heeft, heeft gewonnen!
+            // laat nu de eerste speler winnen die nog in het spel zit
+            return tafel.spelers.firstOrNull() { it.actiefInSpel && !it.gepast}
+        }
+        return winnaar
     }
 
 
@@ -90,6 +96,7 @@ object TafelService{
 
     fun volgendeSpelerDieMoetToepen(tafel: Tafel,speler:Speler?):Speler?{
         val spelersDieMoetenToepen = tafel.spelers.filter { it.toepKeuze==Toepkeuze.GEEN_KEUZE || it==speler}
+        if (spelersDieMoetenToepen.size==1) return null // er zit maar 1 iemand in, dat is de speler zelf. Geeft dus null terum om aan te geven dat iedereen getoept heeft
         if (speler==null) return spelersDieMoetenToepen.firstOrNull()
         if (!spelersDieMoetenToepen.contains(speler)) return null
         if (spelersDieMoetenToepen.last()==speler) return spelersDieMoetenToepen.firstOrNull()
@@ -148,5 +155,6 @@ object TafelService{
         else{
             tafel.huidigeSpeler = volgendeSpelerVoorToep
         }
+
     }
 }

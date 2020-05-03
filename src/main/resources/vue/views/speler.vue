@@ -34,7 +34,7 @@
                             {{getStatus(speler)}}
                         </td>
                     </tr>
-                    <tr>
+                    <tr height="100px">
                         <td v-for="speler in tafel.spelers">
                             <div class="kaartenred">{{getRodeKaart(speler.gespeeldeKaart)}}</div>
                             <div class="kaartenblack">{{getZwarteKaart(speler.gespeeldeKaart)}}</div>
@@ -45,16 +45,16 @@
             <hr>
 
             <br><br>
-            <div v-if="speler">
+            <div v-if="speler&&!slagGewonnen()&&!toepKeuzeDoorgeven()">
                 <div>
                     <table>
                         <tr>
+                            <td>
+                                <img src="/toep.png" height="60px" v-on:click="toep">
+                            </td>
                             <td v-for="(kaart, idx) in speler.kaarten" width="150px">
                                 <div class="kaartenred" v-on:click="speelKaart(idx)">{{getRodeKaart(kaart)}}</div>
                                 <div class="kaartenblack" v-on:click="speelKaart(idx)">{{getZwarteKaart(kaart)}}</div>
-                            </td>
-                            <td>
-                                <img src="/toep.png" height="60px" v-on:click="toep">
                             </td>
                         </tr>
                     </table>

@@ -465,6 +465,62 @@ class SpelerServiceTest {
 
     }
 
+
+    @Test
+    fun testSpelDoorgaanAlsIedereenAutomatischMeegaatMetToep() {
+        val speler1 = maakSpeler("Speler1", "001")
+        val speler2 = maakSpeler("Speler2", "002")
+        val speler3 = maakSpeler("Speler3", "003")
+        val speler4 = maakSpeler("Speler4", "004")
+
+        val speler1Kaart1 = Kaart(HARTEN, 7)
+        val speler1Kaart2 = Kaart(HARTEN, 9)
+        val speler1Kaart3 = Kaart(KLAVER, 7)
+        val speler1Kaart4 = Kaart(KLAVER, 10)
+
+        val speler2Kaart1 = Kaart(HARTEN, 6)
+        val speler2Kaart2 = Kaart(KLAVER, 9)
+        val speler2Kaart3 = Kaart(KLAVER, 11)
+        val speler2Kaart4 = Kaart(HARTEN, 10)
+
+        val speler3Kaart1 = Kaart(RUITEN, 7)
+        val speler3Kaart2 = Kaart(RUITEN, 9)
+        val speler3Kaart3 = Kaart(RUITEN, 11)
+        val speler3Kaart4 = Kaart(SCHOPPEN, 10)
+
+        val speler4Kaart1 = Kaart(SCHOPPEN, 7)
+        val speler4Kaart2 = Kaart(SCHOPPEN, 9)
+        val speler4Kaart3 = Kaart(SCHOPPEN, 11)
+        val speler4Kaart4 = Kaart(RUITEN, 8)
+
+        SpelerService.nieuwSpel(speler1, 2)
+        SpelerService.nieuwSpel(speler2, 1)
+        SpelerService.nieuwSpel(speler3, 1)
+        SpelerService.nieuwSpel(speler4, 1)
+
+        SpelerService.nieuweRonde(speler1, listOf(speler1Kaart1, speler1Kaart2, speler1Kaart3, speler1Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler2, listOf(speler2Kaart1, speler2Kaart2, speler2Kaart3, speler2Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler3, listOf(speler3Kaart1, speler3Kaart2, speler3Kaart3, speler3Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler4, listOf(speler4Kaart1, speler4Kaart2, speler4Kaart3, speler4Kaart4).toMutableList())
+
+        val tafel = Tafel(1)
+        tafel.spelers = listOf(speler1, speler2, speler3, speler4).toMutableList()
+        tafel.opkomer = speler1
+        tafel.huidigeSpeler = speler1
+        tafel.inzet = 1
+        SpelContext.spelData.tafels = listOf(tafel).toMutableList()
+
+
+        // 1e speler toept, de rest gaam automatisch mee
+        assertThat(SpelerService.toep(speler1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.gaMeeMetToep(speler3)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+        assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
+
+        assertThat(SpelerService.speelKaart(speler1, speler1Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+    }
+
     fun maakSpeler(naam: String, id: String): Speler {
         val speler = Speler()
         speler.naam = naam
