@@ -47,14 +47,14 @@
                 <hr>
                 <table>
                     <tr>
-                        <td v-for="speler in tafel.spelers">
+                        <td v-for="speler in tafel.spelers"  width="150px">
                             <b v-if="isAanZet(speler)" class="naamAanBeurt">{{speler.naam}}</b>
                             <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>
                         </td>
                     </tr>
                     <tr>
                         <td v-for="speler in tafel.spelers">
-                            lucifers:{{speler.totaalLucifers}}
+                            score:{{speler.totaalLucifers}}
                             <br>
                             inzet:{{speler.ingezetteLucifers}}
                             <br>
@@ -76,10 +76,8 @@
                 <div>
                     <table>
                         <tr>
-                            <td v-for="(kaart, idx) in speler.kaarten">
-                                <div class="kaartenred" v-on:click="speelKaart(idx)">
-                                    {{getRodeKaart(kaart)}}
-                                </div>
+                            <td v-for="(kaart, idx) in speler.kaarten" width="150px">
+                                <div class="kaartenred" v-on:click="speelKaart(idx)">{{getRodeKaart(kaart)}}</div>
                                 <div class="kaartenblack" v-on:click="speelKaart(idx)">{{getZwarteKaart(kaart)}}</div>
                             </td>
                             <td>
@@ -215,7 +213,7 @@
                 if (speler.toepKeuze == "GEEN_KEUZE") return "";
                 if (speler.toepKeuze == "NVT") return "";
                 if (speler.toepKeuze == "PAS") return "Pas";
-                if (speler.toepKeuze == "MEE") return "Mee";
+                if (speler.toepKeuze == "MEE") return "Ga mee";
                 if (speler.toepKeuze == "TOEP") return "Toep!";
                 return ""
             },
