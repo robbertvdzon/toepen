@@ -7,17 +7,13 @@
             <tr>
                 <th>ID</th>
                 <th>Naam</th>
-                <th>totaalLucifers</th>
-                <th>actiefInSpel</th>
                 <th>wilMeedoen</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="speler in speldata.alleSpelers" >
-                <td>{{speler.id}}</td>
+                <td><a @click="window.open('/speler/'+speler.id, '_blank');" >{{speler.id}}</a></td>
                 <td><input v-model="speler.naam"></td>
-                <td><input v-model="speler.totaalLucifers"></td>
-                <td><input v-model="speler.actiefInSpel"></td>
                 <td><input v-model="speler.wilMeedoen"></td>
             </tr>
             </tbody>
@@ -126,7 +122,7 @@
                 // gebruik websockets voor de volgende updates
                 let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
                 ws.onmessage = msg => this.speldata = JSON.parse(msg.data);
-                ws.onclose = () => alert("WebSocket connection closed");
+                ws.onclose = () => location.reload();
             },
             checkresult: function (res) {
                 if (res.data.status=="FAILED") {
