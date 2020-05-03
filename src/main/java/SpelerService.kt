@@ -36,6 +36,15 @@ object SpelerService {
         if (tafel.huidigeSpeler!=speler) return CommandResult(CommandStatus.FAILED,"Je bent nog niet aan de beurt om een kaart te spelen")
         if (speler.gespeeldeKaart!=null) return CommandResult(CommandStatus.FAILED,"Je hebt al een kaart gespeeld")
         if (!speler.kaarten.contains(kaart)) return CommandResult(CommandStatus.FAILED,"Deze kaart zit niet in de hand")
+
+        if (tafel.opkomer!=speler){
+            val kanBekennen = speler.kaarten.any { it.symbool ==  tafel.opkomer?.gespeeldeKaart?.symbool}
+            val zelfdeSymbool = tafel.opkomer?.gespeeldeKaart?.symbool==kaart.symbool
+            if (kanBekennen && !zelfdeSymbool){
+                return CommandResult(CommandStatus.FAILED,"Je moet bekennen")
+            }
+        }
+
         speler.gespeeldeKaart = kaart
         speler.kaarten.remove(kaart)
         TafelService.vervolgSpel(tafel)

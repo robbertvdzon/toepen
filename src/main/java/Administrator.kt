@@ -81,7 +81,7 @@ object Administrator {
     private fun newMonkey(): Speler {
         val speler = Speler()
         speler.id = "monkey"+(10000..99999).random()
-        speler.naam = speler.id
+        speler.naam = "Monkey"+(10..99).random()
         return speler
     }
 
@@ -92,9 +92,7 @@ object Administrator {
             val nieuweSpelerData = gebruikersMap[it.id]
             if (nieuweSpelerData!=null) {
                 mutableGebruikersList.remove(nieuweSpelerData)
-//                it.totaalLucifers = nieuweSpelerData.totaalLucifers
                 it.naam = nieuweSpelerData.naam
-//                it.actiefInSpel = nieuweSpelerData.actiefInSpel
                 it.wilMeedoen = nieuweSpelerData.wilMeedoen
             }
         }

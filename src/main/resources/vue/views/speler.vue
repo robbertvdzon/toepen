@@ -17,40 +17,11 @@
                         </tr>
                     </table>
                 </h2>
-                <!--
-                               <table >
-                                   <tr>
-                                       <td>Huidige speler :</td>
-                                       <td>{{tafel.huidigeSpeler!=null?tafel.huidigeSpeler.naam:"-"}}</td>
-                                   </tr>
-                                   <tr>
-                                       <td>Opkomer :</td>
-                                       <td>{{tafel.opkomer!=null?tafel.opkomer.naam:"-"}}</td>
-                                   </tr>
-                                   <tr>
-                                       <td>Toeper :</td>
-                                       <td>{{tafel.toeper!=null?tafel.toeper.naam:"-"}}</td>
-                                   </tr>
-                                   <tr>
-                                       <td>Inzet :</td>
-                                       <td>{{tafel.inzet}}</td>
-                                   </tr>
-                                   <tr>
-                                       <td>SlagWinnaar :</td>
-                                       <td>{{tafel.slagWinnaar!=null?tafel.slagWinnaar.naam:"-"}}</td>
-                                   </tr>
-                                   <tr>
-                                       <td>TafelWinnaar :</td>
-                                       <td>{{tafel.tafelWinnaar!=null?tafel.tafelWinnaar.naam:"-"}}</td>
-                                   </tr>
-                               </table>
-                -->
-                <!--               spelers-->
                 <hr>
                 <table>
                     <tr>
-                        <td v-for="speler in tafel.spelers"  width="150px">
-                            <b v-if="isAanZet(speler)" class="naamAanBeurt">{{speler.naam}}</b>
+                        <td v-for="speler in tafel.spelers"  width="250px">
+                            <b v-if="isAanZet(speler)" class="naamNietBeurt"><u>{{speler.naam}}</u></b>
                             <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>
                         </td>
                     </tr>
