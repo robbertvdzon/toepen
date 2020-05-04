@@ -12,12 +12,12 @@ object SpelerService {
     }
 
     fun nieuweRonde(speler:Speler, kaarten: List<Kaart>){
+        speler.gespeeldeKaart = null
+        speler.gepast = false
+        speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         if (speler.actiefInSpel) {
             speler.kaarten = kaarten.toMutableList()
-            speler.gespeeldeKaart = null
             speler.ingezetteLucifers = 1
-            speler.gepast = false
-            speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         }
     }
 

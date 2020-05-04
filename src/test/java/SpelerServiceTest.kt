@@ -1,5 +1,6 @@
 import KaartSymbool.*
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 class SpelerServiceTest {
@@ -461,8 +462,6 @@ class SpelerServiceTest {
 
         assertThat(tafel.tafelWinnaar).isEqualTo(speler1)
         assertThat(tafel.huidigeSpeler).isNull()
-
-
     }
 
 
@@ -518,6 +517,102 @@ class SpelerServiceTest {
         assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Er is niet getoept"))
 
         assertThat(SpelerService.speelKaart(speler1, speler1Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+    }
+
+    @Test
+    @DisplayName("Als af, dan geen gespeelde kaart mee, en laatste 2 spelers moeten het wel uit kunnen spelen")
+    fun testBug1en2() {
+        val speler1 = maakSpeler("Karen", "001")
+        val speler2 = maakSpeler("Ferry", "002")
+        val speler3 = maakSpeler("Robbert", "003")
+        val speler4 = maakSpeler("Marieke", "004")
+
+        val speler1Kaart1 = Kaart(HARTEN, 7)
+        val speler1Kaart2 = Kaart(HARTEN, 9)
+        val speler1Kaart3 = Kaart(HARTEN, 7)
+        val speler1Kaart4 = Kaart(HARTEN, 10)
+
+        val speler2Kaart1 = Kaart(SCHOPPEN, 13)
+        val speler2Kaart2 = Kaart(KLAVER, 9)
+        val speler2Kaart3 = Kaart(KLAVER, 11)
+        val speler2Kaart4 = Kaart(KLAVER, 10)
+
+        val speler3Kaart1 = Kaart(RUITEN, 7)
+        val speler3Kaart2 = Kaart(RUITEN, 9)
+        val speler3Kaart3 = Kaart(RUITEN, 11)
+        val speler3Kaart4 = Kaart(RUITEN, 10)
+
+        val speler4Kaart1 = Kaart(SCHOPPEN, 8)
+        val speler4Kaart2 = Kaart(SCHOPPEN, 9)
+        val speler4Kaart3 = Kaart(SCHOPPEN, 11)
+        val speler4Kaart4 = Kaart(SCHOPPEN, 8)
+
+        SpelerService.nieuwSpel(speler1, 2)
+        SpelerService.nieuwSpel(speler2, 4)
+        SpelerService.nieuwSpel(speler3, 2)
+        SpelerService.nieuwSpel(speler4, 3)
+
+        SpelerService.nieuweRonde(speler1, listOf(speler1Kaart1, speler1Kaart2, speler1Kaart3, speler1Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler2, listOf(speler2Kaart1, speler2Kaart2, speler2Kaart3, speler2Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler3, listOf(speler3Kaart1, speler3Kaart2, speler3Kaart3, speler3Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler4, listOf(speler4Kaart1, speler4Kaart2, speler4Kaart3, speler4Kaart4).toMutableList())
+
+        val tafel = Tafel(1)
+        tafel.spelers = listOf(speler1, speler2, speler3, speler4).toMutableList()
+        tafel.opkomer = speler2
+        tafel.huidigeSpeler = speler2
+        tafel.inzet = 1
+        SpelContext.spelData.tafels = listOf(tafel).toMutableList()
+
+
+        // 1e speler toept, de rest gaam automatisch mee
+        assertThat(SpelerService.toep(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        assertThat(SpelerService.speelKaart(speler2, speler2Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler3, speler3Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler4, speler4Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler1, speler1Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        assertThat(SpelerService.speelKaart(speler2, speler2Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler3, speler3Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler4, speler4Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler1, speler1Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        assertThat(SpelerService.speelKaart(speler2, speler2Kaart3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler3, speler3Kaart3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler4, speler4Kaart3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler1, speler1Kaart3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        assertThat(SpelerService.speelKaart(speler2, speler2Kaart4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler3, speler3Kaart4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler4, speler4Kaart4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler1, speler1Kaart4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        assertThat(speler1.gespeeldeKaart).isEqualTo(null)
+        assertThat(speler2.gespeeldeKaart).isEqualTo(null)
+        assertThat(speler3.gespeeldeKaart).isEqualTo(null)
+        assertThat(speler4.gespeeldeKaart).isEqualTo(null)
+
+        SpelerService.nieuweRonde(speler1, listOf(speler1Kaart1, speler1Kaart2, speler1Kaart3, speler1Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler2, listOf(speler2Kaart1, speler2Kaart2, speler2Kaart3, speler2Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler3, listOf(speler3Kaart1, speler3Kaart2, speler3Kaart3, speler3Kaart4).toMutableList())
+        SpelerService.nieuweRonde(speler4, listOf(speler4Kaart1, speler4Kaart2, speler4Kaart3, speler4Kaart4).toMutableList())
+
+        assertThat(SpelerService.speelKaart(speler4, speler4Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler2, speler2Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        // spel moet doorgaan
+        assertThat(speler4.actiefInSpel).isEqualTo(true)
 
     }
 

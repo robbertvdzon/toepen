@@ -45,7 +45,7 @@
             <hr>
 
             <br><br>
-            <div v-if="speler&&!slagGewonnen()&&!toepKeuzeDoorgeven()">
+            <div >
                 <div>
                     <table>
                         <tr>

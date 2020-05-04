@@ -7,7 +7,7 @@ object Util {
     }
 
     fun getKaartenDeck(): List<Kaart> =
-            (7..13).flatMap {
+            (7..14).flatMap {
                 listOf(
                         Kaart(KaartSymbool.HARTEN, it),
                         Kaart(KaartSymbool.RUITEN, it),

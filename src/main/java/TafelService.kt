@@ -36,7 +36,7 @@ object TafelService{
     }
 
     fun eindeSlag(tafel:Tafel){
-        val laatsteSlag = tafel.spelers.firstOrNull{it.gepast==false}?.kaarten?.size?:0==0
+        val laatsteSlag = tafel.spelers.firstOrNull{it.gepast==false && it.actiefInSpel}?.kaarten?.size?:0==0
         val aantalSpelersDezeRonde = tafel.spelers.filter{it.gepast==false && it.actiefInSpel}.size
         if (laatsteSlag||aantalSpelersDezeRonde<2){
             tafel.spelers.forEach{
@@ -105,7 +105,7 @@ object TafelService{
     }
 
     fun volgendeSpelerDieMoetSpelen(tafel: Tafel,speler:Speler?):Speler?{
-        val spelersDieMoetenSpelen = tafel.spelers.filter { (it.gespeeldeKaart==null && it.gepast==false) || it==speler}
+        val spelersDieMoetenSpelen = tafel.spelers.filter { (it.gespeeldeKaart==null && it.gepast==false && it.actiefInSpel) || it==speler}
         if (speler==null) return spelersDieMoetenSpelen.firstOrNull()
         if (!spelersDieMoetenSpelen.contains(speler)) return null
         if (spelersDieMoetenSpelen.last()==speler) return spelersDieMoetenSpelen.firstOrNull()
