@@ -23,6 +23,7 @@
                         <td v-for="speler in tafel.spelers"  width="250px">
                             <b v-if="isAanZet(speler)" class="naamNietBeurt"><u>{{speler.naam}}</u></b>
                             <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>
+                            &nbsp;&nbsp;{{getStatus(speler)}}
                         </td>
                     </tr>
                     <tr>
@@ -30,8 +31,6 @@
                             score:{{speler.totaalLucifers}}
                             <br>
                             inzet:{{speler.ingezetteLucifers}}
-                            <br>
-                            {{getStatus(speler)}}
                         </td>
                     </tr>
                     <tr height="100px">
