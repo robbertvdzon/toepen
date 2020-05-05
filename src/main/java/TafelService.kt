@@ -45,6 +45,7 @@ object TafelService{
                     it.totaalLucifers-=it.ingezetteLucifers
                     if (it.totaalLucifers==0) it.actiefInSpel = false
                 }
+                it.ingezetteLucifers = 0
             }
             val eindeSpel = tafel.spelers.filter { it.actiefInSpel }.size==1
             if (eindeSpel){
@@ -52,6 +53,7 @@ object TafelService{
                 tafel.huidigeSpeler = null
                 tafel.slagWinnaar = null
                 tafel.toeper = null
+                tafel.tafelWinnaar?.score = 1+(tafel.tafelWinnaar?.score?:0)
             }
             else{// niet einde spel
                 tafel.huidigeSpeler = volgendeActieveSpeler(tafel, tafel.slagWinnaar)

@@ -420,6 +420,10 @@ class SpelerServiceTest {
         assertThat(speler3.totaalLucifers).isEqualTo(1)
         assertThat(speler4.totaalLucifers).isEqualTo(0)
 
+        assertThat(speler2.ingezetteLucifers).isEqualTo(0)
+        assertThat(speler4.ingezetteLucifers).isEqualTo(0)
+
+
         // NIEUWE RONDE, geeft iedereen weer dezelfde kaarten
         SpelerService.nieuweRonde(speler1, listOf(speler1Kaart1, speler1Kaart2, speler1Kaart3, speler1Kaart4).toMutableList())
         SpelerService.nieuweRonde(speler2, listOf(speler2Kaart1, speler2Kaart2, speler2Kaart3, speler2Kaart4).toMutableList())
@@ -448,6 +452,11 @@ class SpelerServiceTest {
         assertThat(speler2.totaalLucifers).isEqualTo(0)
         assertThat(speler3.totaalLucifers).isEqualTo(0)
         assertThat(speler4.totaalLucifers).isEqualTo(0)
+
+        assertThat(speler1.ingezetteLucifers).isEqualTo(0)
+        assertThat(speler2.ingezetteLucifers).isEqualTo(0)
+        assertThat(speler3.ingezetteLucifers).isEqualTo(0)
+        assertThat(speler4.ingezetteLucifers).isEqualTo(0)
 
         assertThat(tafel.tafelWinnaar).isEqualTo(speler1)
         assertThat(tafel.huidigeSpeler).isNull()
