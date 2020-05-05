@@ -214,11 +214,11 @@
                 return symbool + this.getWaarde(kaart);
             },
             isAanZet: function (speler) {
-                return tafel.huidigeSpeler != null && (speler.naam == tafel.huidigeSpeler.naam);
+                return this.tafel.huidigeSpeler != null && (speler.naam == this.tafel.huidigeSpeler.naam);
 
             },
             zelfAanZet: function () {
-                return (tafel.huidigeSpeler) != null && (this.speler.naam == tafel.huidigeSpeler.naam);
+                return (this.tafel.huidigeSpeler) != null && (this.speler.naam == this.tafel.huidigeSpeler.naam);
 
             },
             getStatus: function (speler) {
@@ -232,16 +232,16 @@
                 return ""
             },
             getTafelStatus: function () {
-                if (tafel.tafelWinnaar!=null && tafel.tafelWinnaar.naam!=null) {
-                    return "Spel afgelopen, "+tafel.tafelWinnaar.naam+" heeft gewonnen!";
+                if (this.tafel.tafelWinnaar!=null && this.tafel.tafelWinnaar.naam!=null) {
+                    return "Spel afgelopen, "+this.tafel.tafelWinnaar.naam+" heeft gewonnen!";
                 }
-                if (tafel.huidigeSpeler==null) {
+                if (this.tafel.huidigeSpeler==null) {
                     return "";
                 }
-                if (tafel.huidigeSpeler.naam!=this.speler.naam) {
-                    return tafel.huidigeSpeler.naam+" is aan de beurt";
+                if (this.tafel.huidigeSpeler.naam!=this.speler.naam) {
+                    return this.tafel.huidigeSpeler.naam+" is aan de beurt";
                 }
-                if (tafel.huidigeSpeler.naam==this.speler.naam) {
+                if (this.tafel.huidigeSpeler.naam==this.speler.naam) {
                     if (this.slagGewonnen()) return "Je hebt de slag gewonnen, pak de slag";
                     if (this.toepKeuzeDoorgeven()) return "Er is getoept! Ga mee, pas of toep over";
                     return "Je bent aan de beurt";
