@@ -115,8 +115,8 @@
         data: () => ({
             speldata: null,
             aantalTafels: 1,
-            aantalStartLucifers: 15,
-            vulTafelsAanMetMonkeysTot:5
+            aantalStartLucifers: 5,
+            vulTafelsAanMetMonkeysTot:3
         }),
         created() {
             this.load()

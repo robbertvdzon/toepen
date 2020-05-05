@@ -24,7 +24,7 @@ object SpelerService {
     fun nieuweSlag(speler:Speler){
         if (speler.actiefInSpel) {
             speler.gespeeldeKaart = null
-            speler.toepKeuze = Toepkeuze.GEEN_KEUZE
+//            speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         }
     }
 
