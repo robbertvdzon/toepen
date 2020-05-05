@@ -1,4 +1,3 @@
-import java.util.*
 
 object SpelerService {
     fun nieuwSpel(speler:Speler, startscore:Int){
@@ -49,6 +48,7 @@ object SpelerService {
         speler.gespeeldeKaart = kaart
         speler.kaarten.remove(kaart)
         TafelService.vervolgSpel(tafel)
+        tafel.log.add("assertThat(SpelerService.speelKaart(speler${speler.id}, Kaart(${kaart.symbool},${kaart.waarde}))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, \"\"))")
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
@@ -59,6 +59,7 @@ object SpelerService {
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
         if (tafel.slagWinnaar!=speler) return CommandResult(CommandStatus.FAILED,"Je hebt deze slag niet gewonnen")
         TafelService.eindeSlag(tafel)
+        tafel.log.add("assertThat(SpelerService.pakSlag(speler${speler.id})).isEqualTo(CommandResult(CommandStatus.SUCCEDED, \"\"))")
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
@@ -74,6 +75,7 @@ object SpelerService {
         speler.ingezetteLucifers = tafel.inzet
         speler.toepKeuze = Toepkeuze.TOEP
         TafelService.toep(tafel, speler)
+        tafel.log.add("assertThat(SpelerService.toep(speler${speler.id})).isEqualTo(CommandResult(CommandStatus.SUCCEDED, \"\"))")
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
@@ -89,6 +91,7 @@ object SpelerService {
         if (speler.ingezetteLucifers>speler.totaalLucifers) speler.ingezetteLucifers=speler.totaalLucifers
         speler.toepKeuze = Toepkeuze.MEE
         TafelService.vervolgSpel(tafel)
+        tafel.log.add("assertThat(SpelerService.gaMeeMetToep(speler${speler.id})).isEqualTo(CommandResult(CommandStatus.SUCCEDED, \"\"))")
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
@@ -105,6 +108,7 @@ object SpelerService {
         speler.toepKeuze = Toepkeuze.PAS
         speler.gepast = true
         TafelService.vervolgSpel(tafel)
+        tafel.log.add("assertThat(SpelerService.pas(speler${speler.id})).isEqualTo(CommandResult(CommandStatus.SUCCEDED, \"\"))")
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 

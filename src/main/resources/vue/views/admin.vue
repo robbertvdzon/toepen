@@ -33,6 +33,7 @@
                     <button type="submit" v-on:click="nieuwspel(tafel.tafelNr, aantalStartLucifers)">Nieuw spel</button>
                     <button type="submit" v-on:click="nieuwspel(tafel.tafelNr, 999)">Tijdelijk spel</button>
                     <button type="submit" v-on:click="schopTafel(tafel.tafelNr)">Schop</button>
+                    <button type="submit" v-on:click="dumpTafel(tafel.tafelNr)">Dump</button>
                     gepauzeerd: {{tafel.gepauzeerd}}, winnaar: {{tafel.tafelWinnaar!=null?tafel.tafelWinnaar.naam:"-"}}
                 </div>
                 <hr>
@@ -215,6 +216,9 @@
             },
             schopTafel: function (tafelnr) {
                 axios.post(`/api/schop/` + tafelnr, this.speldata).then(res => this.checkresult(res))
+            },
+            dumpTafel: function (tafelnr) {
+                axios.post(`/api/dump/` + tafelnr, this.speldata).then(res => this.checkresult(res))
             },
             clearLog: function () {
                 axios.post(`/api/clearlog`, null).then(res => this.checkresult(res))

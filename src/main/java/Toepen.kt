@@ -51,6 +51,7 @@ object Toepen {
         app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
         app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
         app.post("/api/schop/:tafelnr", { this.schopTafelAan(it) })
+        app.post("/api/dump/:tafelnr", { this.dump(it) })
         app.post("/api/allespauzeren", { this.allesPauzeren(it) })
         app.post("/api/allesstarten", { this.allesStarten(it) })
         app.post("/api/clearlog", { this.clearlog(it) })
@@ -77,7 +78,7 @@ object Toepen {
 
     fun broadcastMessage() {
         userUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(CommandQueue.lastSpelDataJson)
+            session.send(CommandQueue.getLastSpeldataJson())
         }
     }
 
@@ -89,13 +90,11 @@ object Toepen {
 
 
     private fun loadData(ctx: Context) {
-        log.info("load")
         ctx.json(CommandQueue.addNewCommand(LoadDataCommand()))
         broadcastMessage()
     }
 
     private fun saveData(ctx: Context) {
-        log.info("save")
         val updatedSpelData = ctx.body<SpelData>()
         val command = UpdateGebruikersCommand(updatedSpelData.alleSpelers)
         val res = CommandQueue.addNewCommand(command)
@@ -128,7 +127,6 @@ object Toepen {
     }
 
     private fun maakTafels(ctx: Context) {
-        log.info("maakTafels")
         val aantaltafels = ctx.pathParam("aantaltafels").toInt()
         val startscore = ctx.pathParam("startscore").toInt()
         ctx.json(CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantaltafels, startscore)))
@@ -164,12 +162,18 @@ object Toepen {
         broadcastMessage()
     }
 
+    private fun dump(ctx: Context) {
+        val id = ctx.pathParam("tafelnr")
+        val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
+        tafel?.log?.forEach{
+            println(it)
+        }
+
+    }
+
     private fun speelkaart(ctx: Context) {
-        log.info("speelkaart")
         val id = ctx.pathParam("id")
         val kaart = ctx.body<Kaart>()
-        log.info("id="+id)
-        log.info("kaart="+kaart)
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
@@ -180,9 +184,7 @@ object Toepen {
     }
 
     private fun pakSlag(ctx: Context) {
-        log.info("pak slag")
         val id = ctx.pathParam("id")
-        log.info("id="+id)
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
@@ -193,9 +195,7 @@ object Toepen {
     }
 
     private fun toep(ctx: Context) {
-        log.info("toep")
         val id = ctx.pathParam("id")
-        log.info("id="+id)
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
@@ -206,9 +206,7 @@ object Toepen {
     }
 
     private fun pas(ctx: Context) {
-        log.info("pas")
         val id = ctx.pathParam("id")
-        log.info("id="+id)
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
@@ -219,9 +217,7 @@ object Toepen {
     }
 
     private fun gaMee(ctx: Context) {
-        log.info("ga mee")
         val id = ctx.pathParam("id")
-        log.info("id="+id)
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
@@ -232,7 +228,7 @@ object Toepen {
     }
 
     private fun getSpeldata(ctx: Context) {
-        ctx.result(CommandQueue.lastSpelDataJson)
+        ctx.result(CommandQueue.getLastSpeldataJson())
         }
 
     fun maakInitieleSpeler(id: String): Speler {

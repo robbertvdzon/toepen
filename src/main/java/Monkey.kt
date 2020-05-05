@@ -1,19 +1,30 @@
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.concurrent.thread
 
 object Monkey {
+    val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    //    const val DELAY:Long=2000
+    const val DELAY: Long = 10
+    var echteSpelData = SpelContext.spelData
+
     fun start() {
         thread(start = true) {
             while (true) {
-                Thread.sleep(2000)
+                Thread.sleep(DELAY)
 
-                val alleTafelsKlaar = SpelContext.spelData.tafels.all{it.tafelWinnaar!=null}
-                if (alleTafelsKlaar){
-                    CommandQueue.addNewCommand(MaakNieuweTafelsCommand(SpelContext.spelData.tafels.size,5))
+                echteSpelData = SpelContext.spelData
+                val spelData = objectMapper.readValue<SpelData>(CommandQueue.getLastSpeldataJson(), SpelData::class.java)
+
+                val alleTafelsKlaar = spelData.tafels.all { it.tafelWinnaar != null }
+                if (alleTafelsKlaar) {
+                    CommandQueue.addNewCommand(MaakNieuweTafelsCommand(spelData.tafels.size, 5))
                 }
 
-                SpelContext.spelData.tafels.filter{!it.gepauzeerd}.forEach{
+                spelData.tafels.filter { !it.gepauzeerd }.forEach {
                     val huidigeSpeler = it.huidigeSpeler
-                    if (huidigeSpeler!=null && huidigeSpeler.isMonkey){
+                    if (huidigeSpeler != null && huidigeSpeler.isMonkey) {
                         speelMonkey(it, huidigeSpeler)
                     }
                 }
@@ -24,34 +35,50 @@ object Monkey {
     }
 
     private fun speelMonkey(tafel: Tafel, speler: Speler) {
-        println("Speel monkey:"+speler.naam)
-        var aantalPogingen = 0
-        while (tafel.huidigeSpeler==speler && aantalPogingen<50){
-            aantalPogingen++
-            if (tafel.slagWinnaar==speler){
-                CommandQueue.addNewCommand(PakSlagCommand(speler))
+        if (tafel.slagWinnaar == speler) {
+            val res = CommandQueue.addNewCommand(PakSlagCommand(zoekEchteSpeler(speler)))
+            if (res.status == CommandStatus.SUCCEDED) {
+                //println(("Pak slag : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                 Toepen.broadcastMessage()
-                Thread.sleep(2000)// wacht 2 seconde voordat hij verder gaat
+            }
+            Toepen.broadcastMessage()
+            Thread.sleep(DELAY)// wacht 2 seconde voordat hij verder gaat
 
-            }
-            if ((0..5).random()==0){
-                val res = CommandQueue.addNewCommand(ToepCommand(speler))
-                println(res)
-            }
-            if ((0..2).random()==0){
-                val kaart = speler.kaarten.getOrNull((0..3).random())
-                if (kaart!=null) {
-                    val res = CommandQueue.addNewCommand(SpeelKaartCommand(speler, kaart))
-                    println(res)
-                }
-            }
-            if ((0..2).random()==0){
-                CommandQueue.addNewCommand(GaMeeMetToepCommand(speler))
-            }
-            if ((0..2).random()==0){
-                CommandQueue.addNewCommand(PasCommand(speler))
+        }
+        if ((0..5).random() == 0) {
+            val res = CommandQueue.addNewCommand(ToepCommand(zoekEchteSpeler(speler)))
+            if (res.status == CommandStatus.SUCCEDED) {
+                //println(("Toep : Speler ${speler.naam} ,  hand:${speler.kaarten}")
+                Toepen.broadcastMessage()
             }
         }
-        Toepen.broadcastMessage()
+        if ((0..2).random() == 0) {
+            val kaart = speler.kaarten.getOrNull((0..3).random())
+            if (kaart != null) {
+                val res = CommandQueue.addNewCommand(SpeelKaartCommand(zoekEchteSpeler(speler), kaart))
+                if (res.status == CommandStatus.SUCCEDED) {
+                    //println(("Speelkaart: Speler ${speler.naam} kaart: $kaart ,  hand:${speler.kaarten}")
+                    Toepen.broadcastMessage()
+                }
+            }
+        }
+        if ((0..2).random() == 0) {
+            val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(zoekEchteSpeler(speler)))
+            if (res.status == CommandStatus.SUCCEDED) {
+                //println(("Ga mee: Speler ${speler.naam} ,  hand:${speler.kaarten}")
+                Toepen.broadcastMessage()
+            }
+        }
+        if ((0..2).random() == 0) {
+            val res = CommandQueue.addNewCommand(PasCommand(zoekEchteSpeler(speler)))
+            if (res.status == CommandStatus.SUCCEDED) {
+                //println(("Pas: Speler ${speler.naam} ,  hand:${speler.kaarten}")
+                Toepen.broadcastMessage()
+            }
+        }
+    }
+
+    private fun zoekEchteSpeler(speler: Speler): Speler {
+        return echteSpelData.alleSpelers.firstOrNull{ it.naam == speler.naam }?:speler
     }
 }

@@ -72,6 +72,7 @@ class SpelerServiceTest {
         SpelerService.nieuweRonde(speler4, listOf(speler4Kaart1, speler4Kaart2, speler4Kaart3, speler4Kaart4).toMutableList())
 
         val tafel = Tafel(1)
+
         tafel.spelers = listOf(speler1, speler2, speler3, speler4).toMutableList()
         tafel.opkomer = speler1
         tafel.huidigeSpeler = speler1
@@ -599,20 +600,146 @@ class SpelerServiceTest {
         assertThat(speler3.gespeeldeKaart).isEqualTo(null)
         assertThat(speler4.gespeeldeKaart).isEqualTo(null)
 
-        SpelerService.nieuweRonde(speler1, listOf(speler1Kaart1, speler1Kaart2, speler1Kaart3, speler1Kaart4).toMutableList())
-        SpelerService.nieuweRonde(speler2, listOf(speler2Kaart1, speler2Kaart2, speler2Kaart3, speler2Kaart4).toMutableList())
-        SpelerService.nieuweRonde(speler3, listOf(speler3Kaart1, speler3Kaart2, speler3Kaart3, speler3Kaart4).toMutableList())
-        SpelerService.nieuweRonde(speler4, listOf(speler4Kaart1, speler4Kaart2, speler4Kaart3, speler4Kaart4).toMutableList())
-
-        assertThat(SpelerService.speelKaart(speler4, speler4Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-        assertThat(SpelerService.toep(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-        assertThat(SpelerService.speelKaart(speler2, speler2Kaart1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-        assertThat(SpelerService.pakSlag(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
 
         // spel moet doorgaan
         assertThat(speler4.actiefInSpel).isEqualTo(true)
 
     }
+
+    @Test
+    fun test1(){
+        val speler80785 = maakSpeler("speler.naam", "1")
+        val speler1 =  speler80785
+        var speler80785kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList()
+        speler80785kaarten.add(Kaart(KLAVER, 7))
+        speler80785kaarten.add(Kaart(SCHOPPEN, 8))
+        speler80785kaarten.add(Kaart(KLAVER, 12))
+        speler80785kaarten.add(Kaart(RUITEN, 14))
+        SpelerService.nieuwSpel(speler1, 5)
+        SpelerService.nieuweRonde(speler1, speler80785kaarten)
+        val speler58137 = maakSpeler("speler.naam", "2")
+        val speler2 =  speler58137
+        var speler58137kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList()
+        speler58137kaarten.add(Kaart(KLAVER, 8))
+        speler58137kaarten.add(Kaart(RUITEN, 8))
+        speler58137kaarten.add(Kaart(HARTEN, 7))
+        speler58137kaarten.add(Kaart(KLAVER, 13))
+        SpelerService.nieuwSpel(speler2, 5)
+        SpelerService.nieuweRonde(speler2, speler58137kaarten)
+        val speler23912 = maakSpeler("speler.naam", "3")
+        val speler3 =  speler23912
+        var speler23912kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList()
+        speler23912kaarten.add(Kaart(HARTEN, 9))
+        speler23912kaarten.add(Kaart(RUITEN, 13))
+        speler23912kaarten.add(Kaart(SCHOPPEN, 7))
+        speler23912kaarten.add(Kaart(KLAVER, 10))
+        SpelerService.nieuwSpel(speler3, 5)
+        SpelerService.nieuweRonde(speler3, speler23912kaarten)
+        val speler71976 = maakSpeler("speler.naam", "4")
+        val speler4 =  speler71976
+        var speler71976kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList()
+        speler71976kaarten.add(Kaart(KLAVER, 9))
+        speler71976kaarten.add(Kaart(RUITEN, 10))
+        speler71976kaarten.add(Kaart(SCHOPPEN, 10))
+        speler71976kaarten.add(Kaart(HARTEN, 14))
+        SpelerService.nieuwSpel(speler4, 5)
+        SpelerService.nieuweRonde(speler4, speler71976kaarten)
+        val tafel = Tafel(1)
+        tafel.spelers = listOf(speler1, speler2, speler3, speler4).toMutableList()
+        tafel.opkomer = speler1
+        tafel.huidigeSpeler = speler1
+        tafel.inzet = 1
+        SpelContext.spelData.tafels = listOf(tafel).toMutableList()
+        assertThat(SpelerService.toep(speler80785)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler58137)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler23912)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pas(speler71976)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler80785, Kaart(RUITEN,14))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler58137, Kaart(RUITEN,8))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler23912)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler80785)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler58137)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler23912, Kaart(RUITEN,13))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pakSlag(speler80785)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler80785, Kaart(SCHOPPEN,8))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler58137)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler23912)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pas(speler80785)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler58137, Kaart(KLAVER,13))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler23912)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pas(speler58137)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        speler80785.kaarten.clear()
+        speler80785.kaarten.add(Kaart(RUITEN, 10))
+        speler80785.kaarten.add(Kaart(RUITEN, 8))
+        speler80785.kaarten.add(Kaart(HARTEN, 8))
+        speler80785.kaarten.add(Kaart(SCHOPPEN, 14))
+        speler58137.kaarten.clear()
+        speler58137.kaarten.add(Kaart(SCHOPPEN, 12))
+        speler58137.kaarten.add(Kaart(KLAVER, 9))
+        speler58137.kaarten.add(Kaart(KLAVER, 10))
+        speler58137.kaarten.add(Kaart(RUITEN, 13))
+        speler23912.kaarten.clear()
+        speler23912.kaarten.add(Kaart(RUITEN, 12))
+        speler23912.kaarten.add(Kaart(KLAVER, 14))
+        speler23912.kaarten.add(Kaart(KLAVER, 12))
+        speler23912.kaarten.add(Kaart(HARTEN, 14))
+        speler71976.kaarten.clear()
+        speler71976.kaarten.add(Kaart(SCHOPPEN, 7))
+        speler71976.kaarten.add(Kaart(SCHOPPEN, 8))
+        speler71976.kaarten.add(Kaart(SCHOPPEN, 11))
+        speler71976.kaarten.add(Kaart(HARTEN, 13))
+        assertThat(SpelerService.speelKaart(speler71976, Kaart(SCHOPPEN,11))).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler80785)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pas(speler23912)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler71976)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+
+        println(tafel.tafelWinnaar)
+
+
+    }
+
+    /*
+
+
+NIEUW SPEL
+Speelkaart: Speler Karen kaart: Kaart(symbool=HARTEN, waarde=12) ,  hand:[Kaart(symbool=SCHOPPEN, waarde=11), Kaart(symbool=KLAVER, waarde=7), Kaart(symbool=HARTEN, waarde=10)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=KLAVER, waarde=10) ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=RUITEN, waarde=13), Kaart(symbool=RUITEN, waarde=10)]
+Pak slag : Speler Karen ,  hand:[Kaart(symbool=SCHOPPEN, waarde=11), Kaart(symbool=KLAVER, waarde=7), Kaart(symbool=HARTEN, waarde=10)]
+Speelkaart: Speler Karen kaart: Kaart(symbool=HARTEN, waarde=10) ,  hand:[Kaart(symbool=SCHOPPEN, waarde=11), Kaart(symbool=KLAVER, waarde=7)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=RUITEN, waarde=13) ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=RUITEN, waarde=10)]
+Pak slag : Speler Karen ,  hand:[Kaart(symbool=SCHOPPEN, waarde=11), Kaart(symbool=KLAVER, waarde=7)]
+Toep : Speler Karen ,  hand:[Kaart(symbool=SCHOPPEN, waarde=11), Kaart(symbool=KLAVER, waarde=7)]
+NIEUWE RONDE, tafel: 1
+NIEUWE RONDE, actief, speler: Karen :[Kaart(symbool=SCHOPPEN, waarde=12), Kaart(symbool=HARTEN, waarde=10), Kaart(symbool=SCHOPPEN, waarde=8), Kaart(symbool=RUITEN, waarde=13)]
+NIEUWE RONDE, actief, speler: Ferry :[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=KLAVER, waarde=7), Kaart(symbool=SCHOPPEN, waarde=13)]
+Pas: Speler Ferry ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=KLAVER, waarde=7), Kaart(symbool=SCHOPPEN, waarde=13)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=SCHOPPEN, waarde=13) ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=KLAVER, waarde=7)]
+Speelkaart: Speler Karen kaart: Kaart(symbool=SCHOPPEN, waarde=8) ,  hand:[Kaart(symbool=SCHOPPEN, waarde=12), Kaart(symbool=HARTEN, waarde=10), Kaart(symbool=RUITEN, waarde=13)]
+Pak slag : Speler Ferry ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=KLAVER, waarde=7)]
+Toep : Speler Ferry ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=KLAVER, waarde=7)]
+Ga mee: Speler Karen ,  hand:[Kaart(symbool=SCHOPPEN, waarde=12), Kaart(symbool=HARTEN, waarde=10), Kaart(symbool=RUITEN, waarde=13)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=SCHOPPEN, waarde=7) ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=KLAVER, waarde=7)]
+Speelkaart: Speler Karen kaart: Kaart(symbool=SCHOPPEN, waarde=12) ,  hand:[Kaart(symbool=HARTEN, waarde=10), Kaart(symbool=RUITEN, waarde=13)]
+Pak slag : Speler Karen ,  hand:[Kaart(symbool=HARTEN, waarde=10), Kaart(symbool=RUITEN, waarde=13)]
+Toep : Speler Karen ,  hand:[Kaart(symbool=HARTEN, waarde=10), Kaart(symbool=RUITEN, waarde=13)]
+Ga mee: Speler Ferry ,  hand:[Kaart(symbool=RUITEN, waarde=8), Kaart(symbool=KLAVER, waarde=7)]
+Speelkaart: Speler Karen kaart: Kaart(symbool=HARTEN, waarde=10) ,  hand:[Kaart(symbool=RUITEN, waarde=13)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=KLAVER, waarde=7) ,  hand:[Kaart(symbool=RUITEN, waarde=8)]
+Pak slag : Speler Karen ,  hand:[Kaart(symbool=RUITEN, waarde=13)]
+Speelkaart: Speler Karen kaart: Kaart(symbool=RUITEN, waarde=13) ,  hand:[]
+Toep : Speler Ferry ,  hand:[Kaart(symbool=RUITEN, waarde=8)]
+NIEUWE RONDE, tafel: 1
+NIEUWE RONDE, actief, speler: Karen :[Kaart(symbool=RUITEN, waarde=12), Kaart(symbool=SCHOPPEN, waarde=9), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=RUITEN, waarde=8)]
+NIEUWE RONDE, actief, speler: Ferry :[Kaart(symbool=HARTEN, waarde=13), Kaart(symbool=HARTEN, waarde=14), Kaart(symbool=SCHOPPEN, waarde=10), Kaart(symbool=RUITEN, waarde=9)]
+Pas: Speler Karen ,  hand:[Kaart(symbool=RUITEN, waarde=12), Kaart(symbool=SCHOPPEN, waarde=9), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=RUITEN, waarde=8)]
+Speelkaart: Speler Karen kaart: Kaart(symbool=SCHOPPEN, waarde=9) ,  hand:[Kaart(symbool=RUITEN, waarde=12), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=RUITEN, waarde=8)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=SCHOPPEN, waarde=10) ,  hand:[Kaart(symbool=HARTEN, waarde=13), Kaart(symbool=HARTEN, waarde=14), Kaart(symbool=RUITEN, waarde=9)]
+Pak slag : Speler Ferry ,  hand:[Kaart(symbool=HARTEN, waarde=13), Kaart(symbool=HARTEN, waarde=14), Kaart(symbool=RUITEN, waarde=9)]
+Speelkaart: Speler Ferry kaart: Kaart(symbool=HARTEN, waarde=13) ,  hand:[Kaart(symbool=HARTEN, waarde=14), Kaart(symbool=RUITEN, waarde=9)]
+Toep : Speler Karen ,  hand:[Kaart(symbool=RUITEN, waarde=12), Kaart(symbool=SCHOPPEN, waarde=7), Kaart(symbool=RUITEN, waarde=8)]
+Toep : Speler Ferry ,  hand:[Kaart(symbool=HARTEN, waarde=14), Kaart(symbool=RUITEN, waarde=9)]
+
+    */
 
     fun maakSpeler(naam: String, id: String): Speler {
         val speler = Speler()

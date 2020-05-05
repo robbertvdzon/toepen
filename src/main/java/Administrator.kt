@@ -42,7 +42,7 @@ object Administrator {
         }
 
         SpelContext.spelData = spelData
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        CommandQueue.setLastSpeldataJson(objectMapper.writeValueAsString(SpelContext.spelData))
         return CommandResult(CommandStatus.SUCCEDED, "")
     }
 

@@ -38,6 +38,7 @@ data class Speler(
 
 data class Tafel(
         val tafelNr: Int,
+        var log: MutableList<String> = emptyList<String>().toMutableList(),
         var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var spelersDieAfZijn: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var opkomer: Speler? = null,
