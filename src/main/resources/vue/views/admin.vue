@@ -7,14 +7,19 @@
             <tr>
                 <th>ID</th>
                 <th>Naam</th>
+                <th>Score</th>
                 <th>wilMeedoen</th>
+                <th>Monkey</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="speler in speldata.alleSpelers" >
                 <td><a @click="window.open('/speler/'+speler.id, '_blank');" >{{speler.id}}</a></td>
                 <td><input v-model="speler.naam"></td>
-                <td><input v-model="speler.wilMeedoen"></td>
+                <td><input v-model="speler.score"></td>
+                <td><input type="checkbox" v-model="speler.wilMeedoen"></td>
+                <td><input type="checkbox" v-model="speler.isMonkey"></td>
+
             </tr>
             </tbody>
         </table>
@@ -33,11 +38,6 @@
                <td>Startscore</td>
                <td>&nbsp;:&nbsp;</td>
                <td><input v-model="aantalStartLucifers"></td>
-           </tr>
-           <tr>
-               <td>vulTafelsAanMetMonkeysTot</td>
-               <td>&nbsp;:&nbsp;</td>
-               <td><input v-model="vulTafelsAanMetMonkeysTot"></td>
            </tr>
        </table>
 
@@ -115,8 +115,7 @@
         data: () => ({
             speldata: null,
             aantalTafels: 1,
-            aantalStartLucifers: 5,
-            vulTafelsAanMetMonkeysTot:3
+            aantalStartLucifers: 5
         }),
         created() {
             this.load()
@@ -150,8 +149,12 @@
                     .then(res => this.checkresult(res))
             },
             maakTafels: function (event) {
-                axios.post(`/api/maaktafels/`+this.aantalTafels+`/`+this.aantalStartLucifers+`/`+this.vulTafelsAanMetMonkeysTot,null)
-                    .then(res => this.checkresult(res))
+                axios.post(`/api/save`,this.speldata)
+                    .then(res =>
+                        axios.post(`/api/maaktafels/`+this.aantalTafels+`/`+this.aantalStartLucifers,null)
+                            .then(res => this.checkresult(res))
+                    )
+
             },
 
         }

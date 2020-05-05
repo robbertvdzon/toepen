@@ -18,7 +18,9 @@ data class Speler(
         var gepast: Boolean = false, // gepast na een toep
         var toepKeuze: Toepkeuze = Toepkeuze.GEEN_KEUZE,
         var actiefInSpel: Boolean = true, // zit nog in het spel (is niet af)
-        var wilMeedoen: Boolean = false // bij nieuwe tafel indeling, deze speler mee laten doen
+        var wilMeedoen: Boolean = false, // bij nieuwe tafel indeling, deze speler mee laten doen
+        var isMonkey: Boolean = false,
+        var score:Int = 0
 ) {
     fun berekenScore(startKaart: Kaart):Int {
         if (gespeeldeKaart==null) return 0

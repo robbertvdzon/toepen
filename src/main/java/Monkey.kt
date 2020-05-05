@@ -7,7 +7,7 @@ object Monkey {
                 Thread.sleep(2000)
                 SpelContext.spelData.tafels.forEach{
                     val huidigeSpeler = it.huidigeSpeler
-                    if (huidigeSpeler!=null && huidigeSpeler.id.startsWith("monkey")){
+                    if (huidigeSpeler!=null && huidigeSpeler.isMonkey){
                         speelMonkey(it, huidigeSpeler)
                     }
                 }

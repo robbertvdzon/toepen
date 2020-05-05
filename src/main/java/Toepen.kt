@@ -39,7 +39,7 @@ object Toepen {
         app.get("/api/speldata", { this.getSpeldata(it) })
         app.post("/api/load", { this.loadData(it) })
         app.post("/api/save", { this.saveData(it) })
-        app.post("/api/maaktafels/:aantaltafels/:startscore/:vulTafelsAanMetMonkeysTot", { this.maakTafels(it) })
+        app.post("/api/maaktafels/:aantaltafels/:startscore", { this.maakTafels(it) })
         app.post("/api/speelkaart/:id", { this.speelkaart(it) })
         app.post("/api/pakslag/:id", { this.pakSlag(it) })
         app.post("/api/toep/:id", { this.toep(it) })
@@ -91,8 +91,7 @@ object Toepen {
         log.info("maakTafels")
         val aantaltafels = ctx.pathParam("aantaltafels").toInt()
         val startscore = ctx.pathParam("startscore").toInt()
-        val vulTafelsAanMetMonkeysTot = ctx.pathParam("vulTafelsAanMetMonkeysTot").toInt()
-        ctx.json(CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantaltafels, startscore, vulTafelsAanMetMonkeysTot)))
+        ctx.json(CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantaltafels, startscore)))
         broadcastMessage()
     }
 

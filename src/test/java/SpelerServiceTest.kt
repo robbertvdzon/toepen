@@ -13,7 +13,7 @@ class SpelerServiceTest {
         val speler4 = maakSpeler("Speler4", "004")
         val speler5 = maakSpeler("Speler5", "005")
         Administrator.updateGebruikers(listOf(speler1, speler2, speler3, speler4, speler5))
-        Administrator.maakNieuweTafels(2, 15, 0)
+        Administrator.maakNieuweTafels(2, 15)
         val tafels = SpelContext.spelData.tafels
         assertThat(tafels).hasSize(2);
         assertThat(tafels[0].spelers).hasSize(3)
