@@ -41,9 +41,12 @@ object TafelService{
 
     fun eindeSlag(tafel:Tafel){
         werkScoreBij(tafel)
+
         val laatsteSlag = tafel.spelers.firstOrNull{it.gepast==false && it.actiefInSpel}?.kaarten?.size?:0==0
         val aantalSpelersDezeRonde = tafel.spelers.filter{it.gepast==false && it.actiefInSpel}.size
         if (laatsteSlag||aantalSpelersDezeRonde<2){
+            Toepen.broadcastWinnaar(tafel)
+
             tafel.spelers.forEach{
                 // als je nog in het spel zat, en niet gepast had en niet de winnaar bent, dan ben je lucifers kwijt!
                 if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar!=it){
@@ -70,7 +73,6 @@ object TafelService{
                 ))
 
                 tafel.tafelWinnaar?.score = 1+(tafel.tafelWinnaar?.score?:0)
-                Toepen.broadcastWinnaar(tafel)
             }
             else{// niet einde spel
                 tafel.huidigeSpeler = volgendeActieveSpeler(tafel, tafel.slagWinnaar)

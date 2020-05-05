@@ -56,6 +56,14 @@ body {
     text-align: center;
 }
 
+.winnaarBalk {
+    font-size: 35px;
+    font-family: 'Titillium Web', sans-serif;
+    color: black;
+    background: yellow;
+    text-align: center;
+}
+
 .naamAanBeurt {
   font-size: 35px;
   font-family: 'Titillium Web', sans-serif;

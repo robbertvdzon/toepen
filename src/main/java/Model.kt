@@ -82,3 +82,8 @@ enum class CommandStatus {
     SUCCEDED,
     FAILED
 }
+
+data class RondeWinnaar(
+        val tafelNr:Int,
+        val winnaar:String
+)

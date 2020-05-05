@@ -70,6 +70,12 @@
                     </tr>
                 </table>
             </div>
+
+            <div class="winnaarBalk" v-if="rondewinnaar">
+                {{rondewinnaar}}
+            </div>
+
+
             <div  v-if="mytafel">
                 <div class="statusbalkGlow" v-if="zelfAanZet()" >
                     {{getTafelStatus()}}
@@ -114,6 +120,7 @@
             speldata: null,
             mytafel: null,
             myspeler: null,
+            rondewinnaar: null,
             id: null,
             error: null
         }),
@@ -122,6 +129,19 @@
         },
 
         methods: {
+            loadedDataWinnaar(json) {
+                var tafelNr = json.tafelNr;
+                var winnaar = json.winnaar;
+                if (this.mytafel.tafelNr==tafelNr){
+                    this.rondewinnaar = winnaar+" heeft gewonnen";
+                    setTimeout(()=>{
+                        this.clearWinnaar()
+                    },1500);
+                }
+            },
+            clearWinnaar: function () {
+                this.rondewinnaar = null;
+            },
             loadedData(json) {
                 this.speldata = json;
                 this.myspeler = null;
@@ -154,9 +174,13 @@
                     .catch(() => alert("Error while fetching opdracht"));
 
                 // gebruik websockets voor de volgende updates
-                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
+                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/game");
                 ws.onmessage = msg => this.loadedData(JSON.parse(msg.data));
                 ws.onclose = () => location.reload();
+
+                let wsWinnaar = new WebSocket("ws://" + location.hostname + ":" + location.port + "/winnaar");
+                wsWinnaar.onmessage = msg => this.loadedDataWinnaar(JSON.parse(msg.data));
+                wsWinnaar.onclose = () => location.reload();
 
             },
             checkresult: function (res) {

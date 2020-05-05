@@ -123,7 +123,7 @@
                     .catch(() => alert("Error while fetching opdracht"));
 
                 // gebruik websockets voor de volgende updates
-                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
+                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/game");
                 ws.onmessage = msg => this.loadedData(JSON.parse(msg.data));
                 ws.onclose = () => location.reload();
 

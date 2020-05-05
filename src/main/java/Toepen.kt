@@ -1,5 +1,3 @@
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.plugin.rendering.vue.VueComponent
@@ -14,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 object Toepen {
     private val log = LoggerFactory.getLogger("Toepen")
     private val userUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()// dit kan ook een list zijn!
+    private val winnaarUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()// dit kan ook een list zijn!
     private var nextUserNumber = 1 // Assign to username for next connecting user
 
 
@@ -57,17 +56,23 @@ object Toepen {
         app.post("/api/clearlog", { this.clearlog(it) })
         app.post("/api/resetscore", { this.resetScore(it) })
 
-        app.ws("/chat") { ws: WsHandler ->
+        app.ws("/game") { ws: WsHandler ->
             ws.onConnect { ctx: WsConnectContext ->
                 val username = "User" + nextUserNumber++
                 userUsernameMap.put(ctx, username)
-                broadcastMessage()
+            }
+            ws.onClose { ctx: WsCloseContext -> }
+            ws.onMessage { ctx: WsMessageContext ->  }
+        }
+        app.ws("/winnaar") { ws: WsHandler ->
+            ws.onConnect { ctx: WsConnectContext ->
+                val username = "User" + nextUserNumber++
+                winnaarUsernameMap.put(ctx, username)
             }
             ws.onClose { ctx: WsCloseContext ->
             }
-            ws.onMessage { ctx: WsMessageContext -> broadcastMessage() }
+            ws.onMessage { ctx: WsMessageContext ->  }
         }
-
     }
 
     fun broadcastMessage() {
@@ -77,8 +82,9 @@ object Toepen {
     }
 
     fun broadcastWinnaar(tafel: Tafel) {
-
-
+        winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+            session.send(RondeWinnaar(tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+        }
     }
 
 
