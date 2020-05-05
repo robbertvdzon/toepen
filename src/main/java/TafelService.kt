@@ -70,6 +70,7 @@ object TafelService{
                 ))
 
                 tafel.tafelWinnaar?.score = 1+(tafel.tafelWinnaar?.score?:0)
+                Toepen.broadcastWinnaar(tafel)
             }
             else{// niet einde spel
                 tafel.huidigeSpeler = volgendeActieveSpeler(tafel, tafel.slagWinnaar)

@@ -40,3 +40,30 @@ class UpdateGebruikersCommand(val gebruikers:List<Speler>): Command(){
     override fun process():CommandResult = Administrator.updateGebruikers(gebruikers)
 }
 
+class ClearLog(): Command(){
+    override fun process():CommandResult = Administrator.clearLog()
+}
+
+class ResetScore(): Command(){
+    override fun process():CommandResult = Administrator.resetScore()
+}
+class AllesPauzeren(): Command(){
+    override fun process():CommandResult = Administrator.allesPauzeren()
+}
+class AllesStarten(): Command(){
+    override fun process():CommandResult = Administrator.allesStarten()
+}
+class NieuwSpel(val startscore:Int, val tafel:Tafel?): Command(){
+    override fun process():CommandResult = Administrator.nieuwSpel(startscore, tafel)
+}
+class SchopTafel(val tafel:Tafel?): Command(){
+    override fun process():CommandResult = Administrator.schopTafel(tafel)
+}
+class PauzeerTafel(val tafel:Tafel?): Command(){
+    override fun process():CommandResult = Administrator.pauzeerTafel(tafel)
+}
+class StartTafel(val tafel:Tafel?): Command(){
+    override fun process():CommandResult = Administrator.startTafel(tafel)
+}
+
+

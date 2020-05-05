@@ -12,9 +12,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 object Toepen {
-    val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val log = LoggerFactory.getLogger("Toepen")
-    private val userUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()
+    private val userUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()// dit kan ook een list zijn!
     private var nextUserNumber = 1 // Assign to username for next connecting user
 
 
@@ -65,9 +64,6 @@ object Toepen {
                 broadcastMessage()
             }
             ws.onClose { ctx: WsCloseContext ->
-//                val username: String? = userUsernameMap.get(ctx)
-//                userUsernameMap.remove(ctx)
-                broadcastMessage()
             }
             ws.onMessage { ctx: WsMessageContext -> broadcastMessage() }
         }
@@ -79,6 +75,12 @@ object Toepen {
             session.send(CommandQueue.lastSpelDataJson)
         }
     }
+
+    fun broadcastWinnaar(tafel: Tafel) {
+
+
+    }
+
 
     private fun loadData(ctx: Context) {
         log.info("load")
@@ -100,30 +102,22 @@ object Toepen {
     }
 
     private fun clearlog(ctx: Context){
-        SpelContext.spelData.uitslagen = emptyList<Uitslag>().toMutableList()
+        ctx.json(CommandQueue.addNewCommand(ClearLog()))
+        broadcastMessage()
     }
 
     private fun resetScore(ctx: Context){
-        SpelContext.spelData.alleSpelers.forEach{
-            it.score = 0
-        }
+        ctx.json(CommandQueue.addNewCommand(ResetScore()))
+        broadcastMessage()
     }
 
     private fun allesPauzeren(ctx: Context) {
-        SpelContext.spelData.tafels.forEach{
-            log.info("pauzeer "+it.tafelNr)
-            it.gepauzeerd = true
-        }
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        ctx.json(CommandQueue.addNewCommand(AllesPauzeren()))
         broadcastMessage()
     }
 
     private fun allesStarten(ctx: Context) {
-        SpelContext.spelData.tafels.forEach{
-            log.info("start "+it.tafelNr)
-            it.gepauzeerd = false
-        }
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        ctx.json(CommandQueue.addNewCommand(AllesStarten()))
         broadcastMessage()
     }
 
@@ -138,16 +132,14 @@ object Toepen {
     private fun pauzeer(ctx: Context) {
         val id = ctx.pathParam("tafelnr")
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        tafel?.gepauzeerd = true
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        ctx.json(CommandQueue.addNewCommand(PauzeerTafel(tafel)))
         broadcastMessage()
     }
 
     private fun gadoor(ctx: Context) {
         val id = ctx.pathParam("tafelnr")
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        tafel?.gepauzeerd = false
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        ctx.json(CommandQueue.addNewCommand(StartTafel(tafel)))
         broadcastMessage()
     }
 
@@ -155,19 +147,15 @@ object Toepen {
         val id = ctx.pathParam("tafelnr")
         val lucifers = ctx.pathParam("lucifers").toInt()
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        if (tafel!=null) {
-            TafelService.nieuwSpel(tafel, lucifers)
-        }
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        ctx.json(CommandQueue.addNewCommand(NieuwSpel(lucifers, tafel)))
+        broadcastMessage()
     }
 
     private fun schopTafelAan(ctx: Context) {
         val id = ctx.pathParam("tafelnr")
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        if (tafel!=null) {
-            TafelService.vervolgSpel(tafel)
-        }
-        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        ctx.json(CommandQueue.addNewCommand(SchopTafel(tafel)))
+        broadcastMessage()
     }
 
     private fun speelkaart(ctx: Context) {
@@ -246,6 +234,7 @@ object Toepen {
         speler.id = id
         return speler
     }
+
 
 
 }

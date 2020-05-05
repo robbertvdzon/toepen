@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.javalin.http.Context
 import java.io.File
 
 object Administrator {
@@ -84,6 +85,61 @@ object Administrator {
         }
         mutableGebruikersList.forEach{
             SpelContext.spelData.alleSpelers.add(it)
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun clearLog(): CommandResult {
+        SpelContext.spelData.uitslagen = emptyList<Uitslag>().toMutableList()
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun resetScore(): CommandResult {
+        SpelContext.spelData.alleSpelers.forEach{
+            it.score = 0
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+
+    fun allesPauzeren(): CommandResult {
+        SpelContext.spelData.tafels.forEach{
+            it.gepauzeerd = true
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun allesStarten(): CommandResult {
+        SpelContext.spelData.tafels.forEach{
+            it.gepauzeerd = false
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun nieuwSpel(startscore: Int, tafel: Tafel?): CommandResult {
+        if (tafel!=null) {
+            TafelService.nieuwSpel(tafel, startscore)
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun schopTafel(tafel: Tafel?): CommandResult {
+        if (tafel!=null) {
+            TafelService.vervolgSpel(tafel)
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun pauzeerTafel(tafel: Tafel?): CommandResult {
+        if (tafel!=null) {
+            tafel.gepauzeerd = true
+        }
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
+
+    fun startTafel(tafel: Tafel?): CommandResult {
+        if (tafel!=null) {
+            tafel.gepauzeerd = false
         }
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
