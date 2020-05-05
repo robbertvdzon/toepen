@@ -92,7 +92,7 @@
                                 <img v-if="toepKeuzeDoorgeven()" src="/gamee.png" height="60px" v-on:click="gaMee">
                                 <img v-if="toepKeuzeDoorgeven()" src="/pas.png" height="60px" v-on:click="pas">
                             </td>
-                            <td v-for="(kaart, idx) in speler.kaarten" width="150px">
+                            <td v-for="(kaart, idx) in myspeler.kaarten" width="150px">
                                 <div class="kaartenred" v-on:click="speelKaart(idx)">{{getRodeKaart(kaart)}}</div>
                                 <div class="kaartenblack" v-on:click="speelKaart(idx)">{{getZwarteKaart(kaart)}}</div>
                             </td>

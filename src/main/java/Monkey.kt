@@ -5,6 +5,12 @@ object Monkey {
         thread(start = true) {
             while (true) {
                 Thread.sleep(2000)
+
+                val alleTafelsKlaar = SpelContext.spelData.tafels.all{it.tafelWinnaar!=null}
+                if (alleTafelsKlaar){
+                    CommandQueue.addNewCommand(MaakNieuweTafelsCommand(SpelContext.spelData.tafels.size,5))
+                }
+
                 SpelContext.spelData.tafels.filter{!it.gepauzeerd}.forEach{
                     val huidigeSpeler = it.huidigeSpeler
                     if (huidigeSpeler!=null && huidigeSpeler.isMonkey){

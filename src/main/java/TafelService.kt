@@ -1,5 +1,9 @@
+import java.util.*
+
 object TafelService{
+
     fun vervolgSpel(tafel:Tafel){
+        werkScoreBij(tafel)
         if (tafel.tafelWinnaar!=null) return
         if (tafel.toeper!=null){
             // verwerk toep
@@ -36,6 +40,7 @@ object TafelService{
     }
 
     fun eindeSlag(tafel:Tafel){
+        werkScoreBij(tafel)
         val laatsteSlag = tafel.spelers.firstOrNull{it.gepast==false && it.actiefInSpel}?.kaarten?.size?:0==0
         val aantalSpelersDezeRonde = tafel.spelers.filter{it.gepast==false && it.actiefInSpel}.size
         if (laatsteSlag||aantalSpelersDezeRonde<2){
@@ -48,11 +53,22 @@ object TafelService{
                 it.ingezetteLucifers = 0
             }
             val eindeSpel = tafel.spelers.filter { it.actiefInSpel }.size==1
-            if (eindeSpel){
+            werkScoreBij(tafel)
+            if (eindeSpel){// einde spel
                 tafel.tafelWinnaar = tafel.slagWinnaar
                 tafel.huidigeSpeler = null
                 tafel.slagWinnaar = null
                 tafel.toeper = null
+
+                var scores:MutableList<SpelerScore> = emptyList<SpelerScore>().toMutableList()
+                tafel.spelers.forEach{
+                    it.score = it.score+it.scoreDezeRonde
+                    scores.add(SpelerScore(it.naam, it.scoreDezeRonde))
+                }
+                SpelContext.spelData.uitslagen.add(Uitslag(
+                        Date().toString(),tafel.tafelNr,scores
+                ))
+
                 tafel.tafelWinnaar?.score = 1+(tafel.tafelWinnaar?.score?:0)
             }
             else{// niet einde spel
@@ -73,6 +89,25 @@ object TafelService{
             }
         }
     }
+
+    fun werkScoreBij(tafel:Tafel){
+        val spelersDieAfZijn = tafel.spelers.filter { it.actiefInSpel==false }
+        val aantalSpelersDieInSpelZitten = tafel.spelers.filter { it.actiefInSpel==true }
+        val aantalSpelersDieInSpelZittenCount = aantalSpelersDieInSpelZitten.size
+        val nieuweSpelersDieAfZijn = spelersDieAfZijn.filter { !tafel.spelersDieAfZijn.contains(it) }
+        val score = 4-aantalSpelersDieInSpelZittenCount
+        nieuweSpelersDieAfZijn.forEach {
+            tafel.spelersDieAfZijn.add(it)
+            it.scoreDezeRonde = score
+        }
+        if (aantalSpelersDieInSpelZittenCount==1){
+            aantalSpelersDieInSpelZitten.forEach {
+                it.scoreDezeRonde = 5 // de winnaar!
+            }
+        }
+
+    }
+
 
     fun zoekSlagWinnaar(tafel:Tafel):Speler?{
         val startKaart = tafel.opkomer?.gespeeldeKaart
@@ -118,9 +153,10 @@ object TafelService{
     fun nieuweRonde(tafel:Tafel){
         val kaarten = Util.getGeschutKaartenDeck()
         tafel.spelers.forEach{speler:Speler ->
-            val kaarten =  (1..4).map {kaarten.removeAt(0)}
-            SpelerService.nieuweRonde(speler, kaarten )
+            val handKaarten =  (1..4).map {kaarten.removeAt(0)}
+            SpelerService.nieuweRonde(speler, handKaarten )
         }
+        tafel.spelersDieAfZijn = emptyList<Speler>().toMutableList()
         tafel.inzet = 1
     }
 

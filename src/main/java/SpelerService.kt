@@ -14,6 +14,7 @@ object SpelerService {
     fun nieuweRonde(speler:Speler, kaarten: List<Kaart>){
         speler.gespeeldeKaart = null
         speler.gepast = false
+        speler.scoreDezeRonde = 0
         speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         if (speler.actiefInSpel) {
             speler.kaarten = kaarten.toMutableList()
@@ -107,10 +108,5 @@ object SpelerService {
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 
-    fun nieuweOpmerking(speler:Speler, opmerking: String):CommandResult{
-        val opmerking = Opmerking(speler.naam, Date().toString(),opmerking)
-        SpelContext.spelData.opmerkingen.add(opmerking)
-        return CommandResult(CommandStatus.SUCCEDED,"")
-    }
 
 }

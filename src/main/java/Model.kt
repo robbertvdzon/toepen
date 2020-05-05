@@ -5,8 +5,14 @@ object SpelContext {
 data class SpelData (
         var alleSpelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
-        val opmerkingen: MutableList<Opmerking> = emptyList<Opmerking>().toMutableList()
-)
+        var uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList()
+
+){
+    var scorelijst: MutableList<Speler>
+    get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed().toMutableList()
+    set(list)  {}
+
+}
 
 data class Speler(
         var id: String = "",
@@ -20,7 +26,8 @@ data class Speler(
         var actiefInSpel: Boolean = true, // zit nog in het spel (is niet af)
         var wilMeedoen: Boolean = false, // bij nieuwe tafel indeling, deze speler mee laten doen
         var isMonkey: Boolean = false,
-        var score:Int = 0
+        var score:Int = 0,
+        var scoreDezeRonde: Int = 0
 ) {
     fun berekenScore(startKaart: Kaart):Int {
         if (gespeeldeKaart==null) return 0
@@ -32,6 +39,7 @@ data class Speler(
 data class Tafel(
         val tafelNr: Int,
         var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
+        var spelersDieAfZijn: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var opkomer: Speler? = null,
         var huidigeSpeler: Speler? = null,
         var toeper: Speler? = null,
@@ -54,10 +62,15 @@ enum class Toepkeuze {
     TOEP, MEE, PAS, NVT, GEEN_KEUZE
 }
 
-data class Opmerking(
-        val speler:String,
+data class Uitslag(
         val timestamp: String,
-        val opmerking: String
+        val tafel:Int,
+        val logregels: List<SpelerScore>
+)
+
+data class SpelerScore(
+        val naam: String,
+        val score: Int
 )
 
 data class CommandResult(

@@ -3,6 +3,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 
 object Administrator {
+//    val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     fun loadData():CommandResult {
@@ -84,11 +85,6 @@ object Administrator {
         mutableGebruikersList.forEach{
             SpelContext.spelData.alleSpelers.add(it)
         }
-        return CommandResult(CommandStatus.SUCCEDED,"")
-    }
-
-    fun clearOpmerkingen():CommandResult{
-        SpelContext.spelData.opmerkingen.clear()
         return CommandResult(CommandStatus.SUCCEDED,"")
     }
 

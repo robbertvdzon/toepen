@@ -39,6 +39,7 @@ object Toepen {
         app.get("/", VueComponent("<home></home>"))
         app.get("/speler/:id", VueComponent("<speler></speler>"))
         app.get("/toepking", VueComponent("<admin></admin>"))
+        app.get("/overzicht", VueComponent("<overzicht></overzicht>"))
         app.get("/api/speldata", { this.getSpeldata(it) })
         app.post("/api/load", { this.loadData(it) })
         app.post("/api/save", { this.saveData(it) })
@@ -51,8 +52,11 @@ object Toepen {
         app.post("/api/pauzeer/:tafelnr", { this.pauzeer(it) })
         app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
         app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
+        app.post("/api/schop/:tafelnr", { this.schopTafelAan(it) })
         app.post("/api/allespauzeren", { this.allesPauzeren(it) })
         app.post("/api/allesstarten", { this.allesStarten(it) })
+        app.post("/api/clearlog", { this.clearlog(it) })
+        app.post("/api/resetscore", { this.resetScore(it) })
 
         app.ws("/chat") { ws: WsHandler ->
             ws.onConnect { ctx: WsConnectContext ->
@@ -93,6 +97,16 @@ object Toepen {
         }
         ctx.json(CommandQueue.addNewCommand(SaveDataCommand()))
         broadcastMessage()
+    }
+
+    private fun clearlog(ctx: Context){
+        SpelContext.spelData.uitslagen = emptyList<Uitslag>().toMutableList()
+    }
+
+    private fun resetScore(ctx: Context){
+        SpelContext.spelData.alleSpelers.forEach{
+            it.score = 0
+        }
     }
 
     private fun allesPauzeren(ctx: Context) {
@@ -143,6 +157,15 @@ object Toepen {
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
         if (tafel!=null) {
             TafelService.nieuwSpel(tafel, lucifers)
+        }
+        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+    }
+
+    private fun schopTafelAan(ctx: Context) {
+        val id = ctx.pathParam("tafelnr")
+        val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
+        if (tafel!=null) {
+            TafelService.vervolgSpel(tafel)
         }
         CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
     }
