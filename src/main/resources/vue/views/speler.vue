@@ -6,23 +6,27 @@
                     Vriendjes Toep Toernooi
                     <table>
                         <tr>
-                            <td v-if="tafel">
-                                tafel {{tafel.tafelNr}}, Speler {{speler.naam}}
+                            <td v-if="mytafel">
+                                tafel {{mytafel.tafelNr}}, Speler {{myspeler.naam}}
                             </td>
                         </tr>
                     </table>
                 </div>
             </header>
 
-            <div v-if="tafel">
+            <div v-if="mytafel">
                 <table>
                     <tr>
-                        <td v-for="speler in tafel.spelers" width="250px">
+                        <td v-for="speler in mytafel.spelers" width="250px">
 
                             <div style="z-index: 1; position: relative; height: 70px">
                                 <div style="z-index: 1; position: absolute; top: 20px; left: 0px;">
+                                    <span>
                                     <b v-if="isAanZet(speler)" class="naamAanBeurt"><u>{{speler.naam}}</u></b>
                                     <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>
+                                    <img src="/monkey.png" height="40px" v-if="isMonkey(speler)">
+                                    </span>
+
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="getoept(speler)">
                                     <img src="/getoept.png" height="50px">
@@ -47,6 +51,7 @@
                     <tr style="height: 20px">
                         <td v-for="speler in tafel.spelers">
                             <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij2(speler.totaalLucifers-speler.ingezetteLucifers)">
+                           {{overigeLucifers(speler.totaalLucifers-speler.ingezetteLucifers)}}
                         </td>
                     </tr>
                     <tr style="height: 10px">
@@ -65,7 +70,7 @@
                     </tr>
                 </table>
             </div>
-            <div  v-if="tafel">
+            <div  v-if="mytafel">
                 <div class="statusbalkGlow" v-if="zelfAanZet()" >
                     {{getTafelStatus()}}
                 </div>
@@ -107,8 +112,8 @@
         template: "#speler",
         data: () => ({
             speldata: null,
-            tafel: null,
-            speler: null,
+            mytafel: null,
+            myspeler: null,
             id: null,
             error: null
         }),
@@ -119,8 +124,8 @@
         methods: {
             loadedData(json) {
                 this.speldata = json;
-                this.speler = null;
-                this.tafel = null;
+                this.myspeler = null;
+                this.mytafel = null;
 
                 var tafelCount = this.speldata.tafels.length;
                 for (var i = 0; i < tafelCount; i++) {
@@ -129,12 +134,12 @@
                     for (var j = 0; j < spelerCount; j++) {
                         speler = tafel.spelers[j];
                         if (speler.id == this.id) {
-                            this.speler = speler;
-                            this.tafel = tafel;
+                            this.myspeler = speler;
+                            this.mytafel = tafel;
                         }
                     }
                 }
-                if (this.speler == null) {
+                if (this.myspeler == null) {
                     this.error = "Geen tafel gevonden";
                 }
             },
@@ -166,23 +171,23 @@
                this.error = null;
             },
             speelKaart: function (kaart) {
-                axios.post(`/api/speelkaart/` + this.id, this.speler.kaarten[kaart])
+                axios.post(`/api/speelkaart/` + this.id, this.myspeler.kaarten[kaart])
                     .then(res => this.checkresult(res))
             },
             pakSlag: function (kaart) {
-                axios.post(`/api/pakslag/` + this.id, this.speler.kaarten[kaart])
+                axios.post(`/api/pakslag/` + this.id, this.myspeler.kaarten[kaart])
                     .then(res => this.checkresult(res))
             },
             pas: function (kaart) {
-                axios.post(`/api/pas/` + this.id, this.speler.kaarten[kaart])
+                axios.post(`/api/pas/` + this.id, this.myspeler.kaarten[kaart])
                     .then(res => this.checkresult(res))
             },
             toep: function (kaart) {
-                axios.post(`/api/toep/` + this.id, this.speler.kaarten[kaart])
+                axios.post(`/api/toep/` + this.id, this.myspeler.kaarten[kaart])
                     .then(res => this.checkresult(res))
             },
             gaMee: function (kaart) {
-                axios.post(`/api/gamee/` + this.id, this.speler.kaarten[kaart])
+                axios.post(`/api/gamee/` + this.id, this.myspeler.kaarten[kaart])
                     .then(res => this.checkresult(res))
             },
             getWaarde: function (kaart) {
@@ -214,12 +219,14 @@
                 return symbool + this.getWaarde(kaart);
             },
             isAanZet: function (speler) {
-                return this.tafel.huidigeSpeler != null && (speler.naam == this.tafel.huidigeSpeler.naam);
+                return this.mytafel.huidigeSpeler != null && (speler.naam == this.mytafel.huidigeSpeler.naam);
 
             },
             zelfAanZet: function () {
-                return (this.tafel.huidigeSpeler) != null && (this.speler.naam == this.tafel.huidigeSpeler.naam);
-
+                return (this.mytafel.huidigeSpeler) != null && (this.myspeler.naam == this.mytafel.huidigeSpeler.naam);
+            },
+            isMonkey: function (speler) {
+                return speler.isMonkey;
             },
             getStatus: function (speler) {
                 if (!speler.actiefInSpel) return "Af";
@@ -232,16 +239,16 @@
                 return ""
             },
             getTafelStatus: function () {
-                if (this.tafel.tafelWinnaar!=null && this.tafel.tafelWinnaar.naam!=null) {
-                    return "Spel afgelopen, "+this.tafel.tafelWinnaar.naam+" heeft gewonnen!";
+                if (this.mytafel.tafelWinnaar!=null && this.mytafel.tafelWinnaar.naam!=null) {
+                    return "Spel afgelopen, "+this.mytafel.tafelWinnaar.naam+" heeft gewonnen!";
                 }
-                if (this.tafel.huidigeSpeler==null) {
+                if (this.mytafel.huidigeSpeler==null) {
                     return "";
                 }
-                if (this.tafel.huidigeSpeler.naam!=this.speler.naam) {
-                    return this.tafel.huidigeSpeler.naam+" is aan de beurt";
+                if (this.mytafel.huidigeSpeler.naam!=this.myspeler.naam) {
+                    return this.mytafel.huidigeSpeler.naam+" is aan de beurt";
                 }
-                if (this.tafel.huidigeSpeler.naam==this.speler.naam) {
+                if (this.mytafel.huidigeSpeler.naam==this.myspeler.naam) {
                     if (this.slagGewonnen()) return "Je hebt de slag gewonnen, pak de slag";
                     if (this.toepKeuzeDoorgeven()) return "Er is getoept! Ga mee, pas of toep over";
                     return "Je bent aan de beurt";
@@ -249,29 +256,29 @@
                 return "?";
             },
             slagGewonnen: function () {
-                if (this.tafel == null) return false;
-                if (this.speler == null) return false;
-                if (this.tafel.slagWinnaar == null) return false;
-                return (this.tafel.slagWinnaar.naam == this.speler.naam)
+                if (this.mytafel == null) return false;
+                if (this.myspeler == null) return false;
+                if (this.mytafel.slagWinnaar == null) return false;
+                return (this.mytafel.slagWinnaar.naam == this.myspeler.naam)
             }
             ,
             toepKeuzeDoorgeven: function () {
-                if (this.tafel == null) return false;
-                if (this.speler == null) return false;
-                if (this.tafel.toeper == null) return false;
-                if (this.speler.toepKeuze != "GEEN_KEUZE") return false;
-                return (this.tafel.huidigeSpeler.naam == this.speler.naam)
+                if (this.mytafel == null) return false;
+                if (this.myspeler == null) return false;
+                if (this.mytafel.toeper == null) return false;
+                if (this.myspeler.toepKeuze != "GEEN_KEUZE") return false;
+                return (this.mytafel.huidigeSpeler.naam == this.myspeler.naam)
             },
             getSlagWinnaar: function () {
-                if (this.tafel == null) return "-";
-                if (this.tafel.slagWinnaar == null) return "-";
-                return this.tafel.slagWinnaar.naam;
+                if (this.mytafel == null) return "-";
+                if (this.mytafel.slagWinnaar == null) return "-";
+                return this.mytafel.slagWinnaar.naam;
 
             },
             getSpelWinnaar: function () {
-                if (this.tafel == null) return "-";
-                if (this.tafel.tafelWinnaar == null) return "-";
-                return this.tafel.tafelWinnaar.naam;
+                if (this.mytafel == null) return "-";
+                if (this.mytafel.tafelWinnaar == null) return "-";
+                return this.mytafel.tafelWinnaar.naam;
             },
             numToArray: function (nr) {
                 var elements = [];
@@ -288,8 +295,15 @@
             numToArrayRij2: function (nr) {
                 var elements = [];
                 var total = nr-8;
+                if (total>8) total = 8;
                 for (i = 0; i < total; i++) elements.push("1");
                 return elements;
+            },
+            overigeLucifers: function (nr) {
+                var elements = [];
+                var total = nr-16;
+                if (total>0) return "+"+total;
+                return ""
             },
             getoept: function (speler) {
                 if (!speler.actiefInSpel) return false;

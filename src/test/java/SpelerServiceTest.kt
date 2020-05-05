@@ -155,23 +155,12 @@ class SpelerServiceTest {
         // een nieuwe kaart nieuwe wel
         assertThat(SpelerService.speelKaart(speler1, speler1Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
 
-        // speler 2 moet nu toepen
-        assertThat(SpelerService.toep(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-
-        // speler 4 moet wachten op zijn beurt om mee te gaan
-        assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om mee te gaan"))
-
-        // speler 3 moet mee gaan, passen of overtoepen, hij mag niet een kaart spelen
-        assertThat(SpelerService.speelKaart(speler3, speler3Kaart2)).isEqualTo(CommandResult(CommandStatus.FAILED, "Nog niet iedereen heeft zijn toep keuze opgegeven"))
-        assertThat(SpelerService.pas(speler3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-
-        // speler 4 en 1 gaan mee
-        assertThat(SpelerService.gaMeeMetToep(speler4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-        assertThat(SpelerService.gaMeeMetToep(speler1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
-
-        // alleen speler 1, 2 en 4 doen nog mee, en speler 2 had getoept
-        // speler 2 en 4 moeten nog een kaart spelen
         assertThat(SpelerService.speelKaart(speler2, speler2Kaart4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.speelKaart(speler3, speler3Kaart4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.toep(speler4)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler1)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.gaMeeMetToep(speler2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
+        assertThat(SpelerService.pas(speler3)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
         assertThat(SpelerService.speelKaart(speler4, speler4Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))
 
         // controleer de punten en ingezette lucifers
@@ -233,7 +222,7 @@ class SpelerServiceTest {
         // laatste slag
         assertThat(speler1.kaarten).hasSize(1)
         assertThat(speler2.kaarten).hasSize(1)
-        assertThat(speler3.kaarten).hasSize(3)
+        assertThat(speler3.kaarten).hasSize(2)
         assertThat(speler4.kaarten).hasSize(2)
 
         assertThat(SpelerService.speelKaart(speler2, speler2Kaart2)).isEqualTo(CommandResult(CommandStatus.SUCCEDED, ""))

@@ -19,12 +19,18 @@ object Monkey {
 
     private fun speelMonkey(tafel: Tafel, speler: Speler) {
         println("Speel monkey:"+speler.naam)
-        while (tafel.huidigeSpeler==speler){
+        var aantalPogingen = 0
+        while (tafel.huidigeSpeler==speler && aantalPogingen<50){
+            aantalPogingen++
             if (tafel.slagWinnaar==speler){
                 CommandQueue.addNewCommand(PakSlagCommand(speler))
                 Toepen.broadcastMessage()
                 Thread.sleep(2000)// wacht 2 seconde voordat hij verder gaat
 
+            }
+            if ((0..5).random()==0){
+                val res = CommandQueue.addNewCommand(ToepCommand(speler))
+                println(res)
             }
             if ((0..2).random()==0){
                 val kaart = speler.kaarten.getOrNull((0..3).random())

@@ -64,8 +64,8 @@ object Administrator {
         }
 
         spelData.tafels = tafels.toMutableList()
-        spelData.tafels.forEach{TafelService.nieuwSpel(it, startscore)}
-        return CommandResult(CommandStatus.SUCCEDED,"")
+        spelData.tafels.forEach { TafelService.nieuwSpel(it, startscore) }
+        return CommandResult(CommandStatus.SUCCEDED, "")
     }
 
     fun updateGebruikers(gebruikers:List<Speler>):CommandResult{

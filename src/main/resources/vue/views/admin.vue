@@ -115,18 +115,21 @@
         data: () => ({
             speldata: null,
             aantalTafels: 1,
-            aantalStartLucifers: 5
+            aantalStartLucifers: 15
         }),
         created() {
             this.load()
         },
 
         methods: {
+            loaded:function (json) {
+                this.speldata = json;
+                this.aantalTafels = this.speldata.tafels.length
+            },
             load: function (event) {
                 fetch(`/api/speldata`)
                     .then(res => res.json())
-                    .then(json =>
-                        this.speldata = json
+                    .then(json => this.loaded(json)
                     )
                     .catch(() => alert("Error while fetching opdracht"));
 
