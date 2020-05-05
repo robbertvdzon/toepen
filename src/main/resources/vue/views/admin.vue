@@ -43,13 +43,23 @@
 
         <span>
               <button type="submit" v-on:click="maakTafels">Maak tafels</button>
+              <button type="submit" v-on:click="allesPauzeren">Alles pauzeren</button>
+              <button type="submit" v-on:click="allesStarten">Alles starten</button>
         </span>
 
        <div  v-if="speldata">
            <tbody>
            <div v-for="tafel in speldata.tafels" >
                <h2>Speeltafel {{tafel.tafelNr}}</h2>
+               <button type="submit" v-on:click="pauzeer(tafel.tafelNr)">Pauzeer</button>
+               <button type="submit" v-on:click="gadoor(tafel.tafelNr)">Ga door</button>
+               <button type="submit" v-on:click="nieuwspel((tafel.tafelNr))">Nieuw spel</button>
+
                <table >
+                   <tr>
+                       <td>Gepauzeerd :</td>
+                       <td>{{tafel.gepauzeerd}}</td>
+                   </tr>
                    <tr>
                        <td>Huidige speler :</td>
                        <td>{{tafel.huidigeSpeler!=null?tafel.huidigeSpeler.naam:"-"}}</td>
@@ -133,14 +143,13 @@
                     )
                     .catch(() => alert("Error while fetching opdracht"));
 
-                // gebruik websockets voor de volgende updates
-                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat");
-                ws.onmessage = msg => this.speldata = JSON.parse(msg.data);
-                ws.onclose = () => location.reload();
             },
             checkresult: function (res) {
                 if (res.data.status=="FAILED") {
                     alert(res.data.errorMessage)
+                }
+                else{
+                    alert("Done");
                 }
             },
             loadData: function (event) {
@@ -158,6 +167,21 @@
                             .then(res => this.checkresult(res))
                     )
 
+            },
+            allesPauzeren: function () {
+                axios.post(`/api/allespauzeren`,null).then(res =>this.checkresult(res))
+            },
+            allesStarten: function () {
+                axios.post(`/api/allesstarten`,null).then(res =>this.checkresult(res))
+            },
+            pauzeer: function (tafelnr) {
+                axios.post(`/api/pauzeer/`+tafelnr,this.speldata).then(res =>this.checkresult(res))
+            },
+            gadoor: function (tafelnr) {
+                axios.post(`/api/gadoor/`+tafelnr,this.speldata).then(res =>this.checkresult(res))
+            },
+            nieuwspel: function (tafelnr) {
+                axios.post(`/api/nieuwspel/`+tafelnr+`/`+this.aantalStartLucifers,this.speldata).then(res =>this.checkresult(res))
             },
 
         }

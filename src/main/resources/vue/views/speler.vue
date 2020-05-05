@@ -44,12 +44,12 @@
                         </td>
                     </tr>
                     <tr style="height: 20px">
-                        <td v-for="speler in tafel.spelers">
+                        <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij1(speler.totaalLucifers-speler.ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr style="height: 20px">
-                        <td v-for="speler in tafel.spelers">
+                        <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij2(speler.totaalLucifers-speler.ingezetteLucifers)">
                            {{overigeLucifers(speler.totaalLucifers-speler.ingezetteLucifers)}}
                         </td>
@@ -57,13 +57,13 @@
                     <tr style="height: 10px">
                     </tr>
                     <tr style="height: 20px">
-                        <td v-for="speler in tafel.spelers">
+                        <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="30px"
                                  v-for="lucifer in numToArray(speler.ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr height="100px">
-                        <td v-for="speler in tafel.spelers">
+                        <td v-for="speler in mytafel.spelers">
                             <div class="kaartenred">{{getRodeKaart(speler.gespeeldeKaart)}}</div>
                             <div class="kaartenblack">{{getZwarteKaart(speler.gespeeldeKaart)}}</div>
                         </td>
@@ -241,6 +241,9 @@
             getTafelStatus: function () {
                 if (this.mytafel.tafelWinnaar!=null && this.mytafel.tafelWinnaar.naam!=null) {
                     return "Spel afgelopen, "+this.mytafel.tafelWinnaar.naam+" heeft gewonnen!";
+                }
+                if (this.mytafel.gepauzeerd) {
+                    return "Spel is gepauzeerd!";
                 }
                 if (this.mytafel.huidigeSpeler==null) {
                     return "";

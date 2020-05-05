@@ -24,10 +24,6 @@ class PasCommand(val speler:Speler): Command(){
     override fun process():CommandResult = SpelerService.pas(speler)
 }
 
-class NewOpmerkingCommand(val speler:Speler, val opmerking:String): Command(){
-    override fun process():CommandResult = SpelerService.nieuweOpmerking(speler, opmerking)
-}
-
 class LoadDataCommand(): Command(){
     override fun process():CommandResult = Administrator.loadData()
 }
@@ -44,6 +40,3 @@ class UpdateGebruikersCommand(val gebruikers:List<Speler>): Command(){
     override fun process():CommandResult = Administrator.updateGebruikers(gebruikers)
 }
 
-class ClearOpmerkingenCommand(val aantalKaarten:Int): Command(){
-    override fun process():CommandResult = Administrator.clearOpmerkingen()
-}

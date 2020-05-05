@@ -37,7 +37,8 @@ data class Tafel(
         var toeper: Speler? = null,
         var inzet: Int = 0,
         var slagWinnaar: Speler? = null,
-        var tafelWinnaar:Speler? = null
+        var tafelWinnaar:Speler? = null,
+        var gepauzeerd: Boolean = false
 )
 
 data class Kaart(

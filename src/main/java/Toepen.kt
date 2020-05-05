@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.plugin.rendering.vue.VueComponent
@@ -10,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 object Toepen {
+    val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val log = LoggerFactory.getLogger("Toepen")
     private val userUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()
     private var nextUserNumber = 1 // Assign to username for next connecting user
@@ -45,6 +48,11 @@ object Toepen {
         app.post("/api/toep/:id", { this.toep(it) })
         app.post("/api/gamee/:id", { this.gaMee(it) })
         app.post("/api/pas/:id", { this.pas(it) })
+        app.post("/api/pauzeer/:tafelnr", { this.pauzeer(it) })
+        app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
+        app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
+        app.post("/api/allespauzeren", { this.allesPauzeren(it) })
+        app.post("/api/allesstarten", { this.allesStarten(it) })
 
         app.ws("/chat") { ws: WsHandler ->
             ws.onConnect { ctx: WsConnectContext ->
@@ -87,12 +95,56 @@ object Toepen {
         broadcastMessage()
     }
 
+    private fun allesPauzeren(ctx: Context) {
+        SpelContext.spelData.tafels.forEach{
+            log.info("pauzeer "+it.tafelNr)
+            it.gepauzeerd = true
+        }
+        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        broadcastMessage()
+    }
+
+    private fun allesStarten(ctx: Context) {
+        SpelContext.spelData.tafels.forEach{
+            log.info("start "+it.tafelNr)
+            it.gepauzeerd = false
+        }
+        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        broadcastMessage()
+    }
+
     private fun maakTafels(ctx: Context) {
         log.info("maakTafels")
         val aantaltafels = ctx.pathParam("aantaltafels").toInt()
         val startscore = ctx.pathParam("startscore").toInt()
         ctx.json(CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantaltafels, startscore)))
         broadcastMessage()
+    }
+
+    private fun pauzeer(ctx: Context) {
+        val id = ctx.pathParam("tafelnr")
+        val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
+        tafel?.gepauzeerd = true
+        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        broadcastMessage()
+    }
+
+    private fun gadoor(ctx: Context) {
+        val id = ctx.pathParam("tafelnr")
+        val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
+        tafel?.gepauzeerd = false
+        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
+        broadcastMessage()
+    }
+
+    private fun nieuwSpel(ctx: Context) {
+        val id = ctx.pathParam("tafelnr")
+        val lucifers = ctx.pathParam("lucifers").toInt()
+        val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
+        if (tafel!=null) {
+            TafelService.nieuwSpel(tafel, lucifers)
+        }
+        CommandQueue.lastSpelDataJson = objectMapper.writeValueAsString(SpelContext.spelData)
     }
 
     private fun speelkaart(ctx: Context) {

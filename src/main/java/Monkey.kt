@@ -5,7 +5,7 @@ object Monkey {
         thread(start = true) {
             while (true) {
                 Thread.sleep(2000)
-                SpelContext.spelData.tafels.forEach{
+                SpelContext.spelData.tafels.filter{!it.gepauzeerd}.forEach{
                     val huidigeSpeler = it.huidigeSpeler
                     if (huidigeSpeler!=null && huidigeSpeler.isMonkey){
                         speelMonkey(it, huidigeSpeler)
