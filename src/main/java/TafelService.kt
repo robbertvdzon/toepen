@@ -127,6 +127,8 @@ object TafelService{
     fun nieuwSpel(tafel:Tafel, startscore:Int){
         tafel.huidigeSpeler = tafel.spelers.firstOrNull()
         tafel.opkomer = tafel.spelers.firstOrNull()
+        tafel.tafelWinnaar = null
+        tafel.slagWinnaar = null
         tafel.spelers.forEach{SpelerService.nieuwSpel(it, startscore)}
         nieuweRonde(tafel)
 

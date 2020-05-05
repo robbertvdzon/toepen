@@ -2,6 +2,37 @@
     <app-frame>
        <opdracht-tabs-frame></opdracht-tabs-frame>
        <div id="content">
+           <table v-if="speldata">
+               <tr>
+                   <td>Aantal tafels</td>
+                   <td>&nbsp;:&nbsp;</td>
+                   <td><input v-model="aantalTafels"></td>
+               </tr>
+               <tr>
+                   <td>Startscore</td>
+                   <td>&nbsp;:&nbsp;</td>
+                   <td><input v-model="aantalStartLucifers"></td>
+               </tr>
+           </table>
+
+           <span>
+              <button type="submit" v-on:click="maakTafels">Maak tafels</button>
+              <button type="submit" v-on:click="allesPauzeren">Alles pauze</button>
+              <button type="submit" v-on:click="allesStarten">Alles starten</button>
+        </span>
+
+           <div  v-if="speldata">
+               <div v-for="tafel in speldata.tafels" >
+                   Speeltafel {{tafel.tafelNr}}
+                   <button type="submit" v-on:click="pauzeer(tafel.tafelNr)">Pauzeer</button>
+                   <button type="submit" v-on:click="gadoor(tafel.tafelNr)">Ga door</button>
+                   <button type="submit" v-on:click="nieuwspel((tafel.tafelNr))">Nieuw spel</button>
+                   gepauzeerd: {{tafel.gepauzeerd}}, winnaar: {{tafel.tafelWinnaar!=null?tafel.tafelWinnaar.naam:"-"}}
+               </div>
+               <hr>
+           </div>
+
+
         <table  v-if="speldata">
             <thead>
             <tr>
@@ -28,32 +59,10 @@
               <button type="submit" v-on:click="saveData">Save</button>
         </span>
 
-       <table v-if="speldata">
-           <tr>
-               <td>Aantal tafels</td>
-               <td>&nbsp;:&nbsp;</td>
-               <td><input v-model="aantalTafels"></td>
-           </tr>
-           <tr>
-               <td>Startscore</td>
-               <td>&nbsp;:&nbsp;</td>
-               <td><input v-model="aantalStartLucifers"></td>
-           </tr>
-       </table>
-
-        <span>
-              <button type="submit" v-on:click="maakTafels">Maak tafels</button>
-              <button type="submit" v-on:click="allesPauzeren">Alles pauzeren</button>
-              <button type="submit" v-on:click="allesStarten">Alles starten</button>
-        </span>
 
        <div  v-if="speldata">
-           <tbody>
            <div v-for="tafel in speldata.tafels" >
                <h2>Speeltafel {{tafel.tafelNr}}</h2>
-               <button type="submit" v-on:click="pauzeer(tafel.tafelNr)">Pauzeer</button>
-               <button type="submit" v-on:click="gadoor(tafel.tafelNr)">Ga door</button>
-               <button type="submit" v-on:click="nieuwspel((tafel.tafelNr))">Nieuw spel</button>
 
                <table >
                    <tr>
@@ -110,7 +119,6 @@
                    </tbody>
                </table>
            </div>
-           </tbody>
        </div>
 
 
