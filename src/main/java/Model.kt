@@ -84,7 +84,12 @@ enum class CommandStatus {
     FAILED
 }
 
-data class RondeWinnaar(
+data class Winnaar(
+        val winnaarType: WINNAAR_TYPE,
         val tafelNr:Int,
         val winnaar:String
 )
+
+enum class WINNAAR_TYPE{
+    SLAG, RONDE, SPEL
+}

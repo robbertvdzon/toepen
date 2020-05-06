@@ -5,7 +5,7 @@ import kotlin.concurrent.thread
 object Monkey {
     val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        const val DELAY:Long=100
+        const val DELAY:Long=1000
 //    const val DELAY: Long = 10
     var echteSpelData = SpelContext.spelData
 
@@ -47,14 +47,14 @@ object Monkey {
                 }
 
             }
-            if ((0..10).random() == 0) {
+            if ((0..100).random() == 0) {
                 val res = CommandQueue.addNewCommand(ToepCommand(zoekEchteSpeler(speler)))
                 if (res.status == CommandStatus.SUCCEDED) {
                     //println(("Toep : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if ((0..2).random() == 0) {
+            if ((0..1).random() == 0) {
                 val kaart = speler.kaarten.getOrNull((0..3).random())
                 if (kaart != null) {
                     val res = CommandQueue.addNewCommand(SpeelKaartCommand(zoekEchteSpeler(speler), kaart))
@@ -64,14 +64,14 @@ object Monkey {
                     }
                 }
             }
-            if ((0..2).random() == 0) {
+            if ((0..1).random() == 0) {
                 val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(zoekEchteSpeler(speler)))
                 if (res.status == CommandStatus.SUCCEDED) {
                     //println(("Ga mee: Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if ((0..2).random() == 0) {
+            if ((0..1).random() == 0) {
                 val res = CommandQueue.addNewCommand(PasCommand(zoekEchteSpeler(speler)))
                 if (res.status == CommandStatus.SUCCEDED) {
                     //println(("Pas: Speler ${speler.naam} ,  hand:${speler.kaarten}")

@@ -1,3 +1,4 @@
+import WINNAAR_TYPE.*
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.plugin.rendering.vue.VueComponent
@@ -37,6 +38,7 @@ object Toepen {
         app.get("/", VueComponent("<home></home>"))
         app.get("/speler/:id", VueComponent("<speler></speler>"))
         app.get("/toepking", VueComponent("<admin></admin>"))
+        app.get("/toepkingspelers", VueComponent("<spelers></spelers>"))
         app.get("/overzicht", VueComponent("<overzicht></overzicht>"))
         app.get("/api/speldata", { this.getSpeldata(it) })
         app.post("/api/load", { this.loadData(it) })
@@ -82,9 +84,19 @@ object Toepen {
         }
     }
 
-    fun broadcastWinnaar(tafel: Tafel) {
+    fun broadcastSpelWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(RondeWinnaar(tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+            session.send(Winnaar(SPEL, tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+        }
+    }
+    fun broadcastRondeWinnaar(tafel: Tafel) {
+        winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+            session.send(Winnaar(RONDE, tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+        }
+    }
+    fun broadcastSlagWinnaar(tafel: Tafel) {
+        winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+            session.send(Winnaar(SLAG, tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
         }
     }
 

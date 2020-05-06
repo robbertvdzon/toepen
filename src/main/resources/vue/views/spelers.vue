@@ -1,6 +1,6 @@
-<template id="admin">
+<template id="spelers">
     <app-frame>
-        <a href="toepkingspelers" target="_blank">[SPELERS]</a>
+        <opdracht-tabs-frame></opdracht-tabs-frame>
         <div id="content">
             <table v-if="speldata">
                 <tr>
@@ -152,8 +152,8 @@
 
 <script>
 
-    Vue.component("admin", {
-        template: "#admin",
+    Vue.component("spelers", {
+        template: "#spelers",
         data: () => ({
             speldata: null,
             aantalTafels: 1,

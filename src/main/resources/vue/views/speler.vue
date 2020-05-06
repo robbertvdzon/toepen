@@ -71,8 +71,8 @@
                 </table>
             </div>
 
-            <div class="winnaarBalk" v-if="rondewinnaar">
-                {{rondewinnaar}}
+            <div class="winnaarBalk" v-if="getWinnaarStatus()!=null">
+                {{getWinnaarStatus()}}
             </div>
 
 
@@ -121,6 +121,8 @@
             mytafel: null,
             myspeler: null,
             rondewinnaar: null,
+            slagwinnaar: null,
+            tafelwinnaar: null,
             id: null,
             error: null
         }),
@@ -132,15 +134,31 @@
             loadedDataWinnaar(json) {
                 var tafelNr = json.tafelNr;
                 var winnaar = json.winnaar;
-                if (this.mytafel.tafelNr==tafelNr){
-                    this.rondewinnaar = winnaar+" heeft deze ronde gewonnen";
+                var winnaarType = json.winnaarType;
+                if (this.mytafel.tafelNr==tafelNr && winnaarType=="SLAG"){
+                    this.slagwinnaar = winnaar+" pakt de slag";
                     setTimeout(()=>{
-                        this.clearWinnaar()
+                        this.slagwinnaar = null
                     },1500);
                 }
+                if (this.mytafel.tafelNr==tafelNr && winnaarType=="RONDE"){
+                    this.rondewinnaar = winnaar+" heeft deze ronde gewonnen";
+                    setTimeout(()=>{
+                        this.rondeWinnaarDeel2()
+                    },2000);
+                }
+                if (this.mytafel.tafelNr==tafelNr && winnaarType=="SPEL"){
+                    this.tafelwinnaar = winnaar+" heeft dit spel gewonnen";
+                    setTimeout(()=>{
+                        this.tafelwinnaar = null
+                    },2000);
+                }
             },
-            clearWinnaar: function () {
-                this.rondewinnaar = null;
+            rondeWinnaarDeel2: function () {
+                this.rondewinnaar = "Een nieuwe ronde is gestart";
+                setTimeout(()=>{
+                    this.rondewinnaar = null
+                },4000);
             },
             loadedData(json) {
                 this.speldata = json;
@@ -262,12 +280,24 @@
                 if (speler.toepKeuze == "TOEP") return "Toep!";
                 return ""
             },
+            getWinnaarStatus: function (){
+                if (this.tafelwinnaar!=null ) {
+                    return this.tafelwinnaar;
+                }
+                if (this.rondewinnaar!=null ) {
+                    return this.rondewinnaar;
+                }
+                return null;
+            },
             getTafelStatus: function () {
+                if (this.mytafel.gepauzeerd) {
+                    return "Spel is gepauzeerd!";
+                }
                 if (this.mytafel.tafelWinnaar!=null && this.mytafel.tafelWinnaar.naam!=null) {
                     return "Spel afgelopen, "+this.mytafel.tafelWinnaar.naam+" heeft gewonnen!";
                 }
-                if (this.mytafel.gepauzeerd) {
-                    return "Spel is gepauzeerd!";
+                if (this.slagwinnaar!=null){
+                    return this.slagwinnaar;
                 }
                 if (this.mytafel.huidigeSpeler==null) {
                     return "";
