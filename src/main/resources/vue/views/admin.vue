@@ -1,6 +1,6 @@
 <template id="admin">
     <app-frame>
-        <a href="toepkingspelers" target="_blank">[SPELERS]</a>
+        <a href="toepkingspelers" >[SPELERS]</a>
         <div id="content">
             <table v-if="speldata">
                 <tr>
@@ -25,6 +25,8 @@
               <button type="submit" v-on:click="resetScore">Reser score</button>
             </span>
 
+            <hr>
+
             <div v-if="speldata">
                 <div v-for="tafel in speldata.tafels">
                     Speeltafel {{tafel.tafelNr}}
@@ -38,34 +40,6 @@
                 </div>
                 <hr>
             </div>
-
-
-            <table v-if="speldata">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Naam</th>
-                    <th>Score</th>
-                    <th>wilMeedoen</th>
-                    <th>Monkey</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="speler in speldata.alleSpelers">
-                    <td><a @click="window.open('/speler/'+speler.id, '_blank');">{{speler.id}}</a></td>
-                    <td><input v-model="speler.naam"></td>
-                    <td><input v-model="speler.score"></td>
-                    <td><input type="checkbox" v-model="speler.wilMeedoen"></td>
-                    <td><input type="checkbox" v-model="speler.isMonkey"></td>
-
-                </tr>
-                </tbody>
-            </table>
-            <span>
-              <button type="submit" v-on:click="loadData">Load</button>
-              <button type="submit" v-on:click="saveData">Save</button>
-        </span>
-
 
             <div v-if="speldata">
                 <div v-for="tafel in speldata.tafels">
@@ -187,17 +161,9 @@
                 axios.post(`/api/load`, null)
                     .then(res => this.checkresult(res))
             },
-            saveData: function (event) {
-                axios.post(`/api/save`, this.speldata)
-                    .then(res => this.checkresult(res))
-            },
             maakTafels: function (event) {
-                axios.post(`/api/save`, this.speldata)
-                    .then(res =>
-                        axios.post(`/api/maaktafels/` + this.aantalTafels + `/` + this.aantalStartLucifers, null)
-                            .then(res => this.checkresult(res))
-                    )
-
+                axios.post(`/api/maaktafels/` + this.aantalTafels + `/` + this.aantalStartLucifers, null)
+                    .then(res => this.checkresult(res))
             },
             allesPauzeren: function () {
                 axios.post(`/api/allespauzeren`, null).then(res => this.checkresult(res))
