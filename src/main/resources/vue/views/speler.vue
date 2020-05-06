@@ -133,7 +133,7 @@
                 var tafelNr = json.tafelNr;
                 var winnaar = json.winnaar;
                 if (this.mytafel.tafelNr==tafelNr){
-                    this.rondewinnaar = winnaar+" heeft gewonnen";
+                    this.rondewinnaar = winnaar+" heeft deze ronde gewonnen";
                     setTimeout(()=>{
                         this.clearWinnaar()
                     },1500);

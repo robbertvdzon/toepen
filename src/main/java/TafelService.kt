@@ -67,6 +67,7 @@ object TafelService {
                 SpelContext.spelData.uitslagen.add(Uitslag(
                         Date().toString(), tafel.tafelNr, scores
                 ))
+                println("#Uislagen:"+SpelContext.spelData.uitslagen.size)
 
                 tafel.tafelWinnaar?.score = 1 + (tafel.tafelWinnaar?.score ?: 0)
             } else {// niet einde spel
