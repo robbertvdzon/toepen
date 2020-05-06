@@ -2,6 +2,8 @@
     <app-frame>
         <a href="toepkingspelers" >[SPELERS]</a>
         <div id="content">
+
+            <h2>Nieuwe tafels aanmaken:</h2>
             <table v-if="speldata">
                 <tr>
                     <td>Aantal tafels</td>
@@ -14,18 +16,47 @@
                     <td><input v-model="aantalStartLucifers"></td>
                 </tr>
             </table>
+            <button type="submit" v-on:click="maakTafels">Maak tafels</button>
+
+            <hr>
+            <h2>Acties:</h2>
 
             <span>
-              <button type="submit" v-on:click="maakTafels">Maak tafels</button>
               <button type="submit" v-on:click="allesPauzeren">Alles pauze</button>
               <button type="submit" v-on:click="allesStarten">Alles starten</button>
-            </span>
-            <span>
               <button type="submit" v-on:click="clearLog">Clear log</button>
               <button type="submit" v-on:click="resetScore">Reser score</button>
             </span>
 
             <hr>
+            <h2>Automaat settings:</h2>
+
+            <table v-if="speldata">
+                <tr>
+                    <td>Automatisch nieuwe tafels</td>
+                    <td>&nbsp;:&nbsp;</td>
+                    <td><input type="checkbox" v-model="speldata.automatischNieuweTafels"></td>
+                </tr>
+                <tr>
+                    <td>Aantal nieuwe tafels</td>
+                    <td>&nbsp;:&nbsp;</td>
+                    <td><input v-model="speldata.aantalAutomatischeNieuweTafels"></td>
+                </tr>
+                <tr>
+                    <td>Aantal fisches</td>
+                    <td>&nbsp;:&nbsp;</td>
+                    <td><input v-model="speldata.aantalFishesNieuweTafels"></td>
+                </tr>
+                <tr>
+                    <td>Monkey delay</td>
+                    <td>&nbsp;:&nbsp;</td>
+                    <td><input v-model="speldata.monkeyDelayMsec"></td>
+                </tr>
+            </table>
+            <button type="submit" v-on:click="saveSettings">Save Settings</button>
+
+            <hr>
+            <h2>Tafels:</h2>
 
             <div v-if="speldata">
                 <div v-for="tafel in speldata.tafels">
@@ -157,7 +188,11 @@
                     alert("Done");
                 }
             },
-            loadData: function (event) {
+            saveSettings: function (event) {
+                axios.post(`/api/savesettings`, this.speldata)
+                    .then(res => this.checkresult(res))
+            }
+            ,loadData: function (event) {
                 axios.post(`/api/load`, null)
                     .then(res => this.checkresult(res))
             },

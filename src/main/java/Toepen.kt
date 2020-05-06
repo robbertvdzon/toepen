@@ -43,6 +43,7 @@ object Toepen {
         app.get("/api/speldata", { this.getSpeldata(it) })
         app.post("/api/load", { this.loadData(it) })
         app.post("/api/save", { this.saveData(it) })
+        app.post("/api/savesettings", { this.saveSettings(it) })
         app.post("/api/maaktafels/:aantaltafels/:startscore", { this.maakTafels(it) })
         app.post("/api/speelkaart/:id", { this.speelkaart(it) })
         app.post("/api/pakslag/:id", { this.pakSlag(it) })
@@ -116,6 +117,16 @@ object Toepen {
         }
         ctx.json(CommandQueue.addNewCommand(SaveDataCommand()))
         broadcastMessage()
+    }
+
+    private fun saveSettings(ctx: Context) {
+        val updatedSpelData = ctx.body<SpelData>()
+        SpelContext.spelData.automatischNieuweTafels = updatedSpelData.automatischNieuweTafels
+        SpelContext.spelData.aantalAutomatischeNieuweTafels = updatedSpelData.aantalAutomatischeNieuweTafels
+        SpelContext.spelData.aantalFishesNieuweTafels = updatedSpelData.aantalFishesNieuweTafels
+        SpelContext.spelData.monkeyDelayMsec = updatedSpelData.monkeyDelayMsec
+        ctx.json(CommandQueue.addNewCommand(SaveDataCommand()))
+
     }
 
     private fun clearlog(ctx: Context){

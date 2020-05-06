@@ -5,7 +5,12 @@ object SpelContext {
 data class SpelData (
         var alleSpelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
         var tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
-        var uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList()
+        var uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList(),
+        var automatischNieuweTafels: Boolean? = null,
+        var aantalAutomatischeNieuweTafels: Int? = null,
+        var aantalFishesNieuweTafels: Int? = null,
+        var monkeyDelayMsec: Long? = null
+
 
 ){
     var scorelijst: MutableList<Speler>
