@@ -20,13 +20,35 @@ object Toepen {
     @JvmStatic
     fun main(args: Array<String>) {
         CommandQueue.processCommands()
-        Administrator.loadData()
-        Monkey.start()
+        try {
+            Administrator.loadData()
+        }
+        catch (e:Exception){
+            val spelers = listOf(
+                    maakInitieleSpeler("27331","Robbert"),
+                    maakInitieleSpeler("80785","Bol"),
+                    maakInitieleSpeler("35113","Bob"),
+                    maakInitieleSpeler("21682","Dimi"),
+                    maakInitieleSpeler("18158","Ferry"),
+                    maakInitieleSpeler("23912","JeroenA"),
+                    maakInitieleSpeler("58137","Goof"),
+                    maakInitieleSpeler("71976","JGwoud"),
+                    maakInitieleSpeler("50601","Berg"),
+                    maakInitieleSpeler("92718","Joost"),
+                    maakInitieleSpeler("87079","Schaap"),
+                    maakInitieleSpeler("85365","Marco"),
+                    maakInitieleSpeler("12505","Martin"),
+                    maakInitieleSpeler("97570","Mike"),
+                    maakInitieleSpeler("72780","Niels"),
+                    maakInitieleSpeler("14174","Peter"),
+                    maakInitieleSpeler("78867","Erik")
+            )
+            val command = UpdateGebruikersCommand(spelers)
+            val res = CommandQueue.addNewCommand(command)
+            log.info(res.toString())
 
-//        val spelers = (1..40).map { maakInitieleSpeler(""+(10000..99999).random()) }
-//        val command = UpdateGebruikersCommand(spelers)
-//        val res = CommandQueue.addNewCommand(command)
-//        log.info(res.toString())
+        }
+        Monkey.start()
 
 
         val app = Javalin.create { config ->
@@ -254,9 +276,10 @@ object Toepen {
         ctx.result(CommandQueue.getLastSpeldataJson())
         }
 
-    fun maakInitieleSpeler(id: String): Speler {
+    fun maakInitieleSpeler(id: String, naam:String): Speler {
         val speler = Speler()
         speler.id = id
+        speler.naam = naam
         return speler
     }
 
