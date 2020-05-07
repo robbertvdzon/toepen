@@ -14,7 +14,7 @@
       kind: Route
       metadata:
         name: toepen
-        namespace: "rzo-test"
+        namespace: "reboot-{{ omgeving }}"
         annotations:
           git_ref: "{{ git_info.after }}"
         labels:
@@ -44,7 +44,7 @@
       kind: Service
       metadata:
         name: toepen
-        namespace: "rzo-test"
+        namespace: "reboot-{{ omgeving }}"
         annotations:
           git_ref: "{{ git_info.after }}"
         labels:
@@ -73,7 +73,7 @@
       kind: DeploymentConfig
       metadata:
         name: toepen
-        namespace: "rzo-test"
+        namespace: "reboot-{{ omgeving }}"
         annotations:
           git_ref: "{{ git_info.after }}"
         labels:

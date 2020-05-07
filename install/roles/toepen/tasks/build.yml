@@ -12,7 +12,7 @@
       kind: ImageStream
       metadata:
         name: toepen
-        namespace: "rzo-test"
+        namespace: "reboot-{{ omgeving }}"
 
 
 - name: Create applicatie BuildConfig
@@ -27,7 +27,7 @@
       apiVersion: v1
       kind: BuildConfig
       metadata:
-        namespace: "rzo-test"
+        namespace: "reboot-{{ omgeving }}"
         annotations:
           git_ref: "{{ git_info.after }}"
         labels:
