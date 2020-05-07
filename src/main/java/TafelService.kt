@@ -70,8 +70,6 @@ object TafelService {
                         Date().toString(), tafel.tafelNr, scores
                 ))
                 println("#Uislagen:"+SpelContext.spelData.uitslagen.size)
-
-                tafel.tafelWinnaar?.score = 1 + (tafel.tafelWinnaar?.score ?: 0)
             } else {// niet einde spel
                 tafel.huidigeSpeler = volgendeActieveSpeler(tafel, tafel.slagWinnaar)
                 tafel.opkomer = tafel.huidigeSpeler
@@ -108,13 +106,13 @@ object TafelService {
         nieuweSpelersDieAfZijn.forEach {
             tafel.spelersDieAfZijn.add(it)
             it.scoreDezeRonde = score
+
         }
         if (aantalSpelersDieInSpelZittenCount == 1) {
             aantalSpelersDieInSpelZitten.forEach {
                 it.scoreDezeRonde = 5 // de winnaar!
             }
         }
-
     }
 
 
@@ -165,7 +163,6 @@ object TafelService {
             val handKaarten = (1..4).map { kaarten.removeAt(0) }
             SpelerService.nieuweRonde(speler, handKaarten)
         }
-        tafel.spelersDieAfZijn = emptyList<Speler>().toMutableList()
         tafel.inzet = 1
     }
 
@@ -175,6 +172,7 @@ object TafelService {
         tafel.tafelWinnaar = null
         tafel.slagWinnaar = null
         tafel.spelers.forEach { SpelerService.nieuwSpel(it, startscore) }
+        tafel.spelersDieAfZijn = emptyList<Speler>().toMutableList()
         nieuweRonde(tafel)
         logNieuwSpel(tafel)
 

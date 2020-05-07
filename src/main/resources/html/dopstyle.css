@@ -77,6 +77,12 @@ body {
   color: white;
 }
 
+.naamAf {
+  font-size: 35px;
+  font-family: 'Titillium Web', sans-serif;
+  color: gray;
+}
+
 div {
   font-size: 14px;
 }

@@ -6,6 +6,7 @@ object SpelerService {
         speler.gespeeldeKaart = null
         speler.totaalLucifers = startscore
         speler.ingezetteLucifers = 0
+        speler.scoreDezeRonde = 0
         speler.gepast = false
         speler.toepKeuze = Toepkeuze.GEEN_KEUZE
     }
@@ -13,7 +14,6 @@ object SpelerService {
     fun nieuweRonde(speler:Speler, kaarten: List<Kaart>){
         speler.gespeeldeKaart = null
         speler.gepast = false
-        speler.scoreDezeRonde = 0
         speler.toepKeuze = Toepkeuze.GEEN_KEUZE
         if (speler.actiefInSpel) {
             speler.kaarten = kaarten.toMutableList()

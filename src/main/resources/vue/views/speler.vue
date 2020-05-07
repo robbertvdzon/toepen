@@ -1,9 +1,8 @@
 <template id="speler">
         <div id="content">
             <header>
-                <img src="/cards.png" height="100px">
+                <img src="/kop.png" height="100px">
                 <div class="headerdiv">
-                    Vriendjes Toep Toernooi
                     <table>
                         <tr>
                             <td v-if="mytafel">
@@ -22,23 +21,23 @@
                             <div style="z-index: 1; position: relative; height: 70px">
                                 <div style="z-index: 1; position: absolute; top: 20px; left: 0px;">
                                     <span>
-                                    <b v-if="isAanZet(speler)" class="naamAanBeurt"><u>{{speler.naam}}</u></b>
-                                    <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>
-                                    <img src="/monkey.png" height="40px" v-if="isMonkey(speler)">
+                                    <b v-bind:class="getClass(speler)"><u>{{speler.naam}}</u></b>
+<!--                                    <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>-->
+                                    <img src="/monkey.png" height="50px" v-if="isMonkey(speler)">
                                     </span>
 
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="getoept(speler)">
-                                    <img src="/getoept.png" height="50px">
+                                    <img src="/getoept.png" height="60px">
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gaatMee(speler)">
-                                    <img src="/gaatmee.png" height="50px">
+                                    <img src="/gaatmee.png" height="60px">
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(speler)">
-                                    <img src="/gepast.png" height="50px">
+                                    <img src="/gepast.png" height="60px">
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(speler)">
-                                    <img src="/af.png" height="50px">
+                                    <img src="/af.png" height="60px">
                                 </div>
                             </div>
                         </td>
@@ -92,15 +91,17 @@
                 <div>
                     <table>
                         <tr>
-                            <td>
-                                <img src="/toep.png" height="60px" v-on:click="toep">
-                                <img v-if="slagGewonnen()" src="/pakslag.png" height="60px" v-on:click="pakSlag">
-                                <img v-if="toepKeuzeDoorgeven()" src="/gamee.png" height="60px" v-on:click="gaMee">
-                                <img v-if="toepKeuzeDoorgeven()" src="/pas.png" height="60px" v-on:click="pas">
-                            </td>
                             <td v-for="(kaart, idx) in myspeler.kaarten" width="150px">
                                 <div class="kaartenred" v-on:click="speelKaart(idx)">{{getRodeKaart(kaart)}}</div>
                                 <div class="kaartenblack" v-on:click="speelKaart(idx)">{{getZwarteKaart(kaart)}}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img v-if="!toepKeuzeDoorgeven()&&!slagGewonnen()"src="/iktoep.png" height="70px" v-on:click="toep">
+                                <img v-if="slagGewonnen()" src="/pakslag.png" height="70px" v-on:click="pakSlag">
+                                <img v-if="toepKeuzeDoorgeven()" src="/ikgamee.png" height="70px" v-on:click="gaMee">
+                                <img v-if="toepKeuzeDoorgeven()" src="/ikpas.png" height="70px" v-on:click="pas">
                             </td>
                         </tr>
                     </table>
@@ -260,8 +261,10 @@
                 if (kaart.symbool == "SCHOPPEN") symbool = "♠"
                 return symbool + this.getWaarde(kaart);
             },
-            isAanZet: function (speler) {
-                return this.mytafel.huidigeSpeler != null && (speler.naam == this.mytafel.huidigeSpeler.naam);
+            getClass: function (speler) {
+                if (this.mytafel.huidigeSpeler != null && (speler.naam == this.mytafel.huidigeSpeler.naam)) return "naamAanBeurt";
+                if (this.mytafel.huidigeSpeler != null && (speler.actiefInSpel)) return "naamNietBeurt";
+                return "naamAf"
 
             },
             zelfAanZet: function () {

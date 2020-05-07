@@ -1,3 +1,4 @@
+
 object SpelContext {
     var spelData = SpelData()
 }
