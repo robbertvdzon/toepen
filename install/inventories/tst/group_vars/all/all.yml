@@ -3,6 +3,8 @@ oc_props:
   token: "{{vault_token}}"
   validate_certs: False
 
+omgeving: tst
+
 application:
   instances: 1
   resources:
