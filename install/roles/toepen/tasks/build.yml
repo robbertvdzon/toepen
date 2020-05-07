@@ -1,0 +1,63 @@
+---
+
+- name: Install de ImageStream voor de applicatie
+  when: omgeving == "build"
+  k8s:
+    host: "{{ oc_props.host }}"
+    api_key: "{{ oc_props.token }}"
+    validate_certs: False
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ImageStream
+      metadata:
+        name: toepen
+        namespace: "rzo-test"
+
+
+- name: Create applicatie BuildConfig
+  tags: build
+  when: omgeving == "build"
+  k8s:
+    host: "{{ oc_props.host }}"
+    api_key: "{{ oc_props.token }}"
+    validate_certs: False
+    state: present
+    definition:
+      apiVersion: v1
+      kind: BuildConfig
+      metadata:
+        namespace: "rzo-test"
+        annotations:
+          git_ref: "{{ git_info.after }}"
+        labels:
+          app: toepen
+        name: toepen
+      spec:
+        nodeSelector: null
+        output:
+          to:
+            kind: ImageStreamTag
+            name: toepen:latest
+        runPolicy: Serial
+        source:
+          git:
+            ref: master
+            uri: 'https://github.com/Alliander/toepen'
+          sourceSecret:
+            name: reboot-source-build
+          type: Git
+        strategy:
+          type: Source
+          sourceStrategy:
+            from:
+              kind: ImageStreamTag
+              name: java:11
+              namespace: openshift
+        triggers:
+        - github:
+            secret: kgysvar58q8lsl6t # deze is uniek voor web-sap-po-boot-service, maak een nieuwe voor een ander project
+          type: GitHub
+        - imageChange: {}
+          type: ImageChange
+        - type: ConfigChange
