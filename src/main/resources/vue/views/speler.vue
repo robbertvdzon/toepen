@@ -87,7 +87,7 @@
                 {{error}}
             </div>
 
-            <div>
+            <div v-if="mytafel">
                 <div>
                     <table>
                         <tr>

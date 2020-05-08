@@ -25,7 +25,7 @@
               <button type="submit" v-on:click="allesPauzeren">Alles pauze</button>
               <button type="submit" v-on:click="allesStarten">Alles starten</button>
               <button type="submit" v-on:click="clearLog">Clear log</button>
-              <button type="submit" v-on:click="resetScore">Reser score</button>
+              <button type="submit" v-on:click="resetScore">Reset score</button>
             </span>
 
             <hr>
