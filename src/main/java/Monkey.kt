@@ -45,6 +45,7 @@ object Monkey {
                         val startScore = echteSpelData.aantalFishesNieuweTafels?:15
                         val aantalTafels = echteSpelData.aantalAutomatischeNieuweTafels?:spelData.tafels.size
                         CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantalTafels, startScore))
+                        Toepen.broadcastMessage()
                     }
                 }
 

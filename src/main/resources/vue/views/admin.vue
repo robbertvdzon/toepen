@@ -38,6 +38,11 @@
                     <td><input type="checkbox" v-model="speldata.automatischNieuweTafels"></td>
                 </tr>
                 <tr>
+                    <td>Automatisch pauze bij nieuwe tafels</td>
+                    <td>&nbsp;:&nbsp;</td>
+                    <td><input type="checkbox" v-model="speldata.nieuweTafelAutoPause"></td>
+                </tr>
+                <tr>
                     <td>Aantal nieuwe tafels</td>
                     <td>&nbsp;:&nbsp;</td>
                     <td><input v-model="speldata.aantalAutomatischeNieuweTafels"></td>
@@ -161,8 +166,8 @@
         template: "#admin",
         data: () => ({
             speldata: null,
-            aantalTafels: 1,
-            aantalStartLucifers: 15
+            aantalTafels: 3,
+            aantalStartLucifers: 10
         }),
         created() {
             this.load()

@@ -41,7 +41,10 @@ object Toepen {
                     maakInitieleSpeler("97570","Mike"),
                     maakInitieleSpeler("72780","Niels"),
                     maakInitieleSpeler("14174","Peter"),
-                    maakInitieleSpeler("78867","Erik")
+                    maakInitieleSpeler("78867","Erik"),
+                    maakInitieleSpeler("175867","SpelerX"),
+                    maakInitieleSpeler("288567","SpelerY"),
+                    maakInitieleSpeler("488367","SpelerZ")
             )
             val command = UpdateGebruikersCommand(spelers)
             val res = CommandQueue.addNewCommand(command)
@@ -144,6 +147,7 @@ object Toepen {
     private fun saveSettings(ctx: Context) {
         val updatedSpelData = ctx.body<SpelData>()
         SpelContext.spelData.automatischNieuweTafels = updatedSpelData.automatischNieuweTafels
+        SpelContext.spelData.nieuweTafelAutoPause = updatedSpelData.nieuweTafelAutoPause
         SpelContext.spelData.aantalAutomatischeNieuweTafels = updatedSpelData.aantalAutomatischeNieuweTafels
         SpelContext.spelData.aantalFishesNieuweTafels = updatedSpelData.aantalFishesNieuweTafels
         SpelContext.spelData.monkeyDelayMsec = updatedSpelData.monkeyDelayMsec
@@ -280,6 +284,8 @@ object Toepen {
         val speler = Speler()
         speler.id = id
         speler.naam = naam
+        speler.isMonkey = true
+        speler.wilMeedoen = true
         return speler
     }
 
