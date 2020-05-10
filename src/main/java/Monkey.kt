@@ -83,15 +83,15 @@ object Monkey {
                 }
 
             }
-            if ((0..100).random() == 0) {
+            if (ToepRandom.nextInt(0,100) == 0) {
                 val res = CommandQueue.addNewCommand(ToepCommand(zoekEchteSpeler(speler)))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Toep : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if ((0..1).random() == 0) {
-                val kaart = speler.kaarten.getOrNull((0..3).random())
+            if (ToepRandom.nextInt(0,1) == 0) {
+                val kaart = speler.kaarten.getOrNull(ToepRandom.nextInt(0,3))
                 if (kaart != null) {
                     val res = CommandQueue.addNewCommand(SpeelKaartCommand(zoekEchteSpeler(speler), kaart))
                     if (res.status == CommandStatus.SUCCEDED) {
@@ -100,14 +100,14 @@ object Monkey {
                     }
                 }
             }
-            if ((0..1).random() == 0) {
+            if (ToepRandom.nextInt(0,1) == 0) {
                 val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(zoekEchteSpeler(speler)))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Ga mee: Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if ((0..1).random() == 0) {
+            if (ToepRandom.nextInt(0,1) == 0) {
                 val res = CommandQueue.addNewCommand(PasCommand(zoekEchteSpeler(speler)))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Pas: Speler ${speler.naam} ,  hand:${speler.kaarten}")

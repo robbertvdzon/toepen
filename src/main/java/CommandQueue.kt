@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.io.File
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.TimeUnit
@@ -9,7 +10,20 @@ import kotlin.concurrent.thread
 
 object CommandQueue {
     val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    val logFile = File("log.txt")
     private val lock = ReentrantLock()
+    private val logCommands = true
+
+    fun initLogfile() {
+        logSpeldata()
+    }
+
+    fun logSpeldata() {
+        if (logCommands) {
+            logFile.writeText(objectMapper.writeValueAsString("SpelData:" + SpelContext.spelData + "\n"))
+        }
+    }
+
 
     private var lastSpelDataJson:String = objectMapper.writeValueAsString(SpelContext.spelData)
     val unProcessedCommands: BlockingQueue<Command> = LinkedBlockingDeque<Command>(100)
@@ -30,6 +44,10 @@ object CommandQueue {
                 val command = unProcessedCommands.take()
                 try {
                     command.result = command.process()
+                    if (command.result?.status?.equals(CommandStatus.SUCCEDED)?:false && logCommands){
+                        logFile.appendText(command.javaClass.simpleName+":"+jacksonObjectMapper().writeValueAsString(command)+"\n")
+                        println(command.javaClass.simpleName+":"+jacksonObjectMapper().writeValueAsString(command))
+                    }
                 }
                 catch (e:Exception){
                     command.result = CommandResult(CommandStatus.FAILED, e.message?:"Unknown error")
@@ -59,6 +77,7 @@ object CommandQueue {
             lock.unlock()
         }
     }
+
 
 }
 

@@ -1,5 +1,5 @@
 import io.vavr.control.Either
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 
 object VavrTest {
 
@@ -12,7 +12,7 @@ object VavrTest {
     fun test() {
 //        val r: Either<Fout, Goed> = Either.right(Goed("mijn waarde1"))
         val r: Either<Fout, Goed> = Either.left(Fout(2, "mijn fout"))
-        val g: Either<Fout, Goed> = Either.right(Goed(4,"mijn waarde"))
+        val g: Either<Fout, Goed> = Either.right(Goed(4, "mijn waarde"))
 
 //        g.bind()
 
@@ -24,19 +24,39 @@ object VavrTest {
         }
         println(d)
 
+        val dasd = "d" before "3" after ""
+        dasd after ""
 
+
+    }
+
+
+}
+
+infix fun String.before(s: String): Test2 {
+    return Test2()
+}
+
+
+class Test2 {
+    infix fun and(s:String): Test2 {
+        return Test2()
+    }
+
+    infix fun after(s: String): Test2 {
+        return Test2()
     }
 }
 
-fun <A,B> eitherBlock(c: suspend  () -> B): Either<A, B> {
+fun <A, B> eitherBlock(c: suspend () -> B): Either<A, B> {
     try {
-        return Either.right(runBlocking{c.invoke()})
+        return Either.right(runBlocking { c.invoke() })
     } catch (e: EitherBlockException) {
         return Either.left(e.left as A)
     }
 }
 
-suspend fun Either<Fout, Goed>.bind(): Goed = this.getOrElseThrow{(e)->EitherBlockException(this.left) }  // suspend, om te forceren dat hij alleen maar binnen de eitherBlock draait
+suspend fun Either<Fout, Goed>.bind(): Goed = this.getOrElseThrow { (e) -> EitherBlockException(this.left) }  // suspend, om te forceren dat hij alleen maar binnen de eitherBlock draait
 
 class EitherBlockException(val left: Any) : Exception()
 

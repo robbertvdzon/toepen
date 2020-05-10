@@ -1,5 +1,9 @@
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 abstract class Command{
+    @JsonIgnore
     val lock = Object()
+    @JsonIgnore
     var result:CommandResult? = null
     abstract fun process():CommandResult
 }
@@ -64,6 +68,12 @@ class PauzeerTafel(val tafel:Tafel?): Command(){
 }
 class StartTafel(val tafel:Tafel?): Command(){
     override fun process():CommandResult = Administrator.startTafel(tafel)
+}
+class SetRandomSeed(val seed:Long): Command(){
+    override fun process():CommandResult {
+        ToepRandom.setSeed(seed)
+        return CommandResult(CommandStatus.SUCCEDED,"")
+    }
 }
 
 

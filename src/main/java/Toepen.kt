@@ -20,6 +20,7 @@ object Toepen {
     @JvmStatic
     fun main(args: Array<String>) {
         CommandQueue.processCommands()
+        CommandQueue.addNewCommand(SetRandomSeed(System.currentTimeMillis()))
         try {
             Administrator.loadData()
         }
@@ -51,6 +52,7 @@ object Toepen {
             log.info(res.toString())
 
         }
+        CommandQueue.initLogfile()
         Monkey.start()
 
 
@@ -151,6 +153,7 @@ object Toepen {
         SpelContext.spelData.aantalAutomatischeNieuweTafels = updatedSpelData.aantalAutomatischeNieuweTafels
         SpelContext.spelData.aantalFishesNieuweTafels = updatedSpelData.aantalFishesNieuweTafels
         SpelContext.spelData.monkeyDelayMsec = updatedSpelData.monkeyDelayMsec
+        CommandQueue.logSpeldata()
         ctx.json(CommandQueue.addNewCommand(SaveDataCommand()))
 
     }
