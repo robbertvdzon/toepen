@@ -10,16 +10,13 @@ object VavrTest {
     }
 
     fun test() {
-        val e: Either<Fout2, Goed> = Either.left(Fout2("error"))
         val r: Either<Fout, Goed> = Either.right(Goed("mijn waarde1"))
 //        val r: Either<Fout, Goed> = Either.left(Fout("mijn waarde1"))
         val g: Either<Fout, Goed> = Either.right(Goed("mijn waarde"))
 
-//        val y = g.bind() // moet niet hier mogen
+//        g.bind()
 
-
-        val d = fx<Fout, Goed> {
-//                val z = e.bind()
+        val d = eitherBlock<Fout, Goed> {
             val y = g.bind()
             val w = r.bind()
             val q = g.bind()
@@ -31,8 +28,7 @@ object VavrTest {
     }
 }
 
-fun <A,B> fx(c: suspend  () -> B): Either<A, B> {
-
+fun <A,B> eitherBlock(c: suspend  () -> B): Either<A, B> {
     try {
         val r = runBlocking<B> {
             c.invoke()
@@ -44,7 +40,7 @@ fun <A,B> fx(c: suspend  () -> B): Either<A, B> {
     }
 }
 
-suspend fun Either<Fout, Goed>.bind(): Goed {
+suspend fun Either<Fout, Goed>.bind(): Goed { // suspend, om te forceren dat hij alleen maar binnen de eitherBlock draait
     if (this.isLeft) {
         throw MyEx(this.left)
     }
@@ -57,9 +53,6 @@ data class Fout(
         val fout: String
 )
 
-data class Fout2(
-        val fout: String
-)
 
 data class Goed(
         val waarde: String
