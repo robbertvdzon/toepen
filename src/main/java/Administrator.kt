@@ -119,6 +119,7 @@ object Administrator {
     fun nieuwSpel(startscore: Int, tafel: Tafel?): CommandResult {
         if (tafel!=null) {
             TafelService.nieuwSpel(tafel, startscore)
+            tafel.gepauzeerd = SpelContext.spelData.nieuweTafelAutoPause==true
         }
         return CommandResult(CommandStatus.SUCCEDED,"")
     }

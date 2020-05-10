@@ -102,10 +102,12 @@ object TafelService {
         val aantalSpelersDieInSpelZitten = tafel.spelers.filter { it.actiefInSpel == true }
         val aantalSpelersDieInSpelZittenCount = aantalSpelersDieInSpelZitten.size
         val nieuweSpelersDieAfZijn = spelersDieAfZijn.filter { !tafel.spelersDieAfZijn.contains(it) }
-        val score = 4 - aantalSpelersDieInSpelZittenCount
+        var score = 4 - aantalSpelersDieInSpelZittenCount
         nieuweSpelersDieAfZijn.forEach {
             tafel.spelersDieAfZijn.add(it)
-            it.scoreDezeRonde = score
+            if (score>0) {
+                it.scoreDezeRonde = score
+            }
 
         }
         if (aantalSpelersDieInSpelZittenCount == 1) {
