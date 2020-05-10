@@ -20,7 +20,6 @@ object Toepen {
     @JvmStatic
     fun main(args: Array<String>) {
         CommandQueue.processCommands()
-        CommandQueue.addNewCommand(SetRandomSeed(System.currentTimeMillis()))
         try {
             Administrator.loadData()
         }
@@ -53,6 +52,8 @@ object Toepen {
 
         }
         CommandQueue.initLogfile()
+//        CommandQueue.addNewCommand(SetRandomSeed(System.currentTimeMillis()))
+        CommandQueue.addNewCommand(SetRandomSeed(0))
         Monkey.start()
 
 
@@ -153,7 +154,6 @@ object Toepen {
         SpelContext.spelData.aantalAutomatischeNieuweTafels = updatedSpelData.aantalAutomatischeNieuweTafels
         SpelContext.spelData.aantalFishesNieuweTafels = updatedSpelData.aantalFishesNieuweTafels
         SpelContext.spelData.monkeyDelayMsec = updatedSpelData.monkeyDelayMsec
-        CommandQueue.logSpeldata()
         ctx.json(CommandQueue.addNewCommand(SaveDataCommand()))
 
     }
@@ -188,14 +188,14 @@ object Toepen {
     private fun pauzeer(ctx: Context) {
         val id = ctx.pathParam("tafelnr")
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        ctx.json(CommandQueue.addNewCommand(PauzeerTafel(tafel)))
+        ctx.json(CommandQueue.addNewCommand(PauzeerTafel(tafel!!.tafelNr)))
         broadcastMessage()
     }
 
     private fun gadoor(ctx: Context) {
         val id = ctx.pathParam("tafelnr")
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        ctx.json(CommandQueue.addNewCommand(StartTafel(tafel)))
+        ctx.json(CommandQueue.addNewCommand(StartTafel(tafel!!.tafelNr)))
         broadcastMessage()
     }
 
@@ -203,14 +203,14 @@ object Toepen {
         val id = ctx.pathParam("tafelnr")
         val lucifers = ctx.pathParam("lucifers").toInt()
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        ctx.json(CommandQueue.addNewCommand(NieuwSpel(lucifers, tafel)))
+        ctx.json(CommandQueue.addNewCommand(NieuwSpel(lucifers, tafel!!.tafelNr)))
         broadcastMessage()
     }
 
     private fun schopTafelAan(ctx: Context) {
         val id = ctx.pathParam("tafelnr")
         val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-        ctx.json(CommandQueue.addNewCommand(SchopTafel(tafel)))
+        ctx.json(CommandQueue.addNewCommand(SchopTafel(tafel!!.tafelNr)))
         broadcastMessage()
     }
 
@@ -231,7 +231,7 @@ object Toepen {
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
             return
         }
-        ctx.json(CommandQueue.addNewCommand(SpeelKaartCommand(speler, kaart)))
+        ctx.json(CommandQueue.addNewCommand(SpeelKaartCommand(speler.id, kaart)))
         broadcastMessage()
     }
 
@@ -242,7 +242,7 @@ object Toepen {
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
             return
         }
-        ctx.json(CommandQueue.addNewCommand(PakSlagCommand(speler)))
+        ctx.json(CommandQueue.addNewCommand(PakSlagCommand(speler.id)))
         broadcastMessage()
     }
 
@@ -253,7 +253,7 @@ object Toepen {
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
             return
         }
-        ctx.json(CommandQueue.addNewCommand(ToepCommand(speler)))
+        ctx.json(CommandQueue.addNewCommand(ToepCommand(speler.id)))
         broadcastMessage()
     }
 
@@ -264,7 +264,7 @@ object Toepen {
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
             return
         }
-        ctx.json(CommandQueue.addNewCommand(PasCommand(speler)))
+        ctx.json(CommandQueue.addNewCommand(PasCommand(speler.id)))
         broadcastMessage()
     }
 
@@ -275,7 +275,7 @@ object Toepen {
             ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
             return
         }
-        ctx.json(CommandQueue.addNewCommand(GaMeeMetToepCommand(speler)))
+        ctx.json(CommandQueue.addNewCommand(GaMeeMetToepCommand(speler.id)))
         broadcastMessage()
     }
 

@@ -66,17 +66,17 @@ object Monkey {
     private fun speelMonkey(tafel_: Tafel, speler_: Speler) {
 //        println("Monkey "+speler.naam)
         // Haal de recente tafel en speler data op
-        val spelData = objectMapper.readValue<SpelData>(CommandQueue.getLastSpeldataJson(), SpelData::class.java)
-        val tafel = spelData.tafels.firstOrNull() { it.tafelNr == tafel_.tafelNr }
+        var spelData = objectMapper.readValue<SpelData>(CommandQueue.getLastSpeldataJson(), SpelData::class.java)
+        var tafel = spelData.tafels.firstOrNull() { it.tafelNr == tafel_.tafelNr }
         if (tafel==null) return
         val speler = spelData.alleSpelers.firstOrNull { it.id == speler_.id }
         if (speler==null) return
 
         var aantalPogingen = 0
-        while (tafel.huidigeSpeler == speler && aantalPogingen < 50) {
+        while (tafel?.huidigeSpeler?.equals(speler)?:false && aantalPogingen < 50) {
             aantalPogingen++
-            if (tafel.slagWinnaar == speler) {
-                val res = CommandQueue.addNewCommand(PakSlagCommand(zoekEchteSpeler(speler)))
+            if (tafel?.slagWinnaar == speler) {
+                val res = CommandQueue.addNewCommand(PakSlagCommand(zoekEchteSpeler(speler).id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Pak slag : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
@@ -84,7 +84,7 @@ object Monkey {
 
             }
             if (ToepRandom.nextInt(0,100) == 0) {
-                val res = CommandQueue.addNewCommand(ToepCommand(zoekEchteSpeler(speler)))
+                val res = CommandQueue.addNewCommand(ToepCommand(zoekEchteSpeler(speler).id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Toep : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
@@ -93,7 +93,7 @@ object Monkey {
             if (ToepRandom.nextInt(0,1) == 0) {
                 val kaart = speler.kaarten.getOrNull(ToepRandom.nextInt(0,3))
                 if (kaart != null) {
-                    val res = CommandQueue.addNewCommand(SpeelKaartCommand(zoekEchteSpeler(speler), kaart))
+                    val res = CommandQueue.addNewCommand(SpeelKaartCommand(zoekEchteSpeler(speler).id, kaart))
                     if (res.status == CommandStatus.SUCCEDED) {
 //                        println("Speelkaart: Speler ${speler.naam} kaart: $kaart ,  hand:${speler.kaarten}")
                         Toepen.broadcastMessage()
@@ -101,19 +101,23 @@ object Monkey {
                 }
             }
             if (ToepRandom.nextInt(0,1) == 0) {
-                val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(zoekEchteSpeler(speler)))
+                val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(zoekEchteSpeler(speler).id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Ga mee: Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
             if (ToepRandom.nextInt(0,1) == 0) {
-                val res = CommandQueue.addNewCommand(PasCommand(zoekEchteSpeler(speler)))
+                val res = CommandQueue.addNewCommand(PasCommand(zoekEchteSpeler(speler).id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Pas: Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
+
+            // update speldata
+            spelData = objectMapper.readValue<SpelData>(CommandQueue.getLastSpeldataJson(), SpelData::class.java)
+            tafel = spelData.tafels.firstOrNull() { it.tafelNr == tafel_.tafelNr }
         }
         if (aantalPogingen == 50){
 //            println("Geen actie: ${speler.naam}")
