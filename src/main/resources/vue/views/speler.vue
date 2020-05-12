@@ -21,22 +21,21 @@
                             <div style="z-index: 1; position: relative; height: 70px">
                                 <div style="z-index: 1; position: absolute; top: 20px; left: 0px;">
                                     <span>
-                                    <b v-bind:class="getClass(speler)"><u>{{speler.naam}}</u></b>
-<!--                                    <b v-if="!isAanZet(speler)" class="naamNietBeurt">{{speler.naam}}</b>-->
-                                    <img src="/monkey.png" height="50px" v-if="isMonkey(speler)">
+                                    <b v-bind:class="getClass(getSpeler(speler))"><u>{{getSpeler(speler).naam}}</u></b>
+                                    <img src="/monkey.png" height="50px" v-if="isMonkey(getSpeler(speler))">
                                     </span>
 
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="getoept(speler)">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="getoept(getSpeler(speler))">
                                     <img src="/getoept.png" height="60px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gaatMee(speler)">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gaatMee(getSpeler(speler))">
                                     <img src="/gaatmee.png" height="60px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(speler)">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(getSpeler(speler))">
                                     <img src="/gepast.png" height="60px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(speler)">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(getSpeler(speler))">
                                     <img src="/af.png" height="60px">
                                 </div>
                             </div>
@@ -44,13 +43,13 @@
                     </tr>
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
-                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij1(speler.totaalLucifers-speler.ingezetteLucifers)">
+                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij1(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
-                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij2(speler.totaalLucifers-speler.ingezetteLucifers)">
-                           {{overigeLucifers(speler.totaalLucifers-speler.ingezetteLucifers)}}
+                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij2(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)">
+                           {{overigeLucifers(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)}}
                         </td>
                     </tr>
                     <tr style="height: 10px">
@@ -58,13 +57,13 @@
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="30px"
-                                 v-for="lucifer in numToArray(speler.ingezetteLucifers)">
+                                 v-for="lucifer in numToArray(getSpeler(speler).ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr height="100px">
                         <td v-for="speler in mytafel.spelers">
-                            <div class="kaartenred">{{getRodeKaart(speler.gespeeldeKaart)}}</div>
-                            <div class="kaartenblack">{{getZwarteKaart(speler.gespeeldeKaart)}}</div>
+                            <div class="kaartenred">{{getRodeKaart(getSpeler(speler).gespeeldeKaart)}}</div>
+                            <div class="kaartenblack">{{getZwarteKaart(getSpeler(speler).gespeeldeKaart)}}</div>
                         </td>
                     </tr>
                 </table>
@@ -166,14 +165,22 @@
                 this.myspeler = null;
                 this.mytafel = null;
 
+                var spelerCount = this.speldata.alleSpelers.length;
+                for (var i = 0; i < spelerCount; i++) {
+                    speler = this.speldata.alleSpelers[i];
+                    if (speler.id == this.id) {
+                        this.myspeler = speler;
+                    }
+
+                }
+
                 var tafelCount = this.speldata.tafels.length;
                 for (var i = 0; i < tafelCount; i++) {
                     tafel = this.speldata.tafels[i];
                     var spelerCount = tafel.spelers.length;
                     for (var j = 0; j < spelerCount; j++) {
                         speler = tafel.spelers[j];
-                        if (speler.id == this.id) {
-                            this.myspeler = speler;
+                        if (speler == this.id) {
                             this.mytafel = tafel;
                         }
                     }
@@ -212,6 +219,19 @@
             },
             clearError: function () {
                this.error = null;
+            },
+            getSpeler: function (spelerId) {
+                var spelerCount = this.speldata.alleSpelers.length;
+                for (var i = 0; i < spelerCount; i++) {
+                    if (this.speldata.alleSpelers[i].id == spelerId) {
+                        return this.speldata.alleSpelers[i];
+                    }
+                }
+            },
+            getSpelerNaam: function (spelerId) {
+                var speler = this.getSpeler(spelerId)
+                if (speler==null) return "?"
+                return speler.naam
             },
             speelKaart: function (kaart) {
                 axios.post(`/api/speelkaart/` + this.id, this.myspeler.kaarten[kaart])
@@ -262,13 +282,13 @@
                 return symbool + this.getWaarde(kaart);
             },
             getClass: function (speler) {
-                if (this.mytafel.huidigeSpeler != null && (speler.naam == this.mytafel.huidigeSpeler.naam)) return "naamAanBeurt";
+                if (this.mytafel.huidigeSpeler != null && (speler.id == this.mytafel.huidigeSpeler)) return "naamAanBeurt";
                 if (this.mytafel.huidigeSpeler != null && (speler.actiefInSpel)) return "naamNietBeurt";
                 return "naamAf"
 
             },
             zelfAanZet: function () {
-                return (this.mytafel.huidigeSpeler) != null && (this.myspeler.naam == this.mytafel.huidigeSpeler.naam);
+                return (this.mytafel.huidigeSpeler) != null && (this.myspeler.id == this.mytafel.huidigeSpeler);
             },
             isMonkey: function (speler) {
                 return speler.isMonkey;
@@ -296,19 +316,20 @@
                 if (this.mytafel.gepauzeerd) {
                     return "Spel is gepauzeerd!";
                 }
-                if (this.mytafel.tafelWinnaar!=null && this.mytafel.tafelWinnaar.naam!=null) {
-                    return "Spel afgelopen, "+this.mytafel.tafelWinnaar.naam+" heeft gewonnen!";
+                if (this.mytafel.tafelWinnaar!=null) {
+                    return "Spel afgelopen, "+this.getSpelerNaam(this.mytafel.tafelWinnaar)+" heeft gewonnen!";
                 }
                 if (this.slagwinnaar!=null){
-                    return this.slagwinnaar;
+                    // return this.getSpeler(this.slagwinnaar);
+                    // return "";
                 }
                 if (this.mytafel.huidigeSpeler==null) {
                     return "";
                 }
-                if (this.mytafel.huidigeSpeler.naam!=this.myspeler.naam) {
-                    return this.mytafel.huidigeSpeler.naam+" is aan de beurt";
+                if (this.mytafel.huidigeSpeler!=this.myspeler.id) {
+                    return this.getSpelerNaam(this.mytafel.huidigeSpeler)+" is aan de beurt";
                 }
-                if (this.mytafel.huidigeSpeler.naam==this.myspeler.naam) {
+                if (this.mytafel.huidigeSpeler==this.myspeler.id) {
                     if (this.slagGewonnen()) return "Je hebt de slag gewonnen, pak de slag";
                     if (this.toepKeuzeDoorgeven()) return "Er is getoept! Ga mee, pas of toep over";
                     return "Je bent aan de beurt";
@@ -319,7 +340,7 @@
                 if (this.mytafel == null) return false;
                 if (this.myspeler == null) return false;
                 if (this.mytafel.slagWinnaar == null) return false;
-                return (this.mytafel.slagWinnaar.naam == this.myspeler.naam)
+                return (this.mytafel.slagWinnaar == this.myspeler.id)
             }
             ,
             toepKeuzeDoorgeven: function () {
@@ -327,18 +348,18 @@
                 if (this.myspeler == null) return false;
                 if (this.mytafel.toeper == null) return false;
                 if (this.myspeler.toepKeuze != "GEEN_KEUZE") return false;
-                return (this.mytafel.huidigeSpeler.naam == this.myspeler.naam)
+                return (this.mytafel.huidigeSpeler == this.myspeler.id)
             },
             getSlagWinnaar: function () {
                 if (this.mytafel == null) return "-";
                 if (this.mytafel.slagWinnaar == null) return "-";
-                return this.mytafel.slagWinnaar.naam;
+                return this.getSpelerNaam(this.mytafel.slagWinnaar);
 
             },
             getSpelWinnaar: function () {
                 if (this.mytafel == null) return "-";
                 if (this.mytafel.tafelWinnaar == null) return "-";
-                return this.mytafel.tafelWinnaar.naam;
+                return this.getSpelerNaam(this.mytafel.tafelWinnaar.naam);
             },
             numToArray: function (nr) {
                 var elements = [];

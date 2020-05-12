@@ -50,7 +50,7 @@ object Monkey {
                 }
 
                 spelData.tafels.filter { !it.gepauzeerd }.forEach {
-                    val huidigeSpeler = it.huidigeSpeler
+                    val huidigeSpeler = it.findHuidigeSpeler()
                     if (huidigeSpeler != null && huidigeSpeler.isMonkey && !hasWaitingSpeler(huidigeSpeler.id)) {
                         addWaitingSpeler(huidigeSpeler.id)
                         val tasknew: TimerTask = TimerSchedulePeriod(it, huidigeSpeler)
@@ -69,14 +69,14 @@ object Monkey {
         var spelData = objectMapper.readValue<SpelData>(CommandQueue.getLastSpeldataJson(), SpelData::class.java)
         var tafel = spelData.tafels.firstOrNull() { it.tafelNr == tafel_.tafelNr }
         if (tafel==null) return
-        val speler = spelData.alleSpelers.firstOrNull { it.id == speler_.id }
+        val speler = spelData.alleSpelers.firstOrNull { it.id == speler_.id }?.id
         if (speler==null) return
 
         var aantalPogingen = 0
         while (tafel?.huidigeSpeler?.equals(speler)?:false && aantalPogingen < 50) {
             aantalPogingen++
             if (tafel?.slagWinnaar == speler) {
-                val res = CommandQueue.addNewCommand(PakSlagCommand(zoekEchteSpeler(speler).id))
+                val res = CommandQueue.addNewCommand(PakSlagCommand(speler))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Pak slag : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
@@ -84,16 +84,16 @@ object Monkey {
 
             }
             if (ToepRandom.nextInt(0,100) == 0) {
-                val res = CommandQueue.addNewCommand(ToepCommand(zoekEchteSpeler(speler).id))
+                val res = CommandQueue.addNewCommand(ToepCommand(speler))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Toep : Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
             if (ToepRandom.nextInt(0,1) == 0) {
-                val kaart = speler.kaarten.getOrNull(ToepRandom.nextInt(0,3))
+                val kaart = zoekSpeler(speler)?.kaarten?.getOrNull(ToepRandom.nextInt(0,3))
                 if (kaart != null) {
-                    val res = CommandQueue.addNewCommand(SpeelKaartCommand(zoekEchteSpeler(speler).id, kaart))
+                    val res = CommandQueue.addNewCommand(SpeelKaartCommand(speler, kaart))
                     if (res.status == CommandStatus.SUCCEDED) {
 //                        println("Speelkaart: Speler ${speler.naam} kaart: $kaart ,  hand:${speler.kaarten}")
                         Toepen.broadcastMessage()
@@ -101,14 +101,14 @@ object Monkey {
                 }
             }
             if (ToepRandom.nextInt(0,1) == 0) {
-                val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(zoekEchteSpeler(speler).id))
+                val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(speler))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Ga mee: Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
             if (ToepRandom.nextInt(0,1) == 0) {
-                val res = CommandQueue.addNewCommand(PasCommand(zoekEchteSpeler(speler).id))
+                val res = CommandQueue.addNewCommand(PasCommand(speler))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Pas: Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
@@ -122,12 +122,14 @@ object Monkey {
         if (aantalPogingen == 50){
 //            println("Geen actie: ${speler.naam}")
         }
-        removeWaitingSpeler(speler.id)
+        removeWaitingSpeler(speler)
     }
 
-    private fun zoekEchteSpeler(speler: Speler): Speler {
-        return echteSpelData.alleSpelers.firstOrNull{ it.naam == speler.naam }?:speler
+
+    private fun zoekSpeler(id:String): Speler? {
+        return echteSpelData.alleSpelers.firstOrNull{ it.id == id }
     }
+
 
     class TimerSchedulePeriod(val tafel: Tafel, val speler: Speler) : TimerTask() {
         override fun run() {

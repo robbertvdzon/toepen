@@ -115,17 +115,17 @@ object Toepen {
 
     fun broadcastSpelWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(Winnaar(SPEL, tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+            session.send(Winnaar(SPEL, tafel.tafelNr, tafel.findSlagWinnaar()?.naam?:"?"))
         }
     }
     fun broadcastRondeWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(Winnaar(RONDE, tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+            session.send(Winnaar(RONDE, tafel.tafelNr, tafel.findSlagWinnaar()?.naam?:"?"))
         }
     }
     fun broadcastSlagWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(Winnaar(SLAG, tafel.tafelNr, tafel.slagWinnaar?.naam?:"?"))
+            session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar()?.naam?:"?"))
         }
     }
 

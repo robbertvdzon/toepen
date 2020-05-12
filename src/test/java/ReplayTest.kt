@@ -15,7 +15,8 @@ class ReplayTest {
         CommandQueue.processCommands()
         CommandQueue.disableLog()
         var line:Int = 0
-        File("test1.txt").forEachLine { regel->
+        File("log.txt").forEachLine { regel->
+//        File("test1.txt").forEachLine { regel->
             println("command "+line++)
             val splitPos = regel.indexOfFirst{c->c==':'}
             if (splitPos>0) {
@@ -26,33 +27,34 @@ class ReplayTest {
                     SpelContext.spelData = spelData
                     // replace alle spelers uit de tafels naar de speldata.spelers
                     spelData.tafels.forEach{
-                        tafel:Tafel -> tafel.spelers.forEach {speler:Speler->
+                        tafel:Tafel -> tafel.findSpelers().forEach {speler:Speler->
                         val spelerUitSpel = spelData.alleSpelers.filter { it.id==speler.id }.firstOrNull()
                         if (spelerUitSpel!=null){
                             val index = spelData.alleSpelers.indexOf(spelerUitSpel)
                             spelData.alleSpelers.set(index, speler)
                         }
                     }
-                        // fix huidige speler
-                        if (tafel.huidigeSpeler!=null){
-                            tafel.huidigeSpeler = spelData.alleSpelers.filter { it.id==tafel.huidigeSpeler?.id }.firstOrNull()
-                        }
-                        // fix toeper
-                        if (tafel.toeper!=null){
-                            tafel.toeper = spelData.alleSpelers.filter { it.id==tafel.toeper?.id }.firstOrNull()
-                        }
-                        // fix opkomer
-                        if (tafel.opkomer!=null){
-                            tafel.opkomer = spelData.alleSpelers.filter { it.id==tafel.opkomer?.id }.firstOrNull()
-                        }
-                        // fix slagWinnaar
-                        if (tafel.slagWinnaar!=null){
-                            tafel.slagWinnaar = spelData.alleSpelers.filter { it.id==tafel.slagWinnaar?.id }.firstOrNull()
-                        }
-                        // fix tafelWinnaar
-                        if (tafel.tafelWinnaar!=null){
-                            tafel.tafelWinnaar = spelData.alleSpelers.filter { it.id==tafel.tafelWinnaar?.id }.firstOrNull()
-                        }
+//
+//                        // fix huidige speler
+//                        if (tafel.huidigeSpeler!=null){
+//                            tafel.huidigeSpeler = spelData.alleSpelers.filter { it.id==tafel.huidigeSpeler?.id }.firstOrNull()
+//                        }
+//                        // fix toeper
+//                        if (tafel.toeper!=null){
+//                            tafel.toeper = spelData.alleSpelers.filter { it.id==tafel.toeper?.id }.firstOrNull()
+//                        }
+//                        // fix opkomer
+//                        if (tafel.opkomer!=null){
+//                            tafel.opkomer = spelData.alleSpelers.filter { it.id==tafel.opkomer?.id }.firstOrNull()
+//                        }
+//                        // fix slagWinnaar
+//                        if (tafel.slagWinnaar!=null){
+//                            tafel.slagWinnaar = spelData.alleSpelers.filter { it.id==tafel.slagWinnaar?.id }.firstOrNull()
+//                        }
+//                        // fix tafelWinnaar
+//                        if (tafel.tafelWinnaar!=null){
+//                            tafel.tafelWinnaar = spelData.alleSpelers.filter { it.id==tafel.tafelWinnaar?.id }.firstOrNull()
+//                        }
                     }
                 }
                 if (command == "SpeelKaartCommand") {

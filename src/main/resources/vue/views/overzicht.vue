@@ -21,24 +21,24 @@
                             <div style="z-index: 1; position: relative; height: 70px">
                                 <div style="z-index: 1; position: absolute; top: 20px; left: 0px;">
                                     <span>
-                                    <b v-if="isAanZet(speler, mytafel)" class="naamAanBeurt"><u>{{speler.naam}}</u></b>
-                                    <b v-if="!isAanZet(speler, mytafel)" class="naamNietBeurt">{{speler.naam}}</b>
-                                    <img src="/monkey.png" height="40px" v-if="isMonkey(speler)">
+                                    <b v-if="isAanZet(getSpeler(speler), mytafel)" class="naamAanBeurt"><u>{{getSpelerNaam(speler)}}</u></b>
+                                    <b v-if="!isAanZet(getSpeler(speler), mytafel)" class="naamNietBeurt">{{getSpelerNaam(speler)}}</b>
+                                    <img src="/monkey.png" height="40px" v-if="isMonkey(getSpeler(speler))">
                                     </span>
 
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;"
-                                     v-if="getoept(speler)">
+                                     v-if="getoept(getSpeler(speler))">
                                     <img src="/getoept.png" height="50px">
                                 </div>
                                 <div style="z-index: 2; position: absolute; top: 0px; left: 0px;"
-                                     v-if="gaatMee(speler)">
+                                     v-if="gaatMee(getSpeler(speler))">
                                     <img src="/gaatmee.png" height="50px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(speler)">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(getSpeler(speler))">
                                     <img src="/gepast.png" height="50px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(speler)">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(getSpeler(speler))">
                                     <img src="/af.png" height="50px">
                                 </div>
                             </div>
@@ -47,14 +47,14 @@
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="15px"
-                                 v-for="lucifer in numToArrayRij1(speler.totaalLucifers-speler.ingezetteLucifers)">
+                                 v-for="lucifer in numToArrayRij1(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="15px"
-                                 v-for="lucifer in numToArrayRij2(speler.totaalLucifers-speler.ingezetteLucifers)">
-                            {{overigeLucifers(speler.totaalLucifers-speler.ingezetteLucifers)}}
+                                 v-for="lucifer in numToArrayRij2(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)">
+                            {{overigeLucifers(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)}}
                         </td>
                     </tr>
                     <tr style="height: 10px">
@@ -62,13 +62,13 @@
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="30px"
-                                 v-for="lucifer in numToArray(speler.ingezetteLucifers)">
+                                 v-for="lucifer in numToArray(getSpeler(speler).ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr height="100px">
                         <td v-for="speler in mytafel.spelers">
-                            <div class="kaartenred">{{getRodeKaart(speler.gespeeldeKaart)}}</div>
-                            <div class="kaartenblack">{{getZwarteKaart(speler.gespeeldeKaart)}}</div>
+                            <div class="kaartenred">{{getRodeKaart(getSpeler(speler).gespeeldeKaart)}}</div>
+                            <div class="kaartenblack">{{getZwarteKaart(getSpeler(speler).gespeeldeKaart)}}</div>
                         </td>
                     </tr>
                 </table>
@@ -136,6 +136,19 @@
                     }, 1500);
                 }
             },
+            getSpeler: function (spelerId) {
+                var spelerCount = this.speldata.alleSpelers.length;
+                for (var i = 0; i < spelerCount; i++) {
+                    if (this.speldata.alleSpelers[i].id == spelerId) {
+                        return this.speldata.alleSpelers[i];
+                    }
+                }
+            },
+            getSpelerNaam: function (spelerId) {
+                var speler = this.getSpeler(spelerId)
+                if (speler==null) return "?"
+                return speler.naam
+            },
             getWaarde: function (kaart) {
                 if (kaart == null) return;
                 if (kaart.waarde == "7") return "B";
@@ -165,7 +178,7 @@
                 return symbool + this.getWaarde(kaart);
             },
             isAanZet: function (speler, mytafel) {
-                return mytafel.huidigeSpeler != null && (speler.naam == mytafel.huidigeSpeler.naam);
+                return mytafel.huidigeSpeler != null && (speler.id == mytafel.huidigeSpeler);
 
             },
             isMonkey: function (speler) {
@@ -182,18 +195,18 @@
                 return ""
             },
             getTafelStatus: function (mytafel) {
-                if (mytafel.tafelWinnaar != null && mytafel.tafelWinnaar.naam != null) {
-                    return "Tafel:"+mytafel.tafelNr+":Spel afgelopen, " + mytafel.tafelWinnaar.naam + " heeft gewonnen!";
+                if (mytafel.tafelWinnaar != null) {
+                    return "Tafel:"+mytafel.tafelNr+":Spel afgelopen, " + this.getSpelerNaam(mytafel.tafelWinnaar) + " heeft gewonnen!";
                 }
                 if (mytafel.gepauzeerd) {
                     return "Tafel:"+mytafel.tafelNr+":Spel is gepauzeerd!";
                 }
-                return "Tafel:"+mytafel.tafelNr+":"+mytafel.huidigeSpeler.naam + " is aan de beurt";
+                return "Tafel:"+mytafel.tafelNr+":"+this.getSpelerNaam(mytafel.huidigeSpeler) + " is aan de beurt";
             },
             getSpelWinnaar: function (mytafel) {
                 if (mytafel == null) return "-";
                 if (mytafel.tafelWinnaar == null) return "-";
-                return mytafel.tafelWinnaar.naam;
+                return this.getSpelerNaam(mytafel.tafelWinnaar);
             },
             numToArray: function (nr) {
                 var elements = [];

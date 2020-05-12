@@ -72,73 +72,11 @@
                     <button type="submit" v-on:click="nieuwspel(tafel.tafelNr, 999)">Tijdelijk spel</button>
                     <button type="submit" v-on:click="schopTafel(tafel.tafelNr)">Schop</button>
                     <button type="submit" v-on:click="dumpTafel(tafel.tafelNr)">Dump</button>
-                    gepauzeerd: {{tafel.gepauzeerd}}, winnaar: {{tafel.tafelWinnaar!=null?tafel.tafelWinnaar.naam:"-"}}
+                    gepauzeerd: {{tafel.gepauzeerd}}, winnaar: {{tafel.tafelWinnaar!=null?getSpelerNaam(tafel.tafelWinnaar):"-"}}
                 </div>
                 <hr>
             </div>
 
-            <div v-if="speldata">
-                <div v-for="tafel in speldata.tafels">
-                    <h2>Speeltafel {{tafel.tafelNr}}</h2>
-
-                    <table>
-                        <tr>
-                            <td>Gepauzeerd :</td>
-                            <td>{{tafel.gepauzeerd}}</td>
-                        </tr>
-                        <tr>
-                            <td>Huidige speler :</td>
-                            <td>{{tafel.huidigeSpeler!=null?tafel.huidigeSpeler.naam:"-"}}</td>
-                        </tr>
-                        <tr>
-                            <td>Opkomer :</td>
-                            <td>{{tafel.opkomer!=null?tafel.opkomer.naam:"-"}}</td>
-                        </tr>
-                        <tr>
-                            <td>Toeper :</td>
-                            <td>{{tafel.toeper!=null?tafel.toeper.naam:"-"}}</td>
-                        </tr>
-                        <tr>
-                            <td>Inzet :</td>
-                            <td>{{tafel.inzet}}</td>
-                        </tr>
-                        <tr>
-                            <td>SlagWinnaar :</td>
-                            <td>{{tafel.slagWinnaar!=null?tafel.slagWinnaar.naam:"-"}}</td>
-                        </tr>
-                        <tr>
-                            <td>TafelWinnaar :</td>
-                            <td>{{tafel.tafelWinnaar!=null?tafel.tafelWinnaar.naam:"-"}}</td>
-                        </tr>
-                    </table>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Speler</th>
-                            <th>totaalLucifers</th>
-                            <th>actiefInSpel</th>
-                            <th>ingezetteLucifers</th>
-                            <th>gepast</th>
-                            <th>toepKeuze</th>
-                            <th>gespeeldeKaart</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="speler in tafel.spelers">
-                            <td>{{speler.naam}}</td>
-                            <td>{{speler.totaalLucifers}}</td>
-                            <td>{{speler.actiefInSpel}}</td>
-                            <td>{{speler.ingezetteLucifers}}</td>
-                            <td>{{speler.gepast}}</td>
-                            <td>{{speler.toepKeuze}}</td>
-                            <td>{{speler.gespeeldeKaart}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <hr>
             <h2>Uitslagen</h2>
             <table v-if="speldata">
                 <tr v-for="uitslag in speldata.uitslagen">
@@ -201,7 +139,19 @@
                 axios.post(`/api/load`, null)
                     .then(res => this.checkresult(res))
             },
-            maakTafels: function (event) {
+            getSpeler: function (spelerId) {
+                var spelerCount = this.speldata.alleSpelers.length;
+                for (var i = 0; i < spelerCount; i++) {
+                    if (this.speldata.alleSpelers[i].id == spelerId) {
+                        return this.speldata.alleSpelers[i];
+                    }
+                }
+            },
+            getSpelerNaam: function (spelerId) {
+                var speler = this.getSpeler(spelerId)
+                if (speler==null) return "?"
+                return speler.naam
+            },            maakTafels: function (event) {
                 axios.post(`/api/maaktafels/` + this.aantalTafels + `/` + this.aantalStartLucifers, null)
                     .then(res => this.checkresult(res))
             },

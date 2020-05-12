@@ -44,16 +44,25 @@ data class Speler(
 data class Tafel(
         val tafelNr: Int,
         var log: MutableList<String> = emptyList<String>().toMutableList(),
-        var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
-        var spelersDieAfZijn: MutableList<Speler> = emptyList<Speler>().toMutableList(),
-        var opkomer: Speler? = null,
-        var huidigeSpeler: Speler? = null,
-        var toeper: Speler? = null,
+        var spelers: MutableList<String> = emptyList<String>().toMutableList(),
+        var spelersDieAfZijn: MutableList<String> = emptyList<String>().toMutableList(),
+        var opkomer: String? = null,
+        var huidigeSpeler: String? = null,
+        var toeper: String? = null,
         var inzet: Int = 0,
-        var slagWinnaar: Speler? = null,
-        var tafelWinnaar:Speler? = null,
+        var slagWinnaar: String? = null,
+        var tafelWinnaar:String? = null,
         var gepauzeerd: Boolean = SpelContext.spelData.nieuweTafelAutoPause==true
-)
+){
+    fun findSpelers() = spelers.map {SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+    fun findSpelersDieAfZijn() = spelersDieAfZijn.map {SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+    fun findOpkomer() = opkomer?.let{SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+    fun findHuidigeSpeler() = huidigeSpeler?.let{SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+    fun findToeper() = toeper?.let{SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+    fun findSlagWinnaar() = slagWinnaar?.let{SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+    fun findTafelWinnaar() = tafelWinnaar?.let{SpelContext.spelData.alleSpelers.first{sp->sp.id.equals(it)}}
+
+}
 
 data class Kaart(
         val symbool:KaartSymbool,

@@ -12,7 +12,7 @@ object Administrator {
         val spelData = objectMapper.readValue<SpelData>(json, SpelData::class.java)
         // replace alle spelers uit de tafels naar de speldata.spelers
         spelData.tafels.forEach{
-            tafel:Tafel -> tafel.spelers.forEach {speler:Speler->
+            tafel:Tafel -> tafel.findSpelers().forEach {speler:Speler->
               val spelerUitSpel = spelData.alleSpelers.filter { it.id==speler.id }.firstOrNull()
               if (spelerUitSpel!=null){
                   val index = spelData.alleSpelers.indexOf(spelerUitSpel)
@@ -21,23 +21,23 @@ object Administrator {
             }
             // fix huidige speler
             if (tafel.huidigeSpeler!=null){
-                tafel.huidigeSpeler = spelData.alleSpelers.filter { it.id==tafel.huidigeSpeler?.id }.firstOrNull()
+                tafel.huidigeSpeler = spelData.alleSpelers.filter { it.id==tafel.findHuidigeSpeler()?.id }.map{it.id}.firstOrNull()
             }
             // fix toeper
             if (tafel.toeper!=null){
-                tafel.toeper = spelData.alleSpelers.filter { it.id==tafel.toeper?.id }.firstOrNull()
+                tafel.toeper = spelData.alleSpelers.filter { it.id==tafel.findToeper()?.id }.map{it.id}.firstOrNull()
             }
             // fix opkomer
             if (tafel.opkomer!=null){
-                tafel.opkomer = spelData.alleSpelers.filter { it.id==tafel.opkomer?.id }.firstOrNull()
+                tafel.opkomer = spelData.alleSpelers.filter { it.id==tafel.findOpkomer()?.id }.map{it.id}.firstOrNull()
             }
             // fix slagWinnaar
             if (tafel.slagWinnaar!=null){
-                tafel.slagWinnaar = spelData.alleSpelers.filter { it.id==tafel.slagWinnaar?.id }.firstOrNull()
+                tafel.slagWinnaar = spelData.alleSpelers.filter { it.id==tafel.findSlagWinnaar()?.id }.map{it.id}.firstOrNull()
             }
             // fix tafelWinnaar
             if (tafel.tafelWinnaar!=null){
-                tafel.tafelWinnaar = spelData.alleSpelers.filter { it.id==tafel.tafelWinnaar?.id }.firstOrNull()
+                tafel.tafelWinnaar = spelData.alleSpelers.filter { it.id==tafel.findTafelWinnaar()?.id }.map{it.id}.firstOrNull()
             }
         }
 
@@ -60,7 +60,7 @@ object Administrator {
         while (spelersDieMeedoen.isNotEmpty()){
             tafels.forEach{
                 if (spelersDieMeedoen.isNotEmpty()){
-                    it.spelers.add(spelersDieMeedoen.removeAt(0))
+                    it.spelers.add(spelersDieMeedoen.removeAt(0).id)
                 }
             }
         }
