@@ -21,21 +21,21 @@
                             <div style="z-index: 1; position: relative; height: 70px">
                                 <div style="z-index: 1; position: absolute; top: 20px; left: 0px;">
                                     <span>
-                                    <b v-bind:class="getClass(getSpeler(speler))"><u>{{getSpeler(speler).naam}}</u></b>
-                                    <img src="/monkey.png" height="50px" v-if="isMonkey(getSpeler(speler))">
+                                    <b v-bind:class="getClass(speler)"><u>{{speler.naam}}</u></b>
+                                    <img src="/monkey.png" height="50px" v-if="isMonkey(speler)">
                                     </span>
 
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="getoept(getSpeler(speler))">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="getoept(speler)">
                                     <img src="/getoept.png" height="60px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gaatMee(getSpeler(speler))">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gaatMee(speler)">
                                     <img src="/gaatmee.png" height="60px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(getSpeler(speler))">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="gepast(speler)">
                                     <img src="/gepast.png" height="60px">
                                 </div>
-                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(getSpeler(speler))">
+                                <div style="z-index: 2; position: absolute; top: 0px; left: 0px;" v-if="isAf(speler)">
                                     <img src="/af.png" height="60px">
                                 </div>
                             </div>
@@ -43,13 +43,13 @@
                     </tr>
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
-                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij1(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)">
+                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij1(speler.totaalLucifers-speler.ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
-                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij2(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)">
-                           {{overigeLucifers(getSpeler(speler).totaalLucifers-getSpeler(speler).ingezetteLucifers)}}
+                            <img src="/fiche.png" height="15px" v-for="lucifer in numToArrayRij2(speler.totaalLucifers-speler.ingezetteLucifers)">
+                           {{overigeLucifers(speler.totaalLucifers-speler.ingezetteLucifers)}}
                         </td>
                     </tr>
                     <tr style="height: 10px">
@@ -57,13 +57,13 @@
                     <tr style="height: 20px">
                         <td v-for="speler in mytafel.spelers">
                             <img src="/fiche.png" height="30px"
-                                 v-for="lucifer in numToArray(getSpeler(speler).ingezetteLucifers)">
+                                 v-for="lucifer in numToArray(speler.ingezetteLucifers)">
                         </td>
                     </tr>
                     <tr height="100px">
                         <td v-for="speler in mytafel.spelers">
-                            <div class="kaartenred">{{getRodeKaart(getSpeler(speler).gespeeldeKaart)}}</div>
-                            <div class="kaartenblack">{{getZwarteKaart(getSpeler(speler).gespeeldeKaart)}}</div>
+                            <div class="kaartenred">{{getRodeKaart(speler.gespeeldeKaart)}}</div>
+                            <div class="kaartenblack">{{getZwarteKaart(speler.gespeeldeKaart)}}</div>
                         </td>
                     </tr>
                 </table>
@@ -165,23 +165,15 @@
                 this.myspeler = null;
                 this.mytafel = null;
 
-                var spelerCount = this.speldata.alleSpelers.length;
-                for (var i = 0; i < spelerCount; i++) {
-                    speler = this.speldata.alleSpelers[i];
-                    if (speler.id == this.id) {
-                        this.myspeler = speler;
-                    }
-
-                }
-
                 var tafelCount = this.speldata.tafels.length;
                 for (var i = 0; i < tafelCount; i++) {
                     tafel = this.speldata.tafels[i];
                     var spelerCount = tafel.spelers.length;
                     for (var j = 0; j < spelerCount; j++) {
                         speler = tafel.spelers[j];
-                        if (speler == this.id) {
+                        if (speler.id == this.id) {
                             this.mytafel = tafel;
+                            this.myspeler = speler;
                         }
                     }
                 }

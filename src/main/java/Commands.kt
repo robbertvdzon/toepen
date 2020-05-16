@@ -10,36 +10,41 @@ abstract class Command{
 
 class SpeelKaartCommand(val spelerId:String,val kaart:Kaart): Command(){
     override fun process():CommandResult {
-        val speler = SpelContext.spelData.alleSpelers.firstOrNull{it.id == spelerId}
-        return SpelerService.speelKaart(speler!!, kaart)
+        val speler = SpelContext.findSpeler(spelerId)
+        if (speler==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
+        return SpelerService.speelKaart(speler, kaart)
     }
 }
 
 class PakSlagCommand(val spelerId:String): Command(){
     override fun process():CommandResult {
-        val speler = SpelContext.spelData.alleSpelers.firstOrNull{it.id == spelerId}
-        return SpelerService.pakSlag(speler!!)
+        val speler = SpelContext.findSpeler(spelerId)
+        if (speler==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
+        return SpelerService.pakSlag(speler)
     }
 }
 
 class ToepCommand(val spelerId:String): Command(){
     override fun process():CommandResult {
-        val speler = SpelContext.spelData.alleSpelers.firstOrNull{it.id == spelerId}
-        return SpelerService.toep(speler!!)
+        val speler = SpelContext.findSpeler(spelerId)
+        if (speler==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
+        return SpelerService.toep(speler)
     }
 }
 
 class GaMeeMetToepCommand(val spelerId:String): Command(){
     override fun process():CommandResult {
-        val speler = SpelContext.spelData.alleSpelers.firstOrNull{it.id == spelerId}
-        return SpelerService.gaMeeMetToep(speler!!)
+        val speler = SpelContext.findSpeler(spelerId)
+        if (speler==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
+        return SpelerService.gaMeeMetToep(speler)
     }
 }
 
 class PasCommand(val spelerId:String): Command(){
     override fun process():CommandResult {
-        val speler = SpelContext.spelData.alleSpelers.firstOrNull{it.id == spelerId}
-        return SpelerService.pas(speler!!)
+        val speler = SpelContext.findSpeler(spelerId)
+        if (speler==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
+        return SpelerService.pas(speler)
     }
 }
 
@@ -55,7 +60,7 @@ class MaakNieuweTafelsCommand(val aantal:Int, val startscore:Int): Command(){
     override fun process():CommandResult = Administrator.maakNieuweTafels(aantal, startscore)
 }
 
-class UpdateGebruikersCommand(val gebruikers:List<Speler>): Command(){
+class UpdateGebruikersCommand(val gebruikers:List<Gebruiker>): Command(){
     override fun process():CommandResult = Administrator.updateGebruikers(gebruikers)
 }
 

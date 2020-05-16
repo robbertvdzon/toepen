@@ -28,7 +28,7 @@ object SpelerService {
     }
 
     fun speelKaart(speler:Speler, kaart:Kaart):CommandResult{
-        val tafel = SpelContext.spelData.tafels.find { it.findSpelers().contains(speler) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED,"De tafel is gepauzeerd")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
@@ -53,7 +53,7 @@ object SpelerService {
     }
 
     fun pakSlag(speler:Speler):CommandResult{
-        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler.id) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id }}
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED,"De tafel is gepauzeerd")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
@@ -64,7 +64,7 @@ object SpelerService {
     }
 
     fun toep(speler:Speler):CommandResult{
-        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler.id) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id }}
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED,"De tafel is gepauzeerd")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
@@ -80,7 +80,7 @@ object SpelerService {
     }
 
     fun gaMeeMetToep(speler:Speler):CommandResult{
-        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler.id) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id }}
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED,"De tafel is gepauzeerd")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")
@@ -96,7 +96,7 @@ object SpelerService {
     }
 
     fun pas(speler:Speler):CommandResult{
-        val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler.id) }
+        val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id }}
         if (tafel==null) return CommandResult(CommandStatus.FAILED,"Je zit niet aan een tafel")
         if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED,"De tafel is gepauzeerd")
         if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED,"Je bent af")

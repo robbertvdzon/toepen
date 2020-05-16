@@ -25,26 +25,26 @@ object Toepen {
         }
         catch (e:Exception){
             val spelers = listOf(
-                    maakInitieleSpeler("27331","Robbert"),
-                    maakInitieleSpeler("80785","Bol"),
-                    maakInitieleSpeler("35113","Bob"),
-                    maakInitieleSpeler("21682","Dimi"),
-                    maakInitieleSpeler("18158","Ferry"),
-                    maakInitieleSpeler("23912","JeroenA"),
-                    maakInitieleSpeler("58137","Goof"),
-                    maakInitieleSpeler("71976","JGwoud"),
-                    maakInitieleSpeler("50601","Berg"),
-                    maakInitieleSpeler("92718","Joost"),
-                    maakInitieleSpeler("87079","Schaap"),
-                    maakInitieleSpeler("85365","Marco"),
-                    maakInitieleSpeler("12505","Martin"),
-                    maakInitieleSpeler("97570","Mike"),
-                    maakInitieleSpeler("72780","Niels"),
-                    maakInitieleSpeler("14174","Peter"),
-                    maakInitieleSpeler("78867","Erik"),
-                    maakInitieleSpeler("175867","SpelerX"),
-                    maakInitieleSpeler("288567","SpelerY"),
-                    maakInitieleSpeler("488367","SpelerZ")
+                    maakInitieleGebruiker("27331","Robbert"),
+                    maakInitieleGebruiker("80785","Bol"),
+                    maakInitieleGebruiker("35113","Bob"),
+                    maakInitieleGebruiker("21682","Dimi"),
+                    maakInitieleGebruiker("18158","Ferry"),
+                    maakInitieleGebruiker("23912","JeroenA"),
+                    maakInitieleGebruiker("58137","Goof"),
+                    maakInitieleGebruiker("71976","JGwoud"),
+                    maakInitieleGebruiker("50601","Berg"),
+                    maakInitieleGebruiker("92718","Joost"),
+                    maakInitieleGebruiker("87079","Schaap"),
+                    maakInitieleGebruiker("85365","Marco"),
+                    maakInitieleGebruiker("12505","Martin"),
+                    maakInitieleGebruiker("97570","Mike"),
+                    maakInitieleGebruiker("72780","Niels"),
+                    maakInitieleGebruiker("14174","Peter"),
+                    maakInitieleGebruiker("78867","Erik"),
+                    maakInitieleGebruiker("175867","SpelerX"),
+                    maakInitieleGebruiker("288567","SpelerY"),
+                    maakInitieleGebruiker("488367","SpelerZ")
             )
             val command = UpdateGebruikersCommand(spelers)
             val res = CommandQueue.addNewCommand(command)
@@ -283,13 +283,13 @@ object Toepen {
         ctx.result(CommandQueue.getLastSpeldataJson())
         }
 
-    fun maakInitieleSpeler(id: String, naam:String): Speler {
-        val speler = Speler()
-        speler.id = id
-        speler.naam = naam
-        speler.isMonkey = true
-        speler.wilMeedoen = true
-        return speler
+    fun maakInitieleGebruiker(id: String, naam:String): Gebruiker {
+        val gebruiker = Gebruiker()
+        gebruiker.id = id
+        gebruiker.naam = naam
+        gebruiker.isMonkey = true
+        gebruiker.wilMeedoen = true
+        return gebruiker
     }
 
 

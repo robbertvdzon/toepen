@@ -26,14 +26,14 @@ class ReplayTest {
                     val spelData = objectMapper.readValue(json, SpelData::class.java)
                     SpelContext.spelData = spelData
                     // replace alle spelers uit de tafels naar de speldata.spelers
-                    spelData.tafels.forEach{
-                        tafel:Tafel -> tafel.findSpelers().forEach {speler:Speler->
-                        val spelerUitSpel = spelData.alleSpelers.filter { it.id==speler.id }.firstOrNull()
-                        if (spelerUitSpel!=null){
-                            val index = spelData.alleSpelers.indexOf(spelerUitSpel)
-                            spelData.alleSpelers.set(index, speler)
-                        }
-                    }
+//                    spelData.tafels.forEach{
+//                        tafel:Tafel -> tafel.findSpelers().forEach {speler:Speler->
+//                        val spelerUitSpel = spelData.alleSpelers.filter { it.id==speler.id }.firstOrNull()
+//                        if (spelerUitSpel!=null){
+//                            val index = spelData.alleSpelers.indexOf(spelerUitSpel)
+//                            spelData.alleSpelers.set(index, speler)
+//                        }
+//                    }
 //
 //                        // fix huidige speler
 //                        if (tafel.huidigeSpeler!=null){
@@ -55,7 +55,7 @@ class ReplayTest {
 //                        if (tafel.tafelWinnaar!=null){
 //                            tafel.tafelWinnaar = spelData.alleSpelers.filter { it.id==tafel.tafelWinnaar?.id }.firstOrNull()
 //                        }
-                    }
+//                    }
                 }
                 if (command == "SpeelKaartCommand") {
                     val command = objectMapper.readValue(json, SpeelKaartCommand::class.java)
