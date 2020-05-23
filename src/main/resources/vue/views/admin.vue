@@ -151,7 +151,8 @@
                 var speler = this.getSpeler(spelerId)
                 if (speler==null) return "?"
                 return speler.naam
-            },            maakTafels: function (event) {
+            },
+            maakTafels: function (event) {
                 axios.post(`/api/maaktafels/` + this.aantalTafels + `/` + this.aantalStartLucifers, null)
                     .then(res => this.checkresult(res))
             },

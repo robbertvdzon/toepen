@@ -1,17 +1,17 @@
 
 object SpelerService {
-    fun nieuwSpel(speler:Speler, startscore:Int){
-        speler.actiefInSpel = true
-        speler.kaarten = emptyList<Kaart>().toMutableList()
-        speler.gespeeldeKaart = null
-        speler.totaalLucifers = startscore
-        speler.ingezetteLucifers = 0
-        speler.scoreDezeRonde = 0
-        speler.gepast = false
-        speler.toepKeuze = Toepkeuze.GEEN_KEUZE
+    fun nieuwSpel(speler:Speler, startscore:Int) = speler.apply {
+        actiefInSpel = true
+        kaarten = mutableListOf()
+        gespeeldeKaart = null
+        totaalLucifers = startscore
+        ingezetteLucifers = 0
+        scoreDezeRonde = 0
+        gepast = false
+        toepKeuze = Toepkeuze.GEEN_KEUZE
     }
 
-    fun nieuweRonde(speler:Speler, kaarten: List<Kaart>){
+    fun nieuweRonde(speler: Speler, kaarten: List<Kaart>){
         speler.gespeeldeKaart = null
         speler.gepast = false
         speler.toepKeuze = Toepkeuze.GEEN_KEUZE

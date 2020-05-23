@@ -32,7 +32,7 @@ data class SpelData(
 }
 
 data class Speler(
-        var id: String = "",
+        val id: String = "",
         var naam: String = "",
         var kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList(),
         var gespeeldeKaart: Kaart? = null,
@@ -62,7 +62,7 @@ data class Tafel(
         val tafelNr: Int,
         var log: MutableList<String> = emptyList<String>().toMutableList(),
         var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
-        var spelersDieAfZijn: MutableList<String> = emptyList<String>().toMutableList(),
+        var spelersDieAfZijn: MutableList<String> = mutableListOf(),
         var opkomer: String? = null,
         var huidigeSpeler: String? = null,
         var toeper: String? = null,
