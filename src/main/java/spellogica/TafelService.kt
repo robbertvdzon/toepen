@@ -105,7 +105,7 @@ object TafelService {
             tafel.slagWinnaar = null
             tafel.toeper = null
             tafel.spelers.filter { it.actiefInSpel }.forEach {
-                ToepSpel.nieuweSlag(it)
+                SpelerService.nieuweSlag(it)
             }
         }
     }
@@ -176,7 +176,7 @@ object TafelService {
         val kaarten = Util.getGeschutKaartenDeck()
         tafel.spelers.forEach { speler: Speler ->
             val handKaarten = (1..4).map { kaarten.removeAt(0) }
-            ToepSpel.nieuweRonde(speler, handKaarten)
+            SpelerService.nieuweRonde(speler, handKaarten)
         }
         tafel.inzet = 1
     }
@@ -186,7 +186,7 @@ object TafelService {
         tafel.opkomer = tafel.spelers.firstOrNull()?.id
         tafel.tafelWinnaar = null
         tafel.slagWinnaar = null
-        tafel.spelers.forEach { ToepSpel.nieuwSpel(it, startscore) }
+        tafel.spelers.forEach { SpelerService.nieuwSpel(it, startscore) }
         tafel.spelersDieAfZijn = emptyList<String>().toMutableList()
         nieuweRonde(tafel)
         logNieuwSpel(tafel)
