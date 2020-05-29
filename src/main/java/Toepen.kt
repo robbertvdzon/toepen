@@ -1,4 +1,4 @@
-import model.WINNAAR_TYPE.*
+import model.WinnaarType.*
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.plugin.rendering.vue.VueComponent
