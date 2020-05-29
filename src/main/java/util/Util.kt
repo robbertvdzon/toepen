@@ -2,18 +2,25 @@ package util
 
 import io.vavr.control.Either
 import kotlinx.coroutines.runBlocking
+import model.Gebruiker
 import model.Kaart
 import model.KaartSymbool
 import kotlin.random.Random
 
 object Util {
   private var random: Random = Random(0)
+  private var kaartenDeckRandom: Random = Random(0)
 
   fun getGeschutKaartenDeck(): MutableList<Kaart> {
     val kaarten: MutableList<Kaart> = getKaartenDeck().toMutableList()
-    kaarten.shuffle()
+    kaarten.shuffle(kaartenDeckRandom)
     return kaarten
   }
+
+  fun shuffleSpelers(spelersDieMeedoen: MutableList<Gebruiker>) {
+    spelersDieMeedoen.shuffle(kaartenDeckRandom)
+  }
+
 
   fun getKaartenDeck(): List<Kaart> =
     (7..14).flatMap {

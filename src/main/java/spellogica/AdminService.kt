@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.*
 import spelprocessor.CommandQueue
+import util.Util
 import java.io.File
 
 object AdminService {
@@ -26,7 +27,7 @@ object AdminService {
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int): CommandResult {
     val spelData = SpelContext.spelData
     val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
-    spelersDieMeedoen.shuffle()
+    Util.shuffleSpelers(spelersDieMeedoen)
     val tafels = (1..aantalTafels).map { Tafel(it) }
     while (spelersDieMeedoen.isNotEmpty()) {
       tafels.forEach {
