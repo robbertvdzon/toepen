@@ -8,7 +8,7 @@ import io.javalin.websocket.WsHandler
 import io.javalin.websocket.WsMessageContext
 import model.*
 import org.slf4j.LoggerFactory
-import spellogica.Administrator
+import spellogica.AdminService
 import spelprocessor.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -24,7 +24,7 @@ object Toepen {
     fun main(args: Array<String>) {
         CommandQueue.processCommands()
         try {
-            Administrator.loadData()
+            AdminService.loadData()
         }
         catch (e:Exception){
             val spelers = listOf(

@@ -1,6 +1,6 @@
 package spelprocessor
 
-import spellogica.Administrator
+import spellogica.AdminService
 import model.CommandResult
 import model.CommandStatus
 import model.Gebruiker
@@ -59,57 +59,57 @@ class PasCommand(val spelerId:String): Command(){
 }
 
 class LoadDataCommand(): Command(){
-    override fun process(): CommandResult = Administrator.loadData()
+    override fun process(): CommandResult = AdminService.loadData()
 }
 
 class SaveDataCommand(): Command(){
-    override fun process(): CommandResult = Administrator.saveData()
+    override fun process(): CommandResult = AdminService.saveData()
 }
 
 class MaakNieuweTafelsCommand(val aantal:Int, val startscore:Int): Command(){
-    override fun process(): CommandResult = Administrator.maakNieuweTafels(aantal, startscore)
+    override fun process(): CommandResult = AdminService.maakNieuweTafels(aantal, startscore)
 }
 
 class UpdateGebruikersCommand(val gebruikers:List<Gebruiker>): Command(){
-    override fun process(): CommandResult = Administrator.updateGebruikers(gebruikers)
+    override fun process(): CommandResult = AdminService.updateGebruikers(gebruikers)
 }
 
 class ClearLog(): Command(){
-    override fun process(): CommandResult = Administrator.clearLog()
+    override fun process(): CommandResult = AdminService.clearLog()
 }
 
 class ResetScore(): Command(){
-    override fun process(): CommandResult = Administrator.resetScore()
+    override fun process(): CommandResult = AdminService.resetScore()
 }
 class AllesPauzeren(): Command(){
-    override fun process(): CommandResult = Administrator.allesPauzeren()
+    override fun process(): CommandResult = AdminService.allesPauzeren()
 }
 class AllesStarten(): Command(){
-    override fun process(): CommandResult = Administrator.allesStarten()
+    override fun process(): CommandResult = AdminService.allesStarten()
 }
 class NieuwSpel(val startscore:Int, val tafelNr:Int?): Command(){
     override fun process(): CommandResult {
         val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return Administrator.nieuwSpel(startscore, tafel)
+        return AdminService.nieuwSpel(startscore, tafel)
 
     }
 }
 class SchopTafel(val tafelNr:Int): Command(){
     override fun process(): CommandResult {
         val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return Administrator.schopTafel(tafel)
+        return AdminService.schopTafel(tafel)
     }
 }
 class PauzeerTafel(val tafelNr:Int): Command(){
     override fun process(): CommandResult {
         val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return Administrator.pauzeerTafel(tafel)
+        return AdminService.pauzeerTafel(tafel)
     }
 }
 class StartTafel(val tafelNr:Int): Command(){
     override fun process(): CommandResult {
         val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return Administrator.startTafel(tafel)
+        return AdminService.startTafel(tafel)
     }
 }
 class SetRandomSeed(val seed:Long): Command(){

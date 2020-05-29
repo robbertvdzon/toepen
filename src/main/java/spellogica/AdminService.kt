@@ -6,7 +6,7 @@ import model.*
 import spelprocessor.CommandQueue
 import java.io.File
 
-object Administrator {
+object AdminService {
     val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     fun loadData(): CommandResult {
