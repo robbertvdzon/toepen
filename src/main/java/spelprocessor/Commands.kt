@@ -6,7 +6,7 @@ import model.CommandStatus
 import model.Gebruiker
 import model.Kaart
 import model.SpelContext
-import util.ToepRandom
+import util.Util
 import com.fasterxml.jackson.annotation.JsonIgnore
 import spellogica.ToepSpel
 
@@ -114,7 +114,7 @@ class StartTafel(val tafelNr:Int): Command(){
 }
 class SetRandomSeed(val seed:Long): Command(){
     override fun process(): CommandResult {
-        ToepRandom.setSeed(seed)
+        Util.setSeed(seed)
         return CommandResult(CommandStatus.SUCCEDED, "")
     }
 }

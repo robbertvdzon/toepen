@@ -2,8 +2,10 @@ package util
 
 import model.Kaart
 import model.KaartSymbool
+import kotlin.random.Random
 
 object Util {
+    private var random: Random = Random(0)
 
     fun getGeschutKaartenDeck(): MutableList<Kaart> {
         val kaarten: MutableList<Kaart> = getKaartenDeck().toMutableList()
@@ -20,6 +22,13 @@ object Util {
                         Kaart(KaartSymbool.KLAVER, it)
                 )
             }
+
+
+    fun setSeed(seed:Long){
+        random = Random(seed)
+    }
+
+    fun nextInt(min:Int, max:Int) = (min..max).random(random)
 
 }
 

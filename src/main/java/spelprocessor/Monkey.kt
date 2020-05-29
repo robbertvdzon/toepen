@@ -5,7 +5,7 @@ import model.SpelContext
 import model.SpelData
 import model.Speler
 import model.Tafel
-import util.ToepRandom
+import util.Util
 import Toepen
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -86,15 +86,15 @@ object Monkey {
                 }
 
             }
-            if (ToepRandom.nextInt(0, 100) == 0) {
+            if (Util.nextInt(0, 100) == 0) {
                 val res = CommandQueue.addNewCommand(ToepCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Toep : model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if (ToepRandom.nextInt(0, 1) == 0) {
-                val kaart = speler.kaarten?.getOrNull(ToepRandom.nextInt(0, 3))
+            if (Util.nextInt(0, 1) == 0) {
+                val kaart = speler.kaarten?.getOrNull(Util.nextInt(0, 3))
                 if (kaart != null) {
                     val res = CommandQueue.addNewCommand(SpeelKaartCommand(speler.id, kaart))
                     if (res.status == CommandStatus.SUCCEDED) {
@@ -103,14 +103,14 @@ object Monkey {
                     }
                 }
             }
-            if (ToepRandom.nextInt(0, 1) == 0) {
+            if (Util.nextInt(0, 1) == 0) {
                 val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Ga mee: model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if (ToepRandom.nextInt(0, 1) == 0) {
+            if (Util.nextInt(0, 1) == 0) {
                 val res = CommandQueue.addNewCommand(PasCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
 //                    println("Pas: model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
