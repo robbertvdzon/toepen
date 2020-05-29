@@ -1,6 +1,6 @@
 package model
 
 enum class CommandStatus {
-    SUCCEDED,
-    FAILED
+  SUCCEDED,
+  FAILED
 }

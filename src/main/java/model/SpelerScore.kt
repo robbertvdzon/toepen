@@ -1,6 +1,6 @@
 package model
 
 data class SpelerScore(
-        val naam: String,
-        val score: Int
+  val naam: String,
+  val score: Int
 )

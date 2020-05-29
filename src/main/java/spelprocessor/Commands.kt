@@ -1,122 +1,126 @@
 package spelprocessor
 
-import spellogica.AdminService
-import model.CommandResult
-import model.CommandStatus
-import model.Gebruiker
-import model.Kaart
-import model.SpelContext
-import util.Util
 import com.fasterxml.jackson.annotation.JsonIgnore
+import model.*
+import spellogica.AdminService
 import spellogica.ToepSpel
+import util.Util
 
-abstract class Command{
-    @JsonIgnore
-    val lock = Object()
-    @JsonIgnore
-    var result: CommandResult? = null
-    abstract fun process(): CommandResult
-}
+abstract class Command {
+  @JsonIgnore
+  val lock = Object()
 
-class SpeelKaartCommand(val spelerId:String,val kaart: Kaart): Command(){
-    override fun process(): CommandResult {
-        val speler = SpelContext.findSpeler(spelerId)
-        if (speler==null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-        return ToepSpel.speelKaart(speler, kaart)
-    }
+  @JsonIgnore
+  var result: CommandResult? = null
+  abstract fun process(): CommandResult
 }
 
-class PakSlagCommand(val spelerId:String): Command(){
-    override fun process(): CommandResult {
-        val speler = SpelContext.findSpeler(spelerId)
-        if (speler==null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-        return ToepSpel.pakSlag(speler)
-    }
+class SpeelKaartCommand(val spelerId: String, val kaart: Kaart) : Command() {
+  override fun process(): CommandResult {
+    val speler = SpelContext.findSpeler(spelerId)
+    if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
+    return ToepSpel.speelKaart(speler, kaart)
+  }
 }
 
-class ToepCommand(val spelerId:String): Command(){
-    override fun process(): CommandResult {
-        val speler = SpelContext.findSpeler(spelerId)
-        if (speler==null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-        return ToepSpel.toep(speler)
-    }
+class PakSlagCommand(val spelerId: String) : Command() {
+  override fun process(): CommandResult {
+    val speler = SpelContext.findSpeler(spelerId)
+    if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
+    return ToepSpel.pakSlag(speler)
+  }
 }
 
-class GaMeeMetToepCommand(val spelerId:String): Command(){
-    override fun process(): CommandResult {
-        val speler = SpelContext.findSpeler(spelerId)
-        if (speler==null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-        return ToepSpel.gaMeeMetToep(speler)
-    }
+class ToepCommand(val spelerId: String) : Command() {
+  override fun process(): CommandResult {
+    val speler = SpelContext.findSpeler(spelerId)
+    if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
+    return ToepSpel.toep(speler)
+  }
 }
 
-class PasCommand(val spelerId:String): Command(){
-    override fun process(): CommandResult {
-        val speler = SpelContext.findSpeler(spelerId)
-        if (speler==null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-        return ToepSpel.pas(speler)
-    }
+class GaMeeMetToepCommand(val spelerId: String) : Command() {
+  override fun process(): CommandResult {
+    val speler = SpelContext.findSpeler(spelerId)
+    if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
+    return ToepSpel.gaMeeMetToep(speler)
+  }
 }
 
-class LoadDataCommand(): Command(){
-    override fun process(): CommandResult = AdminService.loadData()
+class PasCommand(val spelerId: String) : Command() {
+  override fun process(): CommandResult {
+    val speler = SpelContext.findSpeler(spelerId)
+    if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
+    return ToepSpel.pas(speler)
+  }
 }
 
-class SaveDataCommand(): Command(){
-    override fun process(): CommandResult = AdminService.saveData()
+class LoadDataCommand() : Command() {
+  override fun process(): CommandResult = AdminService.loadData()
 }
 
-class MaakNieuweTafelsCommand(val aantal:Int, val startscore:Int): Command(){
-    override fun process(): CommandResult = AdminService.maakNieuweTafels(aantal, startscore)
+class SaveDataCommand() : Command() {
+  override fun process(): CommandResult = AdminService.saveData()
 }
 
-class UpdateGebruikersCommand(val gebruikers:List<Gebruiker>): Command(){
-    override fun process(): CommandResult = AdminService.updateGebruikers(gebruikers)
+class MaakNieuweTafelsCommand(val aantal: Int, val startscore: Int) : Command() {
+  override fun process(): CommandResult = AdminService.maakNieuweTafels(aantal, startscore)
 }
 
-class ClearLog(): Command(){
-    override fun process(): CommandResult = AdminService.clearLog()
+class UpdateGebruikersCommand(val gebruikers: List<Gebruiker>) : Command() {
+  override fun process(): CommandResult = AdminService.updateGebruikers(gebruikers)
 }
 
-class ResetScore(): Command(){
-    override fun process(): CommandResult = AdminService.resetScore()
+class ClearLog() : Command() {
+  override fun process(): CommandResult = AdminService.clearLog()
 }
-class AllesPauzeren(): Command(){
-    override fun process(): CommandResult = AdminService.allesPauzeren()
-}
-class AllesStarten(): Command(){
-    override fun process(): CommandResult = AdminService.allesStarten()
-}
-class NieuwSpel(val startscore:Int, val tafelNr:Int?): Command(){
-    override fun process(): CommandResult {
-        val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return AdminService.nieuwSpel(startscore, tafel)
 
-    }
+class ResetScore() : Command() {
+  override fun process(): CommandResult = AdminService.resetScore()
 }
-class SchopTafel(val tafelNr:Int): Command(){
-    override fun process(): CommandResult {
-        val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return AdminService.schopTafel(tafel)
-    }
+
+class AllesPauzeren() : Command() {
+  override fun process(): CommandResult = AdminService.allesPauzeren()
 }
-class PauzeerTafel(val tafelNr:Int): Command(){
-    override fun process(): CommandResult {
-        val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return AdminService.pauzeerTafel(tafel)
-    }
+
+class AllesStarten() : Command() {
+  override fun process(): CommandResult = AdminService.allesStarten()
 }
-class StartTafel(val tafelNr:Int): Command(){
-    override fun process(): CommandResult {
-        val tafel = SpelContext.spelData.tafels.firstOrNull{it.tafelNr==tafelNr}
-        return AdminService.startTafel(tafel)
-    }
+
+class NieuwSpel(val startscore: Int, val tafelNr: Int?) : Command() {
+  override fun process(): CommandResult {
+    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    return AdminService.nieuwSpel(startscore, tafel)
+
+  }
 }
-class SetRandomSeed(val seed:Long): Command(){
-    override fun process(): CommandResult {
-        Util.setSeed(seed)
-        return CommandResult(CommandStatus.SUCCEDED, "")
-    }
+
+class SchopTafel(val tafelNr: Int) : Command() {
+  override fun process(): CommandResult {
+    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    return AdminService.schopTafel(tafel)
+  }
+}
+
+class PauzeerTafel(val tafelNr: Int) : Command() {
+  override fun process(): CommandResult {
+    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    return AdminService.pauzeerTafel(tafel)
+  }
+}
+
+class StartTafel(val tafelNr: Int) : Command() {
+  override fun process(): CommandResult {
+    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    return AdminService.startTafel(tafel)
+  }
+}
+
+class SetRandomSeed(val seed: Long) : Command() {
+  override fun process(): CommandResult {
+    Util.setSeed(seed)
+    return CommandResult(CommandStatus.SUCCEDED, "")
+  }
 }
 
 

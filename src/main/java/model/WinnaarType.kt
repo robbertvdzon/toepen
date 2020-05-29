@@ -1,5 +1,5 @@
 package model
 
 enum class WinnaarType {
-    SLAG, RONDE, SPEL
+  SLAG, RONDE, SPEL
 }
