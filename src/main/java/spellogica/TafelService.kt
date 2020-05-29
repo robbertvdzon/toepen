@@ -1,3 +1,13 @@
+package spellogica
+
+import model.SpelContext
+import model.Speler
+import model.SpelerScore
+import model.Tafel
+import Toepen
+import model.Toepkeuze
+import model.Uitslag
+import util.Util
 import java.util.*
 
 object TafelService {
@@ -72,7 +82,7 @@ object TafelService {
                 SpelContext.spelData.uitslagen.add(Uitslag(
                         Date().toString(), tafel.tafelNr, scores
                 ))
-                println("#Uislagen:"+SpelContext.spelData.uitslagen.size)
+                println("#Uislagen:"+ SpelContext.spelData.uitslagen.size)
             } else {// niet einde spel
                 tafel.huidigeSpeler = volgendeActieveSpeler(tafel, tafel.findSlagWinnaar())?.id
                 tafel.opkomer = tafel.huidigeSpeler
@@ -83,7 +93,7 @@ object TafelService {
                 tafel.spelers.forEach { speler: Speler ->
                     tafel.log.add("speler${speler.id}.clear()")
                     speler.kaarten.forEach {
-                        tafel.log.add("speler${speler.id}.kaarten.add(Kaart(${it.symbool}, ${it.waarde}))")
+                        tafel.log.add("speler${speler.id}.kaarten.add(model.Kaart(${it.symbool}, ${it.waarde}))")
                     }
                 }
 
@@ -95,7 +105,7 @@ object TafelService {
             tafel.slagWinnaar = null
             tafel.toeper = null
             tafel.spelers.filter { it.actiefInSpel }.forEach {
-                SpelerService.nieuweSlag(it)
+                ToepSpel.nieuweSlag(it)
             }
         }
     }
@@ -166,7 +176,7 @@ object TafelService {
         val kaarten = Util.getGeschutKaartenDeck()
         tafel.spelers.forEach { speler: Speler ->
             val handKaarten = (1..4).map { kaarten.removeAt(0) }
-            SpelerService.nieuweRonde(speler, handKaarten)
+            ToepSpel.nieuweRonde(speler, handKaarten)
         }
         tafel.inzet = 1
     }
@@ -176,7 +186,7 @@ object TafelService {
         tafel.opkomer = tafel.spelers.firstOrNull()?.id
         tafel.tafelWinnaar = null
         tafel.slagWinnaar = null
-        tafel.spelers.forEach { SpelerService.nieuwSpel(it, startscore) }
+        tafel.spelers.forEach { ToepSpel.nieuwSpel(it, startscore) }
         tafel.spelersDieAfZijn = emptyList<String>().toMutableList()
         nieuweRonde(tafel)
         logNieuwSpel(tafel)
@@ -190,19 +200,19 @@ object TafelService {
             spelernr++
             tafel.log.add("val speler${speler.id} = maakSpeler(\"speler.naam\", \"${spelernr}\")")
             tafel.log.add("val speler$spelernr =  speler${speler.id}")
-            tafel.log.add("var speler${speler.id}kaarten: MutableList<Kaart> = emptyList<Kaart>().toMutableList()")
+            tafel.log.add("var speler${speler.id}kaarten: MutableList<model.Kaart> = emptyList<model.Kaart>().toMutableList()")
             speler.kaarten.forEach {
-                tafel.log.add("speler${speler.id}kaarten.add(Kaart(${it.symbool}, ${it.waarde}))")
+                tafel.log.add("speler${speler.id}kaarten.add(model.Kaart(${it.symbool}, ${it.waarde}))")
             }
             tafel.log.add("SpelerService.nieuwSpel(speler$spelernr, 5)")
             tafel.log.add("SpelerService.nieuweRonde(speler$spelernr, speler${speler.id}kaarten)")
         }
-        tafel.log.add("val tafel = Tafel(1)")
+        tafel.log.add("val tafel = model.Tafel(1)")
         tafel.log.add("tafel.spelers = listOf(speler1, speler2, speler3, speler4).toMutableList()")
         tafel.log.add("tafel.opkomer = speler1")
         tafel.log.add("tafel.huidigeSpeler = speler1")
         tafel.log.add("tafel.inzet = 1")
-        tafel.log.add("SpelContext.spelData.tafels = listOf(tafel).toMutableList()")
+        tafel.log.add("model.SpelContext.spelData.tafels = listOf(tafel).toMutableList()")
     }
 
     fun toep(tafel: Tafel, speler: Speler) {

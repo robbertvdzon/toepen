@@ -1,3 +1,8 @@
+package util
+
+import model.Kaart
+import model.KaartSymbool
+
 object Util {
 
     fun getGeschutKaartenDeck(): MutableList<Kaart> {

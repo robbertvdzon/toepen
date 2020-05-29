@@ -1,3 +1,5 @@
+package model
+
 object SpelContext {
     var spelData = SpelData()
 
@@ -7,7 +9,7 @@ object SpelContext {
 
     fun findSpeler(spelerId: String?) = spelData
             .tafels
-            .firstOrNull { containsSpeler(it, spelerId?:"") }
+            .firstOrNull { containsSpeler(it, spelerId ?: "") }
             ?.spelers
             ?.firstOrNull { it.id == spelerId }
 
@@ -71,7 +73,7 @@ data class Tafel(
         var tafelWinnaar: String? = null,
         var gepauzeerd: Boolean = SpelContext.spelData.nieuweTafelAutoPause == true
 ) {
-    fun findSpelersDieAfZijn() = spelersDieAfZijn.map { SpelContext.findSpeler(it) }.filter{it!=null}.map{it as Speler}
+    fun findSpelersDieAfZijn() = spelersDieAfZijn.map { SpelContext.findSpeler(it) }.filter{it!=null}.map{it as Speler }
     fun findOpkomer() = SpelContext.findSpeler(opkomer)
     fun findHuidigeSpeler() = SpelContext.findSpeler(huidigeSpeler)
     fun findToeper() = SpelContext.findSpeler(toeper)

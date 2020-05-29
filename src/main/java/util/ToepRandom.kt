@@ -1,4 +1,9 @@
+package util
+
 import kotlin.random.Random
+/*
+ TODO: Naar util.Util
+ */
 
 object ToepRandom {
     var random:Random = Random(0)

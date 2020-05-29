@@ -1,3 +1,8 @@
+package spelprocessor
+
+import model.CommandResult
+import model.CommandStatus
+import model.SpelContext
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
@@ -25,14 +30,14 @@ object CommandQueue {
     private var lastSpelDataJson:String = objectMapper.writeValueAsString(SpelContext.spelData)
     val unProcessedCommands: BlockingQueue<Command> = LinkedBlockingDeque<Command>(100)
 
-    fun addNewCommand(command:Command):CommandResult{
+    fun addNewCommand(command: Command): CommandResult {
         val added = unProcessedCommands.offer(command, 10, TimeUnit.SECONDS)
         if (!added) return CommandResult(CommandStatus.FAILED, "Timeout")
         synchronized(command.lock) {
             command.lock.wait(10)
         }
         while (command.result==null){ Thread.sleep(10)}
-        return command.result?:CommandResult(CommandStatus.FAILED, "Unknown error")
+        return command.result?: CommandResult(CommandStatus.FAILED, "Unknown error")
     }
 
     fun processCommands(){
@@ -43,13 +48,14 @@ object CommandQueue {
                     val before = objectMapper.writeValueAsString(SpelContext.spelData)
                     command.result = command.process()
                     if (command.result?.status?.equals(CommandStatus.SUCCEDED)?:false && logCommands){
-                        logFile.appendText("SpelData:" + before + "\n")
+                        logFile.appendText("model.SpelData:" + before + "\n")
                         logFile.appendText(command.javaClass.simpleName+":"+jacksonObjectMapper().writeValueAsString(command)+"\n")
                         println(command.javaClass.simpleName+":"+jacksonObjectMapper().writeValueAsString(command))
                     }
                 }
                 catch (e:Exception){
-                    command.result = CommandResult(CommandStatus.FAILED, e.message?:"Unknown error")
+                    command.result = CommandResult(CommandStatus.FAILED, e.message
+                            ?: "Unknown error")
                 }
                 setLastSpeldataJson(objectMapper.writeValueAsString(SpelContext.spelData))
                 synchronized(command.lock) {

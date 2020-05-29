@@ -1,9 +1,11 @@
-import KaartSymbool.*
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import model.CommandStatus
+import model.SpelContext
+import model.SpelData
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import spelprocessor.*
 import java.io.File
 
 class ReplayTest {
@@ -22,12 +24,12 @@ class ReplayTest {
             if (splitPos>0) {
                 val command = regel.substring(0, splitPos)
                 val json = regel.substring(splitPos + 1)
-                if (command == "SpelData") {
+                if (command == "model.SpelData") {
                     val spelData = objectMapper.readValue(json, SpelData::class.java)
                     SpelContext.spelData = spelData
                     // replace alle spelers uit de tafels naar de speldata.spelers
 //                    spelData.tafels.forEach{
-//                        tafel:Tafel -> tafel.findSpelers().forEach {speler:Speler->
+//                        tafel:model.Tafel -> tafel.findSpelers().forEach {speler:model.Speler->
 //                        val spelerUitSpel = spelData.alleSpelers.filter { it.id==speler.id }.firstOrNull()
 //                        if (spelerUitSpel!=null){
 //                            val index = spelData.alleSpelers.indexOf(spelerUitSpel)
@@ -57,52 +59,52 @@ class ReplayTest {
 //                        }
 //                    }
                 }
-                if (command == "SpeelKaartCommand") {
+                if (command == "spelprocessor.SpeelKaartCommand") {
                     val command = objectMapper.readValue(json, SpeelKaartCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).describedAs("error:"+res.errorMessage).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "ToepCommand") {
+                if (command == "spelprocessor.ToepCommand") {
                     val command = objectMapper.readValue(json, ToepCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "PakSlagCommand") {
+                if (command == "spelprocessor.PakSlagCommand") {
                     val command = objectMapper.readValue(json, PakSlagCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "GaMeeMetToepCommand") {
+                if (command == "spelprocessor.GaMeeMetToepCommand") {
                     val command = objectMapper.readValue(json, GaMeeMetToepCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "PasCommand") {
+                if (command == "spelprocessor.PasCommand") {
                     val command = objectMapper.readValue(json, PasCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "MaakNieuweTafelsCommand") {
+                if (command == "spelprocessor.MaakNieuweTafelsCommand") {
                     val command = objectMapper.readValue(json, MaakNieuweTafelsCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "UpdateGebruikersCommand") {
+                if (command == "spelprocessor.UpdateGebruikersCommand") {
                     val command = objectMapper.readValue(json, UpdateGebruikersCommand::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "NieuwSpel") {
+                if (command == "spelprocessor.NieuwSpel") {
                     val command = objectMapper.readValue(json, NieuwSpel::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "AllesStarten") {
+                if (command == "spelprocessor.AllesStarten") {
                     val command = objectMapper.readValue(json, AllesStarten::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)
                 }
-                if (command == "SetRandomSeed") {
+                if (command == "spelprocessor.SetRandomSeed") {
                     val command = objectMapper.readValue(json, SetRandomSeed::class.java)
                     val res = CommandQueue.addNewCommand(command)
                     assertThat(res.status).isEqualTo(CommandStatus.SUCCEDED)

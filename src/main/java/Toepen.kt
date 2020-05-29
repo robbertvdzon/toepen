@@ -1,4 +1,4 @@
-import WINNAAR_TYPE.*
+import model.WINNAAR_TYPE.*
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.plugin.rendering.vue.VueComponent
@@ -6,7 +6,10 @@ import io.javalin.websocket.WsCloseContext
 import io.javalin.websocket.WsConnectContext
 import io.javalin.websocket.WsHandler
 import io.javalin.websocket.WsMessageContext
+import model.*
 import org.slf4j.LoggerFactory
+import spellogica.Administrator
+import spelprocessor.*
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -52,7 +55,7 @@ object Toepen {
 
         }
         CommandQueue.initLogfile()
-//        CommandQueue.addNewCommand(SetRandomSeed(System.currentTimeMillis()))
+//        spelprocessor.CommandQueue.addNewCommand(spelprocessor.SetRandomSeed(System.currentTimeMillis()))
         CommandQueue.addNewCommand(SetRandomSeed(0))
         Monkey.start()
 
@@ -115,17 +118,17 @@ object Toepen {
 
     fun broadcastSpelWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(Winnaar(SPEL, tafel.tafelNr, tafel.findSlagWinnaar()?.naam?:"?"))
+            session.send(Winnaar(SPEL, tafel.tafelNr, tafel.findSlagWinnaar()?.naam ?: "?"))
         }
     }
     fun broadcastRondeWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(Winnaar(RONDE, tafel.tafelNr, tafel.findSlagWinnaar()?.naam?:"?"))
+            session.send(Winnaar(RONDE, tafel.tafelNr, tafel.findSlagWinnaar()?.naam ?: "?"))
         }
     }
     fun broadcastSlagWinnaar(tafel: Tafel) {
         winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-            session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar()?.naam?:"?"))
+            session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar()?.naam ?: "?"))
         }
     }
 
@@ -139,7 +142,7 @@ object Toepen {
         val updatedSpelData = ctx.body<SpelData>()
         val command = UpdateGebruikersCommand(updatedSpelData.alleSpelers)
         val res = CommandQueue.addNewCommand(command)
-        if (res.status==CommandStatus.FAILED){
+        if (res.status== CommandStatus.FAILED){
             ctx.json(res)
             return
         }
@@ -228,7 +231,7 @@ object Toepen {
         val kaart = ctx.body<Kaart>()
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
-            ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
+            ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
             return
         }
         ctx.json(CommandQueue.addNewCommand(SpeelKaartCommand(speler.id, kaart)))
@@ -239,7 +242,7 @@ object Toepen {
         val id = ctx.pathParam("id")
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
-            ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
+            ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
             return
         }
         ctx.json(CommandQueue.addNewCommand(PakSlagCommand(speler.id)))
@@ -250,7 +253,7 @@ object Toepen {
         val id = ctx.pathParam("id")
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
-            ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
+            ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
             return
         }
         ctx.json(CommandQueue.addNewCommand(ToepCommand(speler.id)))
@@ -261,7 +264,7 @@ object Toepen {
         val id = ctx.pathParam("id")
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
-            ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
+            ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
             return
         }
         ctx.json(CommandQueue.addNewCommand(PasCommand(speler.id)))
@@ -272,7 +275,7 @@ object Toepen {
         val id = ctx.pathParam("id")
         val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
         if (speler==null){
-            ctx.json(CommandResult(CommandStatus.FAILED,"Speler niet gevonden"))
+            ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
             return
         }
         ctx.json(CommandQueue.addNewCommand(GaMeeMetToepCommand(speler.id)))

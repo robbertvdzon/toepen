@@ -1,3 +1,12 @@
+package spelprocessor
+
+import model.CommandStatus
+import model.SpelContext
+import model.SpelData
+import model.Speler
+import model.Tafel
+import util.ToepRandom
+import Toepen
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.util.*
@@ -72,39 +81,39 @@ object Monkey {
             if (tafel.slagWinnaar == speler.id) {
                 val res = CommandQueue.addNewCommand(PakSlagCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
-//                    println("Pak slag : Speler ${speler.naam} ,  hand:${speler.kaarten}")
+//                    println("Pak slag : model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
 
             }
-            if (ToepRandom.nextInt(0,100) == 0) {
+            if (ToepRandom.nextInt(0, 100) == 0) {
                 val res = CommandQueue.addNewCommand(ToepCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
-//                    println("Toep : Speler ${speler.naam} ,  hand:${speler.kaarten}")
+//                    println("Toep : model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if (ToepRandom.nextInt(0,1) == 0) {
-                val kaart = speler.kaarten?.getOrNull(ToepRandom.nextInt(0,3))
+            if (ToepRandom.nextInt(0, 1) == 0) {
+                val kaart = speler.kaarten?.getOrNull(ToepRandom.nextInt(0, 3))
                 if (kaart != null) {
                     val res = CommandQueue.addNewCommand(SpeelKaartCommand(speler.id, kaart))
                     if (res.status == CommandStatus.SUCCEDED) {
-//                        println("Speelkaart: Speler ${speler.naam} kaart: $kaart ,  hand:${speler.kaarten}")
+//                        println("Speelkaart: model.Speler ${speler.naam} kaart: $kaart ,  hand:${speler.kaarten}")
                         Toepen.broadcastMessage()
                     }
                 }
             }
-            if (ToepRandom.nextInt(0,1) == 0) {
+            if (ToepRandom.nextInt(0, 1) == 0) {
                 val res = CommandQueue.addNewCommand(GaMeeMetToepCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
-//                    println("Ga mee: Speler ${speler.naam} ,  hand:${speler.kaarten}")
+//                    println("Ga mee: model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
-            if (ToepRandom.nextInt(0,1) == 0) {
+            if (ToepRandom.nextInt(0, 1) == 0) {
                 val res = CommandQueue.addNewCommand(PasCommand(speler.id))
                 if (res.status == CommandStatus.SUCCEDED) {
-//                    println("Pas: Speler ${speler.naam} ,  hand:${speler.kaarten}")
+//                    println("Pas: model.Speler ${speler.naam} ,  hand:${speler.kaarten}")
                     Toepen.broadcastMessage()
                 }
             }
