@@ -49,14 +49,22 @@ object TafelService {
     if (laatsteSlag || aantalSpelersDezeRonde < 2) {
       Toepen.broadcastRondeWinnaar(tafel)
 
-      tafel.spelers.forEach {
+      tafel.spelers = tafel.spelers.map{
         // als je nog in het spel zat, en niet gepast had en niet de winnaar bent, dan ben je lucifers kwijt!
+        var totaalLucifers = it.totaalLucifers
+        var actiefInSpel = it.actiefInSpel
+
         if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar != it.id) {
-          it.totaalLucifers -= it.ingezetteLucifers
-          if (it.totaalLucifers == 0) it.actiefInSpel = false
+          totaalLucifers -= it.ingezetteLucifers
+          if (it.totaalLucifers == 0) actiefInSpel = false
         }
-        it.ingezetteLucifers = 0
-      }
+        it.copy(
+          actiefInSpel = actiefInSpel,
+          totaalLucifers = totaalLucifers
+        )
+      }.toMutableList()
+
+
       val eindeSpel = tafel.spelers.filter { it.actiefInSpel }.size == 1
       werkScoreBij(tafel)
       if (eindeSpel) {// einde spel
@@ -114,13 +122,15 @@ object TafelService {
     nieuweSpelersDieAfZijn.forEach {
       tafel.spelersDieAfZijn.add(it.id)
       if (score > 0) {
-        it.scoreDezeRonde = score
+        val aangepasteSpeler = it.copy(scoreDezeRonde = score)
+        tafel.updateSpeler(aangepasteSpeler)
       }
 
     }
     if (aantalSpelersDieInSpelZittenCount == 1) {
       aantalSpelersDieInSpelZitten.forEach {
-        it.scoreDezeRonde = 5 // de winnaar!
+        val aangepasteSpeler = it.copy(scoreDezeRonde = 5)
+        tafel.updateSpeler(aangepasteSpeler)
       }
     }
   }
@@ -212,22 +222,28 @@ object TafelService {
 
   fun toep(tafel: Tafel, speler: Speler) {
     if (tafel.toeper == null) tafel.toeper = speler.id // de eerste toeper bewaren
+
+    // set toep keuze voor alle spelers
     tafel.spelers.forEach {
-      if (it.actiefInSpel) {
-        it.toepKeuze = Toepkeuze.GEEN_KEUZE
-      }
+      var toepKeuze =    Toepkeuze.GEEN_KEUZE
       if (!it.actiefInSpel) {
-        it.toepKeuze = Toepkeuze.PAS
+        toepKeuze = Toepkeuze.PAS
       }
       if (it.gepast) {
-        it.toepKeuze = Toepkeuze.PAS
+        toepKeuze = Toepkeuze.PAS
       }
       if (it.totaalLucifers == it.ingezetteLucifers) {
-        it.toepKeuze = Toepkeuze.MEE
+        toepKeuze = Toepkeuze.MEE
       }
+      tafel.updateSpeler(it.copy(toepKeuze = toepKeuze))
+
     }
-    speler.toepKeuze = Toepkeuze.TOEP
-    val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(tafel, speler)
+
+    // set toep keuze op toep voor de toeper
+    val updatedSpeler = speler.copy(toepKeuze = Toepkeuze.TOEP)
+    tafel.updateSpeler(updatedSpeler)
+
+    val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(tafel, updatedSpeler)
     if (volgendeSpelerVoorToep == null) {
       tafel.huidigeSpeler = tafel.toeper
       tafel.toeper = null

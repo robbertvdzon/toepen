@@ -54,6 +54,9 @@ object CommandQueue {
             logFile.appendText(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command) + "\n")
             println(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command))
           }
+          else{
+//            println("ongeldig command "+command.result)
+          }
         } catch (e: Exception) {
           command.result = CommandResult(CommandStatus.FAILED, e.message
             ?: "Unknown error")

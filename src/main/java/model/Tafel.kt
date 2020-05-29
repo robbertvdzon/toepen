@@ -19,5 +19,9 @@ data class Tafel(
   fun findToeper() = SpelContext.findSpeler(toeper)
   fun findSlagWinnaar() = SpelContext.findSpeler(slagWinnaar)
   fun findTafelWinnaar() = SpelContext.findSpeler(tafelWinnaar)
+  fun updateSpeler(speler:Speler) {
+    spelers = spelers.map {if (it.id==speler.id) speler else it}.toMutableList()
+
+  }
 
 }
