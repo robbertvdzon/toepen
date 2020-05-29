@@ -107,9 +107,11 @@ object TafelService {
       tafel.opkomer = tafel.slagWinnaar
       tafel.slagWinnaar = null
       tafel.toeper = null
-      tafel.spelers.filter { it.actiefInSpel }.forEach {
-        SpelerService.nieuweSlag(it)
-      }
+
+      tafel.spelers = tafel.spelers.map{
+        if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it
+      }.toMutableList()
+
     }
   }
 
