@@ -108,9 +108,7 @@ object TafelService {
       tafel.slagWinnaar = null
       tafel.toeper = null
 
-      tafel.spelers = tafel.spelers.map{
-        if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it
-      }.toMutableList()
+      tafel.spelers = tafel.spelers.map{if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it}.toMutableList()
 
     }
   }
@@ -181,10 +179,10 @@ object TafelService {
 
   fun nieuweRonde(tafel: Tafel) {
     val kaarten = Util.getGeschutKaartenDeck()
-    tafel.spelers.forEach { speler: Speler ->
+    tafel.spelers = tafel.spelers.map { speler: Speler ->
       val handKaarten = (1..4).map { kaarten.removeAt(0) }
       SpelerService.nieuweRonde(speler, handKaarten)
-    }
+    }.toMutableList()
     tafel.inzet = 1
   }
 
@@ -193,7 +191,7 @@ object TafelService {
     tafel.opkomer = tafel.spelers.firstOrNull()?.id
     tafel.tafelWinnaar = null
     tafel.slagWinnaar = null
-    tafel.spelers.forEach { SpelerService.nieuwSpel(it, startscore) }
+    tafel.spelers = tafel.spelers.map { SpelerService.nieuwSpel(it, startscore) }.toMutableList()
     tafel.spelersDieAfZijn = emptyList<String>().toMutableList()
     nieuweRonde(tafel)
     logNieuwSpel(tafel)
