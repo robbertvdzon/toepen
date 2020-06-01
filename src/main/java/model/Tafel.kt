@@ -4,13 +4,13 @@ data class Tafel(
   val tafelNr: Int,
   val spelers: List<Speler> = emptyList(),
   val spelersDieAfZijn: List<String> = emptyList(),
-  var opkomer: String? = null,
-  var huidigeSpeler: String? = null,
-  var toeper: String? = null,
-  var inzet: Int = 0,
-  var slagWinnaar: String? = null,
-  var tafelWinnaar: String? = null,
-  var gepauzeerd: Boolean = SpelContext.spelData.nieuweTafelAutoPause == true
+  val opkomer: String? = null,
+  val huidigeSpeler: String? = null,
+  val toeper: String? = null,
+  val inzet: Int = 0,
+  val slagWinnaar: String? = null,
+  val tafelWinnaar: String? = null,
+  val gepauzeerd: Boolean = SpelContext.spelData.nieuweTafelAutoPause == true
 ) {
 //  fun findSpelersDieAfZijn() = spelersDieAfZijn.map { SpelContext.findSpeler(it) }.filter { it != null }.map { it as Speler }
   fun findOpkomer() = SpelContext.findSpeler(opkomer)
