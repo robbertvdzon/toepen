@@ -59,6 +59,7 @@ object Toepen {
       log.info(res.toString())
 
     }
+    CommandQueue.setLastSpeldata(SpelContext.spelData)
     CommandQueue.initLogfile()
 //        spelprocessor.CommandQueue.addNewCommand(spelprocessor.SetRandomSeed(System.currentTimeMillis()))
     CommandQueue.addNewCommand(SetRandomSeed(0))

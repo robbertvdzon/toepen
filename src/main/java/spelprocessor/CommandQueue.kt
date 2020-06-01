@@ -49,15 +49,15 @@ object CommandQueue {
         val command = unProcessedCommands.take()
         try {
           val before = objectMapper.writeValueAsString(lastSpelData)
-          command.result = command.process()
+          command.result = command.process(lastSpelData)
           if (command.result?.status?.equals(CommandStatus.SUCCEDED) ?: false && logCommands) {
             logFile.appendText("model.SpelData:" + before + "\n")
             logFile.appendText(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command) + "\n")
             println(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command))
-            lastSpelData = SpelContext.spelData
           }
-          else{
-//            println("ongeldig command "+command.result)
+          if (command.result?.status?.equals(CommandStatus.SUCCEDED) ?: false) {
+            lastSpelData = command.result?.newSpelData!!
+            SpelContext.spelData = lastSpelData
           }
         } catch (e: Exception) {
           command.result = CommandResult(CommandStatus.FAILED, e.message

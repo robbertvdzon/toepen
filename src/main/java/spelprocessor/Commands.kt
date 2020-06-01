@@ -12,172 +12,166 @@ abstract class Command {
 
   @JsonIgnore
   var result: CommandResult? = null
-  abstract fun process(): CommandResult
+  abstract fun process(spelData:SpelData): CommandResult
 }
 
 class SpeelKaartCommand(val spelerId: String, val kaart: Kaart) : Command() {
-  override fun process(): CommandResult {
-    val speler = SpelContext.spelData.findSpeler(spelerId)
+  override fun process(spelData:SpelData): CommandResult {
+    val speler = spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    val result = ToepSpel.speelKaart(speler, kaart, SpelContext.spelData)
+    val result = ToepSpel.speelKaart(speler, kaart, spelData)
     if (result.isLeft){
       return CommandResult(CommandStatus.FAILED, result.left)
     }
-    SpelContext.spelData = result.get()
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return CommandResult(CommandStatus.SUCCEDED, "", result.get())
   }
 }
 
 class PakSlagCommand(val spelerId: String) : Command() {
-  override fun process(): CommandResult {
-    val speler = SpelContext.spelData.findSpeler(spelerId)
+  override fun process(spelData:SpelData): CommandResult {
+    val speler = spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    val result = ToepSpel.pakSlag(speler, SpelContext.spelData)
+    val result = ToepSpel.pakSlag(speler, spelData)
     if (result.isLeft){
       return CommandResult(CommandStatus.FAILED, result.left)
     }
-    SpelContext.spelData = result.get()
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return CommandResult(CommandStatus.SUCCEDED, "", result.get())
   }
 }
 
 class ToepCommand(val spelerId: String) : Command() {
-  override fun process(): CommandResult {
-    val speler = SpelContext.spelData.findSpeler(spelerId)
+  override fun process(spelData:SpelData): CommandResult {
+    val speler = spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    val result = ToepSpel.toep(speler, SpelContext.spelData)
+    val result = ToepSpel.toep(speler, spelData)
     if (result.isLeft){
       return CommandResult(CommandStatus.FAILED, result.left)
     }
-    SpelContext.spelData = result.get()
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return CommandResult(CommandStatus.SUCCEDED, "", result.get())
   }
 }
 
 class GaMeeMetToepCommand(val spelerId: String) : Command() {
-  override fun process(): CommandResult {
-    val speler = SpelContext.spelData.findSpeler(spelerId)
+  override fun process(spelData:SpelData): CommandResult {
+    val speler = spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    val result = ToepSpel.gaMeeMetToep(speler, SpelContext.spelData)
+    val result = ToepSpel.gaMeeMetToep(speler, spelData)
     if (result.isLeft){
       return CommandResult(CommandStatus.FAILED, result.left)
     }
-    SpelContext.spelData = result.get()
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return CommandResult(CommandStatus.SUCCEDED, "", result.get())
   }
 }
 
 class PasCommand(val spelerId: String) : Command() {
-  override fun process(): CommandResult {
-    val speler = SpelContext.spelData.findSpeler(spelerId)
+  override fun process(spelData:SpelData): CommandResult {
+    val speler = spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    val result = ToepSpel.pas(speler, SpelContext.spelData)
+    val result = ToepSpel.pas(speler, spelData)
     if (result.isLeft){
       return CommandResult(CommandStatus.FAILED, result.left)
     }
-    SpelContext.spelData = result.get()
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return CommandResult(CommandStatus.SUCCEDED, "", result.get())
   }
 }
 
 class LoadDataCommand() : Command() {
-  override fun process(): CommandResult {
+  override fun process(spelData:SpelData): CommandResult {
     val result = AdminService.loadData()
     if (result.isLeft){
       return CommandResult(CommandStatus.FAILED, result.left)
     }
-    SpelContext.spelData = result.get()
-    CommandQueue.setLastSpeldata(SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    CommandQueue.setLastSpeldata(spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", result.get())
 
   }
 }
 
 class SaveDataCommand() : Command() {
-  override fun process(): CommandResult {
-    AdminService.saveData(SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    AdminService.saveData(spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", spelData)
   }
 }
 
 class MaakNieuweTafelsCommand(val aantal: Int, val startscore: Int) : Command() {
-  override fun process(): CommandResult {
-    SpelContext.spelData = AdminService.maakNieuweTafels(aantal, startscore, SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val newSpelData = AdminService.maakNieuweTafels(aantal, startscore, spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class UpdateGebruikersCommand(val gebruikers: List<Gebruiker>) : Command() {
-  override fun process(): CommandResult {
-    SpelContext.spelData = AdminService.updateGebruikers(gebruikers, SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val newSpelData = AdminService.updateGebruikers(gebruikers, spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class ClearLog() : Command() {
-  override fun process(): CommandResult {
-    SpelContext.spelData = AdminService.clearLog(SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val newSpelData = AdminService.clearLog(spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class ResetScore() : Command() {
-  override fun process(): CommandResult {
-    SpelContext.spelData = AdminService.resetScore(SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val newSpelData = AdminService.resetScore(spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class AllesPauzeren() : Command() {
-  override fun process(): CommandResult {
-    SpelContext.spelData = AdminService.allesPauzeren(SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val newSpelData = AdminService.allesPauzeren(spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class AllesStarten() : Command() {
-  override fun process(): CommandResult {
-    SpelContext.spelData = AdminService.allesStarten(SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val newSpelData = AdminService.allesStarten(spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class NieuwSpel(val startscore: Int, val tafelNr: Int?) : Command() {
-  override fun process(): CommandResult {
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    SpelContext.spelData = AdminService.nieuwSpel(startscore, tafel, SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    val newSpelData = AdminService.nieuwSpel(startscore, tafel, spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class SchopTafel(val tafelNr: Int) : Command() {
-  override fun process(): CommandResult {
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    SpelContext.spelData = AdminService.schopTafel(tafel, SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    val newSpelData = AdminService.schopTafel(tafel, spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class PauzeerTafel(val tafelNr: Int) : Command() {
-  override fun process(): CommandResult {
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    SpelContext.spelData = AdminService.pauzeerTafel(tafel, SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    val newSpelData = AdminService.pauzeerTafel(tafel, spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class StartTafel(val tafelNr: Int) : Command() {
-  override fun process(): CommandResult {
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    SpelContext.spelData = AdminService.startTafel(tafel, SpelContext.spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+  override fun process(spelData:SpelData): CommandResult {
+    val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    val newSpelData = AdminService.startTafel(tafel, spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
 class SetRandomSeed(val seed: Long) : Command() {
-  override fun process(): CommandResult {
+  override fun process(spelData:SpelData): CommandResult {
     Util.setSeed(seed)
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return CommandResult(CommandStatus.SUCCEDED, "", spelData)
   }
 }
 
