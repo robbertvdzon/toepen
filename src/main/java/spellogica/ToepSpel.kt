@@ -8,18 +8,17 @@ object ToepSpel {
 
   // TODO: Hier overal een Either<String, Tafel> terug geven, met een aangepaste tafel terug als goed
   // TODO: Hier overal een spelData meegeven
-  fun speelKaart(speler: Speler, kaart: Kaart): CommandResult {
+  fun speelKaart(speler: Speler, kaart: Kaart, spelData: SpelData): CommandResult {
 
-    val tafel = SpelContext.spelData.tafels.find { it.spelers.contains(speler) }
+    val tafel = spelData.tafels.find { it.spelers.contains(speler) }
     if (tafel == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED, "De tafel is gepauzeerd")
+    val tafelNr = tafel.tafelNr
 
     val result = Util.eitherBlock<String, CommandResult> {
-      val updatedSpeler = SpelerService.speelKaart(speler, kaart, tafel).bind()
-      val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      val newSpelData = SpelerService.speelKaart(speler, kaart, tafel, spelData).bind()
       SpelContext.spelData = newSpelData
-      TafelService.vervolgSpel(updatedTafel)
+      TafelService.vervolgSpel(spelData.findTafel(tafelNr))
       CommandResult(CommandStatus.SUCCEDED, "")
     }
 

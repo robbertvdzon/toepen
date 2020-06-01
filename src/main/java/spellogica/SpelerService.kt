@@ -28,7 +28,7 @@ object SpelerService {
     gespeeldeKaart = if (speler.actiefInSpel) null else speler.gespeeldeKaart
   )
 
-  fun speelKaart(speler: Speler, kaart: Kaart, tafel: Tafel): Either<String, Speler> {
+  fun speelKaart(speler: Speler, kaart: Kaart, tafel: Tafel, spelData: SpelData): Either<String, SpelData> {
     if (!speler.actiefInSpel) return Either.left("Je bent af")
     if (tafel.toeper != null) return Either.left("Nog niet iedereen heeft zijn toep keuze opgegeven")
     if (tafel.huidigeSpeler != speler.id) return Either.left("Je bent nog niet aan de beurt om een kaart te spelen")
@@ -43,12 +43,13 @@ object SpelerService {
       }
     }
 
-    return Either.right(
-      speler.copy(
-        gespeeldeKaart = kaart,
-        kaarten = speler.kaarten.filter { it != kaart }
-      )
+    val newSpeler = speler.copy(
+      gespeeldeKaart = kaart,
+      kaarten = speler.kaarten.filter { it != kaart }
     )
+    val newTafel = tafel.updateSpeler(newSpeler)
+    val newSpelData = spelData.updateTafel(newTafel).first
+    return Either.right(newSpelData)
   }
 
   fun toep(speler: Speler, tafel: Tafel, inzet: Int): Either<String, Speler> {
