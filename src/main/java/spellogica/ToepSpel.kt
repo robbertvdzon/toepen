@@ -1,31 +1,30 @@
 package spellogica
 
+import io.vavr.control.Either
 import model.*
 import util.Util
 import util.Util.bind
 
 object ToepSpel {
 
-  // TODO: Hier overal een Either<String, Tafel> terug geven, met een aangepaste tafel terug als goed
+  // TODO: Hier overal een Either<String, SpelData> terug geven, met een aangepaste SpelData terug als goed
   // TODO: Hier overal een spelData meegeven
-  fun speelKaart(speler: Speler, kaart: Kaart, spelData: SpelData): CommandResult {
+
+
+  fun speelKaart(speler: Speler, kaart: Kaart, spelData: SpelData): Either<String, SpelData> {
 
     val tafel = spelData.tafels.find { it.spelers.contains(speler) }
-    if (tafel == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED, "De tafel is gepauzeerd")
+    if (tafel == null) return Either.left( "Je zit niet aan een tafel")
+    if (tafel.gepauzeerd) return Either.left( "De tafel is gepauzeerd")
     val tafelNr = tafel.tafelNr
 
-    val result = Util.eitherBlock<String, CommandResult> {
+    val result = Util.eitherBlock<String, SpelData> {
       val newSpelData = SpelerService.speelKaart(speler, kaart, tafel, spelData).bind()
       SpelContext.spelData = newSpelData
       TafelService.vervolgSpel(spelData.findTafel(tafelNr))
-      CommandResult(CommandStatus.SUCCEDED, "")
+      SpelContext.spelData // hier eigen spelData terug geven
     }
-
-    if (result.isLeft){
-      return CommandResult(CommandStatus.FAILED, result.left)
-    }
-    else return result.get()
+    return result
   }
 
   fun pakSlag(speler: Speler): CommandResult {

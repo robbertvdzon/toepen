@@ -19,7 +19,12 @@ class SpeelKaartCommand(val spelerId: String, val kaart: Kaart) : Command() {
   override fun process(): CommandResult {
     val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    return ToepSpel.speelKaart(speler, kaart, SpelContext.spelData)
+    val result = ToepSpel.speelKaart(speler, kaart, SpelContext.spelData)
+    if (result.isLeft){
+      return CommandResult(CommandStatus.FAILED, result.left)
+    }
+    SpelContext.spelData = result.get()
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
