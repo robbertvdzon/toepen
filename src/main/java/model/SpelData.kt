@@ -16,7 +16,7 @@ data class SpelData(
 
   fun updateTafel(tafel:Tafel): Pair<SpelData, Tafel>{
     val tafels = tafels.map {if (it.tafelNr==tafel.tafelNr) tafel else it}.toMutableList()
-    val spelData = SpelContext.spelData.copy(
+    val spelData = this.copy(
       tafels = tafels
     )
     return Pair(spelData,tafel)
@@ -24,7 +24,7 @@ data class SpelData(
 
   fun updateGebruiker(gebruiker:Gebruiker): Pair<SpelData, Gebruiker>{
     val alleSpelers = alleSpelers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
-    val spelData = SpelContext.spelData.copy(
+    val spelData = this.copy(
       tafels = tafels
     )
     return Pair(spelData,gebruiker)

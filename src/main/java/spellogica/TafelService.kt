@@ -12,10 +12,11 @@ object TafelService {
     var tafel = tafelX
     var spelData = spelDataX
     spelData = werkScoreBij(tafel, spelData)
+    SpelContext.spelData = spelData
+
     tafel = spelData.findTafel(tafel.tafelNr)
 
     if (tafel.tafelWinnaar != null) {
-      SpelContext.spelData = spelData
       return spelData
     }
     if (tafel.toeper != null) {
@@ -32,8 +33,6 @@ object TafelService {
           tafel = newTafel
           spelData = newSpeldata
           spelData = eindeSlag(tafel, spelData)
-
-
         } else {
           val (newSpeldata, newTafel) = spelData.updateTafel(tafel.copy(
             huidigeSpeler = tafel.toeper,
@@ -70,7 +69,6 @@ object TafelService {
       }
 
     }
-    SpelContext.spelData = spelData
     return spelData
   }
 
@@ -183,11 +181,10 @@ object TafelService {
 
 
     }
-    SpelContext.spelData = spelData
     return spelData
   }
 
-  fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
+  private fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
 
@@ -221,7 +218,6 @@ object TafelService {
         spelData = newSpelData
       }
     }
-    SpelContext.spelData = spelData
     return spelData
   }
 
@@ -352,7 +348,6 @@ object TafelService {
       spelData = newSpelData
     }
 
-    SpelContext.spelData = spelData
     return spelData
   }
 }
