@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.vavr.control.Either
 import model.*
-import spelprocessor.CommandQueue
 import util.Util
 import java.io.File
 
@@ -17,19 +16,21 @@ object AdminService {
     return Either.right(spelData)
   }
 
-  fun saveData(spelData:SpelData) {
+  fun saveData(spelData: SpelData) {
     val json = objectMapper.writeValueAsString(spelData)
     File("speldata.dat").writeText(json)
   }
 
-  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX:SpelData): SpelData {
+  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
-    var tafels = (1..aantalTafels).map { Tafel(
-      tafelNr = it,
-      gepauzeerd = spelData.nieuweTafelAutoPause == true
-    ) }
+    var tafels = (1..aantalTafels).map {
+      Tafel(
+        tafelNr = it,
+        gepauzeerd = spelData.nieuweTafelAutoPause == true
+      )
+    }
     while (spelersDieMeedoen.isNotEmpty()) {
       tafels = tafels.map {
         if (spelersDieMeedoen.isNotEmpty()) {
@@ -44,7 +45,7 @@ object AdminService {
     }
 
     spelData = spelData.copy(
-        tafels = tafels.toMutableList()
+      tafels = tafels.toMutableList()
     )
     spelData.tafels.forEach {
       val newSpelData = TafelService.nieuwSpel(spelData, it, startscore)
@@ -53,7 +54,7 @@ object AdminService {
     return spelData
   }
 
-  fun updateGebruikers(gebruikers: List<Gebruiker>, spelDataX:SpelData): SpelData  {
+  fun updateGebruikers(gebruikers: List<Gebruiker>, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
     val mutableGebruikersList = gebruikers.toMutableList()
@@ -69,47 +70,43 @@ object AdminService {
             wilMeedoen = nieuweSpelerData.wilMeedoen
           )
         )
-       spelData = updatedSpelData
+        spelData = updatedSpelData
       }
     }
     val nieuweSpelers = spelData.alleSpelers.plus(mutableGebruikersList)
     spelData = spelData.copy(
-        alleSpelers = nieuweSpelers
-      )
+      alleSpelers = nieuweSpelers
+    )
 
     return spelData
   }
 
-  fun clearLog(): CommandResult {
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
-        uitslagen = emptyList<Uitslag>().toMutableList()
-      )
+  fun clearLog(spelDataX: SpelData): SpelData {
+    return spelDataX.copy(
+      uitslagen = emptyList<Uitslag>().toMutableList()
     )
-    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
-  fun resetScore(): CommandResult {
-    SpelContext.spelData.alleSpelers.forEach {
+  fun resetScore(spelDataX: SpelData): SpelData {
+    var spelData = spelDataX
+    spelData.alleSpelers.forEach {
       val (updatedSpelData, _) = SpelContext.spelData.updateGebruiker(
         it.copy(
           score = 0
         )
       )
-      SpelContext.spelData = updatedSpelData
+      spelData = updatedSpelData
     }
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return spelData
   }
 
 
-  fun allesPauzeren(): CommandResult {
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
-        tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
-      )
+  fun allesPauzeren(spelDataX: SpelData): SpelData {
+    var spelData = spelDataX.copy(
+      tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
     )
 
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return spelData
   }
 
   fun allesStarten(): CommandResult {
@@ -124,11 +121,11 @@ object AdminService {
 
   fun nieuwSpel(startscore: Int, tafel: Tafel?): CommandResult {
     if (tafel != null) {
-      val newSpelData =  TafelService.nieuwSpel(SpelContext.spelData, tafel, startscore)
+      val newSpelData = TafelService.nieuwSpel(SpelContext.spelData, tafel, startscore)
       val pauzedTafel = newSpelData.findTafel(tafel.tafelNr).copy(
         gepauzeerd = newSpelData.nieuweTafelAutoPause == true
       )
-      val (newSpelData2,_ ) = SpelContext.spelData.updateTafel(pauzedTafel)
+      val (newSpelData2, _) = SpelContext.spelData.updateTafel(pauzedTafel)
       SpelContext.spelData = newSpelData2
     }
     return CommandResult(CommandStatus.SUCCEDED, "")

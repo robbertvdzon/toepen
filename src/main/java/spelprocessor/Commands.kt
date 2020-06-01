@@ -115,15 +115,24 @@ class UpdateGebruikersCommand(val gebruikers: List<Gebruiker>) : Command() {
 }
 
 class ClearLog() : Command() {
-  override fun process(): CommandResult = AdminService.clearLog()
+  override fun process(): CommandResult {
+    SpelContext.spelData = AdminService.clearLog(SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
+  }
 }
 
 class ResetScore() : Command() {
-  override fun process(): CommandResult = AdminService.resetScore()
+  override fun process(): CommandResult {
+    SpelContext.spelData = AdminService.resetScore(SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
+  }
 }
 
 class AllesPauzeren() : Command() {
-  override fun process(): CommandResult = AdminService.allesPauzeren()
+  override fun process(): CommandResult {
+    SpelContext.spelData = AdminService.allesPauzeren(SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
+  }
 }
 
 class AllesStarten() : Command() {
