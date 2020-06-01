@@ -27,7 +27,10 @@ object AdminService {
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int): CommandResult {
     val spelersDieMeedoen = SpelContext.spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
-    var tafels = (1..aantalTafels).map { Tafel(it) }
+    var tafels = (1..aantalTafels).map { Tafel(
+      tafelNr = it,
+      gepauzeerd = SpelContext.spelData.nieuweTafelAutoPause == true
+    ) }
     while (spelersDieMeedoen.isNotEmpty()) {
       tafels = tafels.map {
         if (spelersDieMeedoen.isNotEmpty()) {

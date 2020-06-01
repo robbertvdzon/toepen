@@ -10,7 +10,7 @@ data class Tafel(
   val inzet: Int = 0,
   val slagWinnaar: String? = null,
   val tafelWinnaar: String? = null,
-  val gepauzeerd: Boolean = SpelContext.spelData.nieuweTafelAutoPause == true
+  val gepauzeerd: Boolean
 ) {
   fun findOpkomer(spelData: SpelData) = spelData.findSpeler(opkomer)
   fun findHuidigeSpeler(spelData: SpelData) = spelData.findSpeler(huidigeSpeler)
