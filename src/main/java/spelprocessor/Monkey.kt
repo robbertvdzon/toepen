@@ -13,7 +13,7 @@ import kotlin.concurrent.thread
 object Monkey {
   val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   const val DELAY: Long = 10
-  var echteSpelData = SpelContext.spelData
+  var echteSpelData = CommandQueue.getLastSpelData()
   var waitingSpelers: MutableSet<String> = HashSet<String>()
   val lock = Object()
 
@@ -41,7 +41,7 @@ object Monkey {
     thread(start = true) {
       while (true) {
         Thread.sleep(DELAY)
-        echteSpelData = SpelContext.spelData
+        echteSpelData = CommandQueue.getLastSpelData()
         var spelData = CommandQueue.getLastSpelData()
 
         if (echteSpelData.automatischNieuweTafels == true) {

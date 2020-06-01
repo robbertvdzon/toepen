@@ -1,7 +1,6 @@
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.CommandStatus
-import model.SpelContext
 import model.SpelData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -36,7 +35,6 @@ class ReplayTest {
           if (playSynced){
             testSpeldata(spelData)
           }
-          SpelContext.spelData = spelData
           CommandQueue.setLastSpeldata(spelData)
           playSynced = true
         }

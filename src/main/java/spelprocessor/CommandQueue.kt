@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.CommandResult
 import model.CommandStatus
-import model.SpelContext
 import model.SpelData
 import java.io.File
 import java.util.concurrent.BlockingQueue
@@ -57,7 +56,6 @@ object CommandQueue {
           }
           if (command.result?.status?.equals(CommandStatus.SUCCEDED) ?: false) {
             lastSpelData = command.result?.newSpelData!!
-            SpelContext.spelData = lastSpelData
           }
         } catch (e: Exception) {
           command.result = CommandResult(CommandStatus.FAILED, e.message
