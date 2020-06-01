@@ -16,9 +16,7 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, SpelData> {
       val newSpelData = SpelerService.speelKaart(speler, kaart, tafel, spelData).bind()
-      SpelContext.spelData = newSpelData
       val newnewSpelData = TafelService.vervolgSpel(spelData.findTafel(tafelNr),newSpelData)
-      SpelContext.spelData = newnewSpelData
       newnewSpelData
     }
     return result
@@ -31,7 +29,6 @@ object ToepSpel {
     if (!speler.actiefInSpel) return Either.left(  "Je bent af")
     if (tafel.slagWinnaar != speler.id) return Either.left(  "Je hebt deze slag niet gewonnen")
     val newnewSpelData = TafelService.eindeSlag(tafel, SpelContext.spelData)
-    SpelContext.spelData = newnewSpelData
     return Either.right(newnewSpelData)
   }
 
@@ -45,9 +42,7 @@ object ToepSpel {
       val updatedSpeler = SpelerService.toep(speler, tafel, nieuweInzet).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler).copy(inzet = nieuweInzet)
       val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
-      SpelContext.spelData = newSpelData
       val newnewSpelData = TafelService.toep(newSpelData, newTafel, updatedSpeler)
-      SpelContext.spelData = newnewSpelData
       newnewSpelData
     }
 
@@ -63,9 +58,7 @@ object ToepSpel {
       val updatedSpeler = SpelerService.gaMeeMetToep(speler, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
       val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
-      SpelContext.spelData = newSpelData
       val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
-      SpelContext.spelData = newnewSpelData
       newnewSpelData
     }
     return result
@@ -81,7 +74,6 @@ object ToepSpel {
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
       val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
       val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
-      SpelContext.spelData = newnewSpelData
       newnewSpelData
     }
     return result
