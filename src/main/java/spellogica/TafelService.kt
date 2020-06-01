@@ -292,17 +292,18 @@ object TafelService {
   }
 
 
-  fun toep(tafelX: Tafel, speler: Speler) {
+  fun toep(spelDataX:SpelData, tafelX: Tafel, speler: Speler):SpelData {
     var tafel = tafelX
+    var spelData = spelDataX
 
     if (tafel.toeper == null) {
-      val (newSpeldata, newTafel) = SpelContext.spelData.updateTafel(
+      val (newSpeldata, newTafel) = spelData.updateTafel(
         tafel.copy(
           toeper = speler.id // de eerste toeper bewaren
         )
       )
       tafel = newTafel
-      SpelContext.spelData = newSpeldata
+      spelData = newSpeldata
 
     }
 
@@ -319,37 +320,39 @@ object TafelService {
         toepKeuze = Toepkeuze.MEE
       }
       val updatedTafel = tafel.updateSpeler(it.copy(toepKeuze = toepKeuze))
-      val (newSpeldata, newTafel) = SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpeldata, newTafel) = spelData.updateTafel(updatedTafel)
       tafel = newTafel
-      SpelContext.spelData = newSpeldata
+      spelData = newSpeldata
 
 
     }
     // laad de tafel opnieuw, die kan aangepast zijn
-    val tafel2 = SpelContext.spelData.tafels.first { it.tafelNr == tafel.tafelNr }
+    val tafel2 = spelData.tafels.first { it.tafelNr == tafel.tafelNr }
 
     // set toep keuze op toep voor de toeper
     val updatedSpeler = speler.copy(toepKeuze = Toepkeuze.TOEP)
     val updatedTafel = tafel2.updateSpeler(updatedSpeler)
-    val (newSpelData, newTafel) = SpelContext.spelData.updateTafel(updatedTafel)
-    SpelContext.spelData = newSpelData
+    val (newSpelData, newTafel) = spelData.updateTafel(updatedTafel)
+    spelData = newSpelData
 
     val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(updatedTafel, updatedSpeler)
     if (volgendeSpelerVoorToep == null) {
 
-      val (newSpelData, newTafel) = SpelContext.spelData.updateTafel(updatedTafel.copy(
+      val (newSpelData, newTafel) = spelData.updateTafel(updatedTafel.copy(
         huidigeSpeler = updatedTafel.toeper,
         toeper = null
       ))
-      SpelContext.spelData = newSpelData
+      spelData = newSpelData
 
 
     } else {
-      val (newSpelData, newTafel) = SpelContext.spelData.updateTafel(updatedTafel.copy(
+      val (newSpelData, newTafel) = spelData.updateTafel(updatedTafel.copy(
         huidigeSpeler = volgendeSpelerVoorToep.id
       ))
-      SpelContext.spelData = newSpelData
+      spelData = newSpelData
     }
 
+    SpelContext.spelData = spelData
+    return spelData
   }
 }

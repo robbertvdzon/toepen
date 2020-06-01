@@ -47,7 +47,7 @@ object ToepSpel {
       val updatedTafel = tafel.updateSpeler(updatedSpeler).copy(inzet = nieuweInzet)
       val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
       SpelContext.spelData = newSpelData
-      TafelService.toep(newTafel, updatedSpeler)
+      TafelService.toep(newSpelData, newTafel, updatedSpeler)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
 
