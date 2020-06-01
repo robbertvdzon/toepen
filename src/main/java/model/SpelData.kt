@@ -19,4 +19,22 @@ data class SpelData(
     return tafel
   }
 
+  fun findGebruiker(spelerId: String?) = this
+    .alleSpelers
+    .firstOrNull { it.id == spelerId }
+
+  fun findSpeler(spelerId: String?) = this
+    .tafels
+    .firstOrNull { containsSpeler(it, spelerId ?: "") }
+    ?.spelers
+    ?.firstOrNull { it.id == spelerId }
+
+  fun findTafel(tafelNr:Int): Tafel{
+    return this.tafels.first { it.tafelNr==tafelNr }
+  }
+
+  private fun containsSpeler(it: Tafel, spelerId: String?) =
+    it.spelers.filter { speler -> speler.id == spelerId ?: "" }.firstOrNull() != null
+
+
 }

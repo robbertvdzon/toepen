@@ -17,7 +17,7 @@ abstract class Command {
 
 class SpeelKaartCommand(val spelerId: String, val kaart: Kaart) : Command() {
   override fun process(): CommandResult {
-    val speler = SpelContext.findSpeler(spelerId)
+    val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     return ToepSpel.speelKaart(speler, kaart)
   }
@@ -25,7 +25,7 @@ class SpeelKaartCommand(val spelerId: String, val kaart: Kaart) : Command() {
 
 class PakSlagCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
-    val speler = SpelContext.findSpeler(spelerId)
+    val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     return ToepSpel.pakSlag(speler)
   }
@@ -33,7 +33,7 @@ class PakSlagCommand(val spelerId: String) : Command() {
 
 class ToepCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
-    val speler = SpelContext.findSpeler(spelerId)
+    val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     return ToepSpel.toep(speler)
   }
@@ -41,7 +41,7 @@ class ToepCommand(val spelerId: String) : Command() {
 
 class GaMeeMetToepCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
-    val speler = SpelContext.findSpeler(spelerId)
+    val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     return ToepSpel.gaMeeMetToep(speler)
   }
@@ -49,7 +49,7 @@ class GaMeeMetToepCommand(val spelerId: String) : Command() {
 
 class PasCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
-    val speler = SpelContext.findSpeler(spelerId)
+    val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     return ToepSpel.pas(speler)
   }

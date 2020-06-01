@@ -56,7 +56,7 @@ object Monkey {
 
         spelData.tafels.filter { !it.gepauzeerd }.forEach {
           val huidigeSpeler = it.findHuidigeSpeler()
-          val huidigeGebruiker = SpelContext.findGebruiker(it.huidigeSpeler)
+          val huidigeGebruiker = SpelContext.spelData.findGebruiker(it.huidigeSpeler)
           if (huidigeSpeler != null && huidigeGebruiker != null && huidigeGebruiker.isMonkey && !hasWaitingSpeler(huidigeSpeler.id)) {
             addWaitingSpeler(huidigeSpeler.id)
             val tasknew: TimerTask = TimerSchedulePeriod(it, huidigeSpeler)

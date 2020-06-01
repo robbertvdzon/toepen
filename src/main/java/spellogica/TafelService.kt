@@ -11,7 +11,7 @@ object TafelService {
   fun vervolgSpel(tafelX: Tafel) {
     var tafel = tafelX
     werkScoreBij(tafel)
-    tafel = SpelContext.findTafel(tafel.tafelNr)
+    tafel = SpelContext.spelData.findTafel(tafel.tafelNr)
 
     if (tafel.tafelWinnaar != null) return
     if (tafel.toeper != null) {
@@ -60,7 +60,7 @@ object TafelService {
     var tafel = tafelX
     Toepen.broadcastSlagWinnaar(tafel)
     werkScoreBij(tafel)
-    tafel = SpelContext.findTafel(tafel.tafelNr)
+    tafel = SpelContext.spelData.findTafel(tafel.tafelNr)
 
     val laatsteSlag = tafel.spelers.firstOrNull { it.gepast == false && it.actiefInSpel }?.kaarten?.size ?: 0 == 0
     val aantalSpelersDezeRonde = tafel.spelers.filter { it.gepast == false && it.actiefInSpel }.size
@@ -88,7 +88,7 @@ object TafelService {
 
       val eindeSpel = tafel.spelers.filter { it.actiefInSpel }.size == 1
       werkScoreBij(tafel)
-      tafel = SpelContext.findTafel(tafel.tafelNr)
+      tafel = SpelContext.spelData.findTafel(tafel.tafelNr)
       if (eindeSpel) {// einde spel
         Toepen.broadcastSpelWinnaar(tafel)
         tafel = SpelContext.spelData.updateTafel(
@@ -102,7 +102,7 @@ object TafelService {
 
         var scores: MutableList<SpelerScore> = emptyList<SpelerScore>().toMutableList()
         tafel.spelers.forEach {
-          val gebruiker = SpelContext.findGebruiker(it.id)
+          val gebruiker = SpelContext.spelData.findGebruiker(it.id)
           if (gebruiker != null) {
             gebruiker.score = gebruiker.score + it.scoreDezeRonde
           }
