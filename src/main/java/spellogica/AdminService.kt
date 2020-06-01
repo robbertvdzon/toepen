@@ -36,8 +36,7 @@ object AdminService {
           val spelers = it.spelers.plus(Speler(id = gebruiker.id, naam = gebruiker.naam))
           val tafel = it.copy(spelers = spelers.toMutableList())
           tafel
-        }
-        else {
+        } else {
           it
         }
       }
@@ -58,10 +57,14 @@ object AdminService {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
-        it.naam = nieuweSpelerData.naam
-        it.score = nieuweSpelerData.score
-        it.isMonkey = nieuweSpelerData.isMonkey
-        it.wilMeedoen = nieuweSpelerData.wilMeedoen
+        SpelContext.spelData.updateGebruiker(
+          it.copy(
+            naam = nieuweSpelerData.naam,
+            score = nieuweSpelerData.score,
+            isMonkey = nieuweSpelerData.isMonkey,
+            wilMeedoen = nieuweSpelerData.wilMeedoen
+          )
+        )
       }
     }
     mutableGebruikersList.forEach {
@@ -77,7 +80,11 @@ object AdminService {
 
   fun resetScore(): CommandResult {
     SpelContext.spelData.alleSpelers.forEach {
-      it.score = 0
+      SpelContext.spelData.updateGebruiker(
+        it.copy(
+          score = 0
+        )
+      )
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
@@ -113,14 +120,14 @@ object AdminService {
 
   fun pauzeerTafel(tafel: Tafel?): CommandResult {
     SpelContext.spelData.tafels = SpelContext.spelData.tafels.map {
-      if (it.tafelNr==tafel?.tafelNr) it.copy(gepauzeerd = true) else it
+      if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
     }.toMutableList()
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun startTafel(tafel: Tafel?): CommandResult {
     SpelContext.spelData.tafels = SpelContext.spelData.tafels.map {
-      if (it.tafelNr==tafel?.tafelNr) it.copy(gepauzeerd = false) else it
+      if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
     }.toMutableList()
     return CommandResult(CommandStatus.SUCCEDED, "")
   }

@@ -19,6 +19,11 @@ data class SpelData(
     return tafel
   }
 
+  fun updateGebruiker(gebruiker:Gebruiker): Gebruiker{
+    alleSpelers = alleSpelers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
+    return gebruiker
+  }
+
   fun findGebruiker(spelerId: String?) = this
     .alleSpelers
     .firstOrNull { it.id == spelerId }

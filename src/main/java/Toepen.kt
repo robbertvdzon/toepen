@@ -278,11 +278,12 @@ object Toepen {
   }
 
   fun maakInitieleGebruiker(id: String, naam: String): Gebruiker {
-    val gebruiker = Gebruiker()
-    gebruiker.id = id
-    gebruiker.naam = naam
-    gebruiker.isMonkey = true
-    gebruiker.wilMeedoen = true
+    val gebruiker = Gebruiker(
+      id = id,
+      naam = naam,
+      isMonkey = true,
+      wilMeedoen = true
+    )
     return gebruiker
   }
 
