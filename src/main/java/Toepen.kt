@@ -24,7 +24,10 @@ object Toepen {
   fun main(args: Array<String>) {
     CommandQueue.processCommands()
     try {
-      AdminService.loadData()
+      val loadResult = AdminService.loadData()
+      if (loadResult.isRight){
+        SpelContext.spelData = loadResult.get()
+      }
     } catch (e: Exception) {
       val spelers = listOf(
         maakInitieleGebruiker("27331", "Robbert"),

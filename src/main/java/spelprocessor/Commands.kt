@@ -81,7 +81,16 @@ class PasCommand(val spelerId: String) : Command() {
 }
 
 class LoadDataCommand() : Command() {
-  override fun process(): CommandResult = AdminService.loadData()
+  override fun process(): CommandResult {
+    val result = AdminService.loadData()
+    if (result.isLeft){
+      return CommandResult(CommandStatus.FAILED, result.left)
+    }
+    SpelContext.spelData = result.get()
+    CommandQueue.setLastSpeldataJson(AdminService.objectMapper.writeValueAsString(SpelContext.spelData))
+    return CommandResult(CommandStatus.SUCCEDED, "")
+
+  }
 }
 
 class SaveDataCommand() : Command() {

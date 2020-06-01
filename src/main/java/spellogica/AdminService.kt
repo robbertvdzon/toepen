@@ -2,6 +2,7 @@ package spellogica
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.vavr.control.Either
 import model.*
 import spelprocessor.CommandQueue
 import util.Util
@@ -10,12 +11,10 @@ import java.io.File
 object AdminService {
   val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-  fun loadData(): CommandResult {
+  fun loadData(): Either<String, SpelData> {
     val json = File("speldata.dat").readText(Charsets.UTF_8)
     val spelData = objectMapper.readValue<SpelData>(json, SpelData::class.java)
-    SpelContext.spelData = spelData
-    CommandQueue.setLastSpeldataJson(objectMapper.writeValueAsString(SpelContext.spelData))
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return Either.right(spelData)
   }
 
   fun saveData(): CommandResult {
