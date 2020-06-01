@@ -121,7 +121,7 @@ object TafelService {
         spelData = newSpeldata
 
 
-        var scores: MutableList<SpelerScore> = emptyList<SpelerScore>().toMutableList()
+        val scores: MutableList<SpelerScore> = emptyList<SpelerScore>().toMutableList()
         tafel.spelers.forEach {
           val gebruiker = spelData.findGebruiker(it.id)
           if (gebruiker != null) {
