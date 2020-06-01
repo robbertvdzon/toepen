@@ -14,9 +14,9 @@ data class SpelData(
     get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed().toMutableList()
     set(list) {}
 
-  fun updateTafel(tafel:Tafel){
+  fun updateTafel(tafel:Tafel): Tafel{
     tafels = tafels.map {if (it.tafelNr==tafel.tafelNr) tafel else it}.toMutableList()
-
+    return tafel
   }
 
 }

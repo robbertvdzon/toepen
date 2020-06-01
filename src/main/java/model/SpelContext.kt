@@ -13,6 +13,10 @@ object SpelContext {
     ?.spelers
     ?.firstOrNull { it.id == spelerId }
 
+  fun findTafel(tafelNr:Int): Tafel{
+    return spelData.tafels.first { it.tafelNr==tafelNr }
+  }
+
   private fun containsSpeler(it: Tafel, spelerId: String?) =
     it.spelers.filter { speler -> speler.id == spelerId ?: "" }.firstOrNull() != null
 }

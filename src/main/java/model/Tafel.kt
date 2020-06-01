@@ -2,7 +2,6 @@ package model
 
 data class Tafel(
   val tafelNr: Int,
-//  var log: MutableList<String> = emptyList<String>().toMutableList(),
   val spelers: List<Speler> = emptyList(),
   val spelersDieAfZijn: List<String> = emptyList(),
   var opkomer: String? = null,
