@@ -7,6 +7,7 @@ import java.util.*
 
 object TafelService {
 
+
   fun vervolgSpel(tafelX: Tafel) {
     var tafel = tafelX
     werkScoreBij(tafel)
@@ -20,25 +21,36 @@ object TafelService {
         val iedereenGepast = tafel.spelers.none { it.toepKeuze == Toepkeuze.MEE }
         if (iedereenGepast) {
           // einde deze ronde!
-          tafel = SpelContext.spelData.updateTafel(tafel.copy())
-          tafel.slagWinnaar = tafel.spelers.firstOrNull { it.toepKeuze == Toepkeuze.TOEP }?.id
-          tafel.huidigeSpeler = tafel.slagWinnaar
+          tafel = SpelContext.spelData.updateTafel(tafel.copy(
+            slagWinnaar = tafel.spelers.firstOrNull { it.toepKeuze == Toepkeuze.TOEP }?.id,
+            huidigeSpeler = tafel.slagWinnaar
+          ))
           eindeSlag(tafel)
         } else {
-          tafel.huidigeSpeler = tafel.toeper
-          tafel.toeper = null
+          tafel = SpelContext.spelData.updateTafel(tafel.copy(
+            huidigeSpeler = tafel.toeper,
+            toeper = null
+          ))
+
         }
       } else {
-        tafel.huidigeSpeler = volgendeSpelerDieMoetToepen(tafel, tafel.findHuidigeSpeler())?.id
+        tafel = SpelContext.spelData.updateTafel(tafel.copy(
+          huidigeSpeler = volgendeSpelerDieMoetToepen(tafel, tafel.findHuidigeSpeler())?.id
+        ))
       }
     } else {
       // verwerk slag
       val alleSpelersHebbenKaartIngezet = tafel.spelers.all { it.gespeeldeKaart != null || !it.actiefInSpel || it.gepast }
       if (alleSpelersHebbenKaartIngezet) {
-        tafel.slagWinnaar = zoekSlagWinnaar(tafel)?.id
-        tafel.huidigeSpeler = tafel.slagWinnaar
+        val slagWinnaar = zoekSlagWinnaar(tafel)?.id
+        tafel = SpelContext.spelData.updateTafel(tafel.copy(
+          slagWinnaar = slagWinnaar,
+          huidigeSpeler = slagWinnaar
+        ))
       } else {
-        tafel.huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel, tafel.findHuidigeSpeler())?.id
+        tafel = SpelContext.spelData.updateTafel(tafel.copy(
+          huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel, tafel.findHuidigeSpeler())?.id
+        ))
       }
 
     }
