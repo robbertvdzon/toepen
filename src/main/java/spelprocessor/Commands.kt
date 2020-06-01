@@ -136,35 +136,41 @@ class AllesPauzeren() : Command() {
 }
 
 class AllesStarten() : Command() {
-  override fun process(): CommandResult = AdminService.allesStarten()
+  override fun process(): CommandResult {
+    SpelContext.spelData = AdminService.allesStarten(SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
+  }
 }
 
 class NieuwSpel(val startscore: Int, val tafelNr: Int?) : Command() {
   override fun process(): CommandResult {
     val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    return AdminService.nieuwSpel(startscore, tafel)
-
+    SpelContext.spelData = AdminService.nieuwSpel(startscore, tafel, SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
 class SchopTafel(val tafelNr: Int) : Command() {
   override fun process(): CommandResult {
     val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    return AdminService.schopTafel(tafel)
+    SpelContext.spelData = AdminService.schopTafel(tafel, SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
 class PauzeerTafel(val tafelNr: Int) : Command() {
   override fun process(): CommandResult {
     val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    return AdminService.pauzeerTafel(tafel)
+    SpelContext.spelData = AdminService.pauzeerTafel(tafel, SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
 class StartTafel(val tafelNr: Int) : Command() {
   override fun process(): CommandResult {
     val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    return AdminService.startTafel(tafel)
+    SpelContext.spelData = AdminService.startTafel(tafel, SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 

@@ -90,7 +90,7 @@ object AdminService {
   fun resetScore(spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     spelData.alleSpelers.forEach {
-      val (updatedSpelData, _) = SpelContext.spelData.updateGebruiker(
+      val (updatedSpelData, _) = spelData.updateGebruiker(
         it.copy(
           score = 0
         )
@@ -103,65 +103,59 @@ object AdminService {
 
   fun allesPauzeren(spelDataX: SpelData): SpelData {
     var spelData = spelDataX.copy(
-      tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
+      tafels = spelDataX.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
     )
 
     return spelData
   }
 
-  fun allesStarten(): CommandResult {
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
-        tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = false) }.toMutableList()
+  fun allesStarten(spelDataX: SpelData): SpelData {
+    return spelDataX.copy(
+        tafels = spelDataX.tafels.map { it.copy(gepauzeerd = false) }.toMutableList()
       )
-    )
-
-    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
-  fun nieuwSpel(startscore: Int, tafel: Tafel?): CommandResult {
+  fun nieuwSpel(startscore: Int, tafel: Tafel?,spelDataX: SpelData): SpelData {
+    var spelData = spelDataX
     if (tafel != null) {
-      val newSpelData = TafelService.nieuwSpel(SpelContext.spelData, tafel, startscore)
+      val newSpelData = TafelService.nieuwSpel(spelData, tafel, startscore)
       val pauzedTafel = newSpelData.findTafel(tafel.tafelNr).copy(
         gepauzeerd = newSpelData.nieuweTafelAutoPause == true
       )
-      val (newSpelData2, _) = SpelContext.spelData.updateTafel(pauzedTafel)
-      SpelContext.spelData = newSpelData2
+      val (newSpelData2, _) = spelData.updateTafel(pauzedTafel)
+      spelData = newSpelData2
     }
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return spelData
   }
 
-  fun schopTafel(tafel: Tafel?): CommandResult {
+  fun schopTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
+    var spelData = spelDataX
     if (tafel != null) {
-      val newnewSpelData = TafelService.vervolgSpel(tafel, SpelContext.spelData)
-      SpelContext.spelData = newnewSpelData
+      val newnewSpelData = TafelService.vervolgSpel(tafel, spelData)
+      spelData = newnewSpelData
 
     }
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return spelData
   }
 
-  fun pauzeerTafel(tafel: Tafel?): CommandResult {
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
-        tafels = SpelContext.spelData.tafels.map {
+  fun pauzeerTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
+    var spelData = spelDataX
+    spelData.copy(
+        tafels = spelData.tafels.map {
           if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
         }.toMutableList()
-      )
     )
-
-
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return spelData
   }
 
-  fun startTafel(tafel: Tafel?): CommandResult {
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
-        tafels = SpelContext.spelData.tafels.map {
+  fun startTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
+    var spelData = spelDataX
+    spelData.copy(
+        tafels = spelData.tafels.map {
           if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
         }.toMutableList()
       )
-    )
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return spelData
   }
 
 }
