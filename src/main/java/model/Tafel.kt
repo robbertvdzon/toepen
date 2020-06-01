@@ -12,11 +12,11 @@ data class Tafel(
   val tafelWinnaar: String? = null,
   val gepauzeerd: Boolean = SpelContext.spelData.nieuweTafelAutoPause == true
 ) {
-  fun findOpkomer() = SpelContext.spelData.findSpeler(opkomer)
-  fun findHuidigeSpeler() = SpelContext.spelData.findSpeler(huidigeSpeler)
-  fun findSlagWinnaar() = SpelContext.spelData.findSpeler(slagWinnaar)
-  fun updateSpeler(speler:Speler):Tafel {
-    val spelers = spelers.map {if (it.id==speler.id) speler else it}.toMutableList()
+  fun findOpkomer(spelData: SpelData) = spelData.findSpeler(opkomer)
+  fun findHuidigeSpeler(spelData: SpelData) = spelData.findSpeler(huidigeSpeler)
+  fun findSlagWinnaar(spelData: SpelData) = spelData.findSpeler(slagWinnaar)
+  fun updateSpeler(speler: Speler): Tafel {
+    val spelers = spelers.map { if (it.id == speler.id) speler else it }.toMutableList()
     return this.copy(spelers = spelers)
   }
 

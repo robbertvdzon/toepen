@@ -36,8 +36,8 @@ object SpelerService {
     if (!speler.kaarten.contains(kaart)) return Either.left("Deze kaart zit niet in de hand")
 
     if (tafel.opkomer != speler.id) {
-      val kanBekennen = speler.kaarten.any { it.symbool == tafel.findOpkomer()?.gespeeldeKaart?.symbool }
-      val zelfdeSymbool = tafel.findOpkomer()?.gespeeldeKaart?.symbool == kaart.symbool
+      val kanBekennen = speler.kaarten.any { it.symbool == tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool }
+      val zelfdeSymbool = tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool == kaart.symbool
       if (kanBekennen && !zelfdeSymbool) {
         return Either.left("Je moet bekennen")
       }

@@ -55,7 +55,7 @@ object Monkey {
         }
 
         spelData.tafels.filter { !it.gepauzeerd }.forEach {
-          val huidigeSpeler = it.findHuidigeSpeler()
+          val huidigeSpeler = it.findHuidigeSpeler(SpelContext.spelData)
           val huidigeGebruiker = SpelContext.spelData.findGebruiker(it.huidigeSpeler)
           if (huidigeSpeler != null && huidigeGebruiker != null && huidigeGebruiker.isMonkey && !hasWaitingSpeler(huidigeSpeler.id)) {
             addWaitingSpeler(huidigeSpeler.id)
