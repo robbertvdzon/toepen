@@ -32,7 +32,12 @@ class PakSlagCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
     val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    return ToepSpel.pakSlag(speler)
+    val result = ToepSpel.pakSlag(speler, SpelContext.spelData)
+    if (result.isLeft){
+      return CommandResult(CommandStatus.FAILED, result.left)
+    }
+    SpelContext.spelData = result.get()
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
@@ -40,7 +45,12 @@ class ToepCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
     val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    return ToepSpel.toep(speler)
+    val result = ToepSpel.toep(speler, SpelContext.spelData)
+    if (result.isLeft){
+      return CommandResult(CommandStatus.FAILED, result.left)
+    }
+    SpelContext.spelData = result.get()
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
@@ -48,7 +58,12 @@ class GaMeeMetToepCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
     val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    return ToepSpel.gaMeeMetToep(speler)
+    val result = ToepSpel.gaMeeMetToep(speler, SpelContext.spelData)
+    if (result.isLeft){
+      return CommandResult(CommandStatus.FAILED, result.left)
+    }
+    SpelContext.spelData = result.get()
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
@@ -56,7 +71,12 @@ class PasCommand(val spelerId: String) : Command() {
   override fun process(): CommandResult {
     val speler = SpelContext.spelData.findSpeler(spelerId)
     if (speler == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
-    return ToepSpel.pas(speler)
+    val result = ToepSpel.pas(speler, SpelContext.spelData)
+    if (result.isLeft){
+      return CommandResult(CommandStatus.FAILED, result.left)
+    }
+    SpelContext.spelData = result.get()
+    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
