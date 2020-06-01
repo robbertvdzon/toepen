@@ -119,9 +119,10 @@ object TafelService {
         tafel.spelers.forEach {
           val gebruiker = SpelContext.spelData.findGebruiker(it.id)
           if (gebruiker != null) {
-            SpelContext.spelData.updateGebruiker(gebruiker.copy(
+            val (updatedSpelData, _) = SpelContext.spelData.updateGebruiker(gebruiker.copy(
               score = gebruiker.score + it.scoreDezeRonde
             ))
+            SpelContext.spelData = updatedSpelData
           }
           scores.add(SpelerScore(it.naam, it.scoreDezeRonde))
         }

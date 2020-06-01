@@ -1,7 +1,7 @@
 package model
 
 data class SpelData(
-  var alleSpelers: MutableList<Gebruiker> = emptyList<Gebruiker>().toMutableList(),
+  val alleSpelers: MutableList<Gebruiker> = emptyList<Gebruiker>().toMutableList(),
   val tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
   val uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList(),
   val automatischNieuweTafels: Boolean? = true,
@@ -22,9 +22,12 @@ data class SpelData(
     return Pair(spelData,tafel)
   }
 
-  fun updateGebruiker(gebruiker:Gebruiker): Gebruiker{
-    alleSpelers = alleSpelers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
-    return gebruiker
+  fun updateGebruiker(gebruiker:Gebruiker): Pair<SpelData, Gebruiker>{
+    val alleSpelers = alleSpelers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
+    val spelData = SpelContext.spelData.copy(
+      tafels = tafels
+    )
+    return Pair(spelData,gebruiker)
   }
 
   fun findGebruiker(spelerId: String?) = this

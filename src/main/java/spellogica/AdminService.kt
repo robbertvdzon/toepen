@@ -61,7 +61,7 @@ object AdminService {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
-        SpelContext.spelData.updateGebruiker(
+        val (updatedSpelData, _) = SpelContext.spelData.updateGebruiker(
           it.copy(
             naam = nieuweSpelerData.naam,
             score = nieuweSpelerData.score,
@@ -69,6 +69,7 @@ object AdminService {
             wilMeedoen = nieuweSpelerData.wilMeedoen
           )
         )
+       SpelContext.spelData = updatedSpelData
       }
     }
     mutableGebruikersList.forEach {
@@ -88,11 +89,12 @@ object AdminService {
 
   fun resetScore(): CommandResult {
     SpelContext.spelData.alleSpelers.forEach {
-      SpelContext.spelData.updateGebruiker(
+      val (updatedSpelData, _) = SpelContext.spelData.updateGebruiker(
         it.copy(
           score = 0
         )
       )
+      SpelContext.spelData = updatedSpelData
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
