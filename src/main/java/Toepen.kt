@@ -195,87 +195,58 @@ object Toepen {
   }
 
   private fun pauzeer(ctx: Context) {
-    val id = ctx.pathParam("tafelnr")
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-    ctx.json(CommandQueue.addNewCommand(PauzeerTafel(tafel!!.tafelNr)))
+    val tafelNr = ctx.pathParam("tafelnr").toInt()
+    ctx.json(CommandQueue.addNewCommand(PauzeerTafel(tafelNr)))
     broadcastMessage()
   }
 
   private fun gadoor(ctx: Context) {
-    val id = ctx.pathParam("tafelnr")
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-    ctx.json(CommandQueue.addNewCommand(StartTafel(tafel!!.tafelNr)))
+    val tafelNr = ctx.pathParam("tafelnr").toInt()
+    ctx.json(CommandQueue.addNewCommand(StartTafel(tafelNr)))
     broadcastMessage()
   }
 
   private fun nieuwSpel(ctx: Context) {
-    val id = ctx.pathParam("tafelnr")
+    val tafelNr = ctx.pathParam("tafelnr").toInt()
     val lucifers = ctx.pathParam("lucifers").toInt()
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-    ctx.json(CommandQueue.addNewCommand(NieuwSpel(lucifers, tafel!!.tafelNr)))
+    ctx.json(CommandQueue.addNewCommand(NieuwSpel(lucifers, tafelNr)))
     broadcastMessage()
   }
 
   private fun schopTafelAan(ctx: Context) {
-    val id = ctx.pathParam("tafelnr")
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-    ctx.json(CommandQueue.addNewCommand(SchopTafel(tafel!!.tafelNr)))
+    val tafelNr = ctx.pathParam("tafelnr").toInt()
+    ctx.json(CommandQueue.addNewCommand(SchopTafel(tafelNr)))
     broadcastMessage()
   }
 
   private fun speelkaart(ctx: Context) {
     val id = ctx.pathParam("id")
     val kaart = ctx.body<Kaart>()
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
-    if (speler == null) {
-      ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
-      return
-    }
-    ctx.json(CommandQueue.addNewCommand(SpeelKaartCommand(speler.id, kaart)))
+    ctx.json(CommandQueue.addNewCommand(SpeelKaartCommand(id, kaart)))
     broadcastMessage()
   }
 
   private fun pakSlag(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
-    if (speler == null) {
-      ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
-      return
-    }
-    ctx.json(CommandQueue.addNewCommand(PakSlagCommand(speler.id)))
+    ctx.json(CommandQueue.addNewCommand(PakSlagCommand(id)))
     broadcastMessage()
   }
 
   private fun toep(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
-    if (speler == null) {
-      ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
-      return
-    }
-    ctx.json(CommandQueue.addNewCommand(ToepCommand(speler.id)))
+    ctx.json(CommandQueue.addNewCommand(ToepCommand(id)))
     broadcastMessage()
   }
 
   private fun pas(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
-    if (speler == null) {
-      ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
-      return
-    }
-    ctx.json(CommandQueue.addNewCommand(PasCommand(speler.id)))
+    ctx.json(CommandQueue.addNewCommand(PasCommand(id)))
     broadcastMessage()
   }
 
   private fun gaMee(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
-    if (speler == null) {
-      ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
-      return
-    }
-    ctx.json(CommandQueue.addNewCommand(GaMeeMetToepCommand(speler.id)))
+    ctx.json(CommandQueue.addNewCommand(GaMeeMetToepCommand(id)))
     broadcastMessage()
   }
 
