@@ -13,7 +13,7 @@ import kotlin.concurrent.thread
 object Monkey {
   val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   const val DELAY: Long = 10
-  var echteSpelData = CommandQueue.getLastSpelData()
+  var echteSpelData = CommandQueue.lastSpelData
   var waitingSpelers: MutableSet<String> = HashSet<String>()
   val lock = Object()
 
@@ -41,8 +41,8 @@ object Monkey {
     thread(start = true) {
       while (true) {
         Thread.sleep(DELAY)
-        echteSpelData = CommandQueue.getLastSpelData()
-        var spelData = CommandQueue.getLastSpelData()
+        echteSpelData = CommandQueue.lastSpelData
+        var spelData = CommandQueue.lastSpelData
 
         if (echteSpelData.automatischNieuweTafels == true) {
           val alleTafelsKlaar = spelData.tafels.all { it.tafelWinnaar != null }
@@ -50,13 +50,13 @@ object Monkey {
             val startScore = echteSpelData.aantalFishesNieuweTafels ?: 15
             val aantalTafels = echteSpelData.aantalAutomatischeNieuweTafels ?: spelData.tafels.size
             CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantalTafels, startScore))
-            spelData = CommandQueue.getLastSpelData()
+            spelData = CommandQueue.lastSpelData
             Toepen.broadcastMessage()
           }
         }
 
         spelData.tafels.filter { !it.gepauzeerd }.forEach {
-          spelData = CommandQueue.getLastSpelData()
+          spelData = CommandQueue.lastSpelData
           val huidigeSpeler = it.findHuidigeSpeler(spelData)
           val huidigeGebruiker = spelData.findGebruiker(it.huidigeSpeler)
           if (huidigeSpeler != null && huidigeGebruiker != null && huidigeGebruiker.isMonkey && !hasWaitingSpeler(huidigeSpeler.id)) {

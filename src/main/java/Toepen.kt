@@ -27,10 +27,7 @@ object Toepen {
   fun main(args: Array<String>) {
     CommandQueue.processCommands()
     try {
-      val loadResult = AdminService.loadData()
-      if (loadResult.isRight){
-        CommandQueue.setLastSpeldata(loadResult.get())
-      }
+      CommandQueue.lastSpelData = AdminService.loadData()
     } catch (e: Exception) {
       val spelers = listOf(
         maakInitieleGebruiker("27331", "Robbert"),
@@ -117,25 +114,25 @@ object Toepen {
 
   fun broadcastMessage() {
     userUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-      session.send(objectMapper.writeValueAsString(CommandQueue.getLastSpelData()))
+      session.send(objectMapper.writeValueAsString(CommandQueue.lastSpelData))
     }
   }
 
   fun broadcastSpelWinnaar(tafel: Tafel) {
     winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-      session.send(Winnaar(SPEL, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.getLastSpelData())?.naam ?: "?"))
+      session.send(Winnaar(SPEL, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
 
   fun broadcastRondeWinnaar(tafel: Tafel) {
     winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-      session.send(Winnaar(RONDE, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.getLastSpelData())?.naam ?: "?"))
+      session.send(Winnaar(RONDE, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
 
   fun broadcastSlagWinnaar(tafel: Tafel) {
     winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-      session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.getLastSpelData())?.naam ?: "?"))
+      session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
 
@@ -159,14 +156,14 @@ object Toepen {
 
   private fun saveSettings(ctx: Context) {
     val updatedSpelData = ctx.body<SpelData>()
-    val spelData = CommandQueue.getLastSpelData().copy(
+    val spelData = CommandQueue.lastSpelData.copy(
       automatischNieuweTafels = updatedSpelData.automatischNieuweTafels,
       nieuweTafelAutoPause = updatedSpelData.nieuweTafelAutoPause,
       aantalAutomatischeNieuweTafels = updatedSpelData.aantalAutomatischeNieuweTafels,
       aantalFishesNieuweTafels = updatedSpelData.aantalFishesNieuweTafels,
       monkeyDelayMsec = updatedSpelData.monkeyDelayMsec
     )
-    CommandQueue.setLastSpeldata(spelData)
+    CommandQueue.lastSpelData = spelData
     ctx.json(CommandQueue.addNewCommand(SaveDataCommand()))
 
   }
@@ -255,7 +252,7 @@ object Toepen {
   }
 
   private fun getSpeldata(ctx: Context) {
-    ctx.result(objectMapper.writeValueAsString(CommandQueue.getLastSpelData()))
+    ctx.result(objectMapper.writeValueAsString(CommandQueue.lastSpelData))
   }
 
   fun maakInitieleGebruiker(id: String, naam: String): Gebruiker {

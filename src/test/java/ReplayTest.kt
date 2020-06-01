@@ -35,7 +35,7 @@ class ReplayTest {
           if (playSynced){
             testSpeldata(spelData)
           }
-          CommandQueue.setLastSpeldata(spelData)
+          CommandQueue.lastSpelData = spelData
           playSynced = true
         }
         if (cmd == "SpeelKaartCommand") {
@@ -107,7 +107,7 @@ class ReplayTest {
 //    spelData.uitslagen = mutableListOf<Uitslag>()
 //    SpelContext.spelData.uitslagen = mutableListOf<Uitslag>()
     // complare 2 data
-    val ownSpelData = objectMapper.writeValueAsString(CommandQueue.getLastSpelData())
+    val ownSpelData = objectMapper.writeValueAsString(CommandQueue.lastSpelData)
     val correctSpelData = objectMapper.writeValueAsString(spelData)
     if (ownSpelData != correctSpelData) {
       println("spel differs")

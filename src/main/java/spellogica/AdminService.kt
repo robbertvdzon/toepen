@@ -10,10 +10,10 @@ import java.io.File
 object AdminService {
   val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-  fun loadData(): Either<String, SpelData> {
+  fun loadData(): SpelData {
     val json = File("speldata.dat").readText(Charsets.UTF_8)
     val spelData = objectMapper.readValue<SpelData>(json, SpelData::class.java)
-    return Either.right(spelData)
+    return spelData
   }
 
   fun saveData(spelData: SpelData) {
