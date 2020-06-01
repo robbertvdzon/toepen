@@ -23,17 +23,17 @@ object ToepSpel {
   }
 
   fun pakSlag(speler: Speler, spelData: SpelData): Either<String, SpelData>  {
-    val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id } }
+    val tafel = spelData.tafels.find { it.spelers.any { it.id == speler.id } }
     if (tafel == null) return Either.left(  "Je zit niet aan een tafel")
     if (tafel.gepauzeerd) return Either.left(  "De tafel is gepauzeerd")
     if (!speler.actiefInSpel) return Either.left(  "Je bent af")
     if (tafel.slagWinnaar != speler.id) return Either.left(  "Je hebt deze slag niet gewonnen")
-    val newnewSpelData = TafelService.eindeSlag(tafel, SpelContext.spelData)
+    val newnewSpelData = TafelService.eindeSlag(tafel, spelData)
     return Either.right(newnewSpelData)
   }
 
   fun toep(speler: Speler, spelData: SpelData): Either<String, SpelData>  {
-    val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id } }
+    val tafel = spelData.tafels.find { it.spelers.any { it.id == speler.id } }
     if (tafel == null) return Either.left(  "Je zit niet aan een tafel")
     if (tafel.gepauzeerd) return Either.left(  "De tafel is gepauzeerd")
     val nieuweInzet = tafel.inzet+1
@@ -41,7 +41,7 @@ object ToepSpel {
     val result = Util.eitherBlock<String, SpelData> {
       val updatedSpeler = SpelerService.toep(speler, tafel, nieuweInzet).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler).copy(inzet = nieuweInzet)
-      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpelData,newTafel ) = spelData.updateTafel(updatedTafel)
       val newnewSpelData = TafelService.toep(newSpelData, newTafel, updatedSpeler)
       newnewSpelData
     }
@@ -50,14 +50,14 @@ object ToepSpel {
   }
 
   fun gaMeeMetToep(speler: Speler, spelData: SpelData): Either<String, SpelData>  {
-    val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id } }
+    val tafel = spelData.tafels.find { it.spelers.any { it.id == speler.id } }
     if (tafel == null) return Either.left(  "Je zit niet aan een tafel")
     if (tafel.gepauzeerd) return Either.left(  "De tafel is gepauzeerd")
 
     val result = Util.eitherBlock<String, SpelData> {
       val updatedSpeler = SpelerService.gaMeeMetToep(speler, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpelData,newTafel ) = spelData.updateTafel(updatedTafel)
       val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
       newnewSpelData
     }
@@ -65,14 +65,14 @@ object ToepSpel {
   }
 
   fun pas(speler: Speler, spelData: SpelData): Either<String, SpelData>  {
-    val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id } }
+    val tafel = spelData.tafels.find { it.spelers.any { it.id == speler.id } }
     if (tafel == null) return Either.left(  "Je zit niet aan een tafel")
     if (tafel.gepauzeerd) return Either.left(  "De tafel is gepauzeerd")
 
     val result = Util.eitherBlock<String, SpelData> {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpelData,newTafel ) = spelData.updateTafel(updatedTafel)
       val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
       newnewSpelData
     }
