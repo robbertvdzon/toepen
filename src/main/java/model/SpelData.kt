@@ -2,21 +2,24 @@ package model
 
 data class SpelData(
   var alleSpelers: MutableList<Gebruiker> = emptyList<Gebruiker>().toMutableList(),
-  var tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
-  var uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList(),
-  var automatischNieuweTafels: Boolean? = true,
-  var nieuweTafelAutoPause: Boolean? = false,
-  var aantalAutomatischeNieuweTafels: Int? = 3,
-  var aantalFishesNieuweTafels: Int? = 10,
-  var monkeyDelayMsec: Long? = 5000
+  val tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
+  val uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList(),
+  val automatischNieuweTafels: Boolean? = true,
+  val nieuweTafelAutoPause: Boolean? = false,
+  val aantalAutomatischeNieuweTafels: Int? = 3,
+  val aantalFishesNieuweTafels: Int? = 10,
+  val monkeyDelayMsec: Long? = 5000
 ) {
   var scorelijst: MutableList<Gebruiker>
     get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed().toMutableList()
     set(list) {}
 
-  fun updateTafel(tafel:Tafel): Tafel{
-    tafels = tafels.map {if (it.tafelNr==tafel.tafelNr) tafel else it}.toMutableList()
-    return tafel
+  fun updateTafel(tafel:Tafel): Pair<SpelData, Tafel>{
+    val tafels = tafels.map {if (it.tafelNr==tafel.tafelNr) tafel else it}.toMutableList()
+    val spelData = SpelContext.spelData.copy(
+      tafels = tafels
+    )
+    return Pair(spelData,tafel)
   }
 
   fun updateGebruiker(gebruiker:Gebruiker): Gebruiker{

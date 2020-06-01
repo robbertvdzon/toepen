@@ -17,8 +17,8 @@ object ToepSpel {
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.speelKaart(speler, kaart, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      SpelContext.spelData.updateTafel(updatedTafel)
-
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      SpelContext.spelData = newSpelData
       TafelService.vervolgSpel(updatedTafel)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
@@ -48,8 +48,9 @@ object ToepSpel {
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.toep(speler, tafel, nieuweInzet).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler).copy(inzet = nieuweInzet)
-      SpelContext.spelData.updateTafel(updatedTafel)
-      TafelService.toep(updatedTafel, updatedSpeler)
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      SpelContext.spelData = newSpelData
+      TafelService.toep(newTafel, updatedSpeler)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
 
@@ -67,7 +68,8 @@ object ToepSpel {
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.gaMeeMetToep(speler, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      SpelContext.spelData = newSpelData
       TafelService.vervolgSpel(updatedTafel)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
@@ -89,7 +91,8 @@ object ToepSpel {
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      SpelContext.spelData = newSpelData
       TafelService.vervolgSpel(updatedTafel)
       CommandResult(CommandStatus.SUCCEDED, "")
     }

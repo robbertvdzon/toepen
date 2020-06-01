@@ -21,36 +21,46 @@ object TafelService {
         val iedereenGepast = tafel.spelers.none { it.toepKeuze == Toepkeuze.MEE }
         if (iedereenGepast) {
           // einde deze ronde!
-          tafel = SpelContext.spelData.updateTafel(tafel.copy(
+          val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(tafel.copy(
             slagWinnaar = tafel.spelers.firstOrNull { it.toepKeuze == Toepkeuze.TOEP }?.id,
             huidigeSpeler = tafel.slagWinnaar
           ))
+          tafel = newTafel
+          SpelContext.spelData = newSpeldata
           eindeSlag(tafel)
         } else {
-          tafel = SpelContext.spelData.updateTafel(tafel.copy(
+          val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(tafel.copy(
             huidigeSpeler = tafel.toeper,
             toeper = null
           ))
+          tafel = newTafel
+          SpelContext.spelData = newSpeldata
 
         }
       } else {
-        tafel = SpelContext.spelData.updateTafel(tafel.copy(
+        val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(tafel.copy(
           huidigeSpeler = volgendeSpelerDieMoetToepen(tafel, tafel.findHuidigeSpeler())?.id
         ))
+        tafel = newTafel
+        SpelContext.spelData = newSpeldata
       }
     } else {
       // verwerk slag
       val alleSpelersHebbenKaartIngezet = tafel.spelers.all { it.gespeeldeKaart != null || !it.actiefInSpel || it.gepast }
       if (alleSpelersHebbenKaartIngezet) {
         val slagWinnaar = zoekSlagWinnaar(tafel)?.id
-        tafel = SpelContext.spelData.updateTafel(tafel.copy(
+        val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(tafel.copy(
           slagWinnaar = slagWinnaar,
           huidigeSpeler = slagWinnaar
         ))
+        tafel = newTafel
+        SpelContext.spelData = newSpeldata
       } else {
-        tafel = SpelContext.spelData.updateTafel(tafel.copy(
+        val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(tafel.copy(
           huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel, tafel.findHuidigeSpeler())?.id
         ))
+        tafel = newTafel
+        SpelContext.spelData = newSpeldata
       }
 
     }
@@ -84,14 +94,16 @@ object TafelService {
       val updatedTafel = tafel.copy(
         spelers = nieuweSpelers
       )
-      tafel = SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(updatedTafel)
+      tafel = newTafel
+      SpelContext.spelData = newSpeldata
 
       val eindeSpel = tafel.spelers.filter { it.actiefInSpel }.size == 1
       werkScoreBij(tafel)
       tafel = SpelContext.spelData.findTafel(tafel.tafelNr)
       if (eindeSpel) {// einde spel
         Toepen.broadcastSpelWinnaar(tafel)
-        tafel = SpelContext.spelData.updateTafel(
+        val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(
           tafel.copy(
             tafelWinnaar = tafel.slagWinnaar,
             huidigeSpeler = null,
@@ -99,6 +111,9 @@ object TafelService {
             toeper = null
           )
         )
+        tafel = newTafel
+        SpelContext.spelData = newSpeldata
+
 
         var scores: MutableList<SpelerScore> = emptyList<SpelerScore>().toMutableList()
         tafel.spelers.forEach {
@@ -116,7 +131,7 @@ object TafelService {
         println("#Uislagen:" + SpelContext.spelData.uitslagen.size)
       } else {// niet einde spel
         val huidigeSpeler = volgendeActieveSpeler(tafel, tafel.findSlagWinnaar())?.id
-        tafel = SpelContext.spelData.updateTafel(
+        val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(
           tafel.copy(
             huidigeSpeler = huidigeSpeler,
             opkomer = huidigeSpeler,
@@ -124,11 +139,16 @@ object TafelService {
             toeper = null
           )
         )
+        tafel = newTafel
+        SpelContext.spelData = newSpeldata
+
         val updatedTafel = nieuweRonde(tafel)
-        tafel = SpelContext.spelData.updateTafel(updatedTafel)
+        val (newSpeldata2,newTafel2) = SpelContext.spelData.updateTafel(updatedTafel)
+        tafel = newTafel2
+        SpelContext.spelData = newSpeldata2
       }
     } else { // niet de laatste slag
-      tafel = SpelContext.spelData.updateTafel(
+      val (newSpeldata2,newTafel2) = SpelContext.spelData.updateTafel(
         tafel.copy(
           huidigeSpeler = tafel.slagWinnaar,
           opkomer = tafel.slagWinnaar,
@@ -136,11 +156,15 @@ object TafelService {
           toeper = null
         )
       )
+      tafel = newTafel2
+      SpelContext.spelData = newSpeldata2
 
       val updatedTafel = tafel.copy(
         spelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }.toMutableList()
       )
-      SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      SpelContext.spelData = newSpelData
+
 
     }
   }
@@ -164,7 +188,8 @@ object TafelService {
       val aangepasteSpeler = it.copy(scoreDezeRonde = scoreDezeRonde)
       tafel = tafel.updateSpeler(aangepasteSpeler)
       tafel = tafel.copy(spelersDieAfZijn = nieuweSpelersDieAfZijn)
-      SpelContext.spelData.updateTafel(tafel)
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(tafel)
+      SpelContext.spelData = newSpelData
 
     }
     if (aantalSpelersDieInSpelZittenCount == 1) {
@@ -173,7 +198,8 @@ object TafelService {
         // laad de tafel opnieuw, die kan aangepast zijn
         tafel = SpelContext.spelData.tafels.first { it.tafelNr == tafel.tafelNr }
         tafel = tafel.updateSpeler(aangepasteSpeler)
-        SpelContext.spelData.updateTafel(tafel)
+        val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(tafel)
+        SpelContext.spelData = newSpelData
       }
     }
   }
@@ -247,11 +273,14 @@ object TafelService {
     var tafel = tafelX
 
     if (tafel.toeper == null) {
-      tafel = SpelContext.spelData.updateTafel(
+      val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(
         tafel.copy(
           toeper = speler.id // de eerste toeper bewaren
         )
       )
+      tafel = newTafel
+      SpelContext.spelData = newSpeldata
+
     }
 
     // set toep keuze voor alle spelers
@@ -267,7 +296,9 @@ object TafelService {
         toepKeuze = Toepkeuze.MEE
       }
       val updatedTafel = tafel.updateSpeler(it.copy(toepKeuze = toepKeuze))
-      tafel = SpelContext.spelData.updateTafel(updatedTafel)
+      val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(updatedTafel)
+      tafel = newTafel
+      SpelContext.spelData = newSpeldata
 
 
     }
@@ -277,19 +308,24 @@ object TafelService {
     // set toep keuze op toep voor de toeper
     val updatedSpeler = speler.copy(toepKeuze = Toepkeuze.TOEP)
     val updatedTafel = tafel2.updateSpeler(updatedSpeler)
-    SpelContext.spelData.updateTafel(updatedTafel)
+    val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+    SpelContext.spelData = newSpelData
 
     val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(updatedTafel, updatedSpeler)
     if (volgendeSpelerVoorToep == null) {
-      SpelContext.spelData.updateTafel(updatedTafel.copy(
+
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel.copy(
         huidigeSpeler = updatedTafel.toeper,
         toeper = null
       ))
+      SpelContext.spelData = newSpelData
+
 
     } else {
-      SpelContext.spelData.updateTafel(updatedTafel.copy(
+      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel.copy(
         huidigeSpeler = volgendeSpelerVoorToep.id
       ))
+      SpelContext.spelData = newSpelData
     }
 
   }
