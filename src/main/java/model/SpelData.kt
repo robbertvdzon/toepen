@@ -1,7 +1,7 @@
 package model
 
 data class SpelData(
-  var gebruikers: MutableList<Gebruiker> = emptyList<Gebruiker>().toMutableList(),
+  var alleSpelers: MutableList<Gebruiker> = emptyList<Gebruiker>().toMutableList(),
   var tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
   var uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList(),
   var automatischNieuweTafels: Boolean? = true,
@@ -11,7 +11,7 @@ data class SpelData(
   var monkeyDelayMsec: Long? = 5000
 ) {
   var scorelijst: MutableList<Gebruiker>
-    get() = gebruikers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed().toMutableList()
+    get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed().toMutableList()
     set(list) {}
 
   fun updateTafel(tafel:Tafel): Tafel{
@@ -20,12 +20,12 @@ data class SpelData(
   }
 
   fun updateGebruiker(gebruiker:Gebruiker): Gebruiker{
-    gebruikers = gebruikers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
+    alleSpelers = alleSpelers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
     return gebruiker
   }
 
   fun findGebruiker(spelerId: String?) = this
-    .gebruikers
+    .alleSpelers
     .firstOrNull { it.id == spelerId }
 
   fun findSpeler(spelerId: String?) = this

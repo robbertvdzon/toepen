@@ -25,8 +25,7 @@ object AdminService {
   }
 
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int): CommandResult {
-    val spelData = SpelContext.spelData
-    val spelersDieMeedoen = spelData.gebruikers.filter { it.wilMeedoen }.toMutableList()
+    val spelersDieMeedoen = SpelContext.spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
     var tafels = (1..aantalTafels).map { Tafel(it) }
     while (spelersDieMeedoen.isNotEmpty()) {
@@ -42,8 +41,12 @@ object AdminService {
       }
     }
 
-    spelData.tafels = tafels.toMutableList()
-    spelData.tafels.forEach {
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        tafels = tafels.toMutableList()
+      )
+    )
+    SpelContext.spelData.tafels.forEach {
       val updatedTafel = TafelService.nieuwSpel(it, startscore)
       SpelContext.spelData.updateTafel(updatedTafel)
     }
@@ -53,7 +56,7 @@ object AdminService {
   fun updateGebruikers(gebruikers: List<Gebruiker>): CommandResult {
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
     val mutableGebruikersList = gebruikers.toMutableList()
-    SpelContext.spelData.gebruikers.forEach {
+    SpelContext.spelData.alleSpelers.forEach {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
@@ -68,18 +71,22 @@ object AdminService {
       }
     }
     mutableGebruikersList.forEach {
-      SpelContext.spelData.gebruikers.add(it)
+      SpelContext.spelData.alleSpelers.add(it)
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun clearLog(): CommandResult {
-    SpelContext.spelData.uitslagen = emptyList<Uitslag>().toMutableList()
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        uitslagen = emptyList<Uitslag>().toMutableList()
+      )
+    )
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun resetScore(): CommandResult {
-    SpelContext.spelData.gebruikers.forEach {
+    SpelContext.spelData.alleSpelers.forEach {
       SpelContext.spelData.updateGebruiker(
         it.copy(
           score = 0
@@ -91,12 +98,22 @@ object AdminService {
 
 
   fun allesPauzeren(): CommandResult {
-    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
+      )
+    )
+
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun allesStarten(): CommandResult {
-    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = false) }.toMutableList()
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = false) }.toMutableList()
+      )
+    )
+
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
@@ -119,16 +136,26 @@ object AdminService {
   }
 
   fun pauzeerTafel(tafel: Tafel?): CommandResult {
-    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map {
-      if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
-    }.toMutableList()
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        tafels = SpelContext.spelData.tafels.map {
+          if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
+        }.toMutableList()
+      )
+    )
+
+
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun startTafel(tafel: Tafel?): CommandResult {
-    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map {
-      if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
-    }.toMutableList()
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        tafels = SpelContext.spelData.tafels.map {
+          if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
+        }.toMutableList()
+      )
+    )
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
