@@ -72,9 +72,12 @@ object AdminService {
        SpelContext.spelData = updatedSpelData
       }
     }
-    mutableGebruikersList.forEach {
-      SpelContext.spelData.alleSpelers.add(it)
-    }
+    val nieuweSpelers = SpelContext.spelData.alleSpelers.plus(mutableGebruikersList)
+    SpelContext.updateSpelData(
+      SpelContext.spelData.copy(
+        alleSpelers = nieuweSpelers
+      )
+    )
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 

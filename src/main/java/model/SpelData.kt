@@ -1,16 +1,16 @@
 package model
 
 data class SpelData(
-  val alleSpelers: MutableList<Gebruiker> = emptyList<Gebruiker>().toMutableList(),
-  val tafels: MutableList<Tafel> = emptyList<Tafel>().toMutableList(),
-  val uitslagen: MutableList<Uitslag> = emptyList<Uitslag>().toMutableList(),
+  val alleSpelers: List<Gebruiker> = emptyList<Gebruiker>(),
+  val tafels: List<Tafel> = emptyList<Tafel>(),
+  val uitslagen: List<Uitslag> = emptyList<Uitslag>(),
   val automatischNieuweTafels: Boolean? = true,
   val nieuweTafelAutoPause: Boolean? = false,
   val aantalAutomatischeNieuweTafels: Int? = 3,
   val aantalFishesNieuweTafels: Int? = 10,
   val monkeyDelayMsec: Long? = 5000
 ) {
-  var scorelijst: MutableList<Gebruiker>
+  var scorelijst: List<Gebruiker>
     get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed().toMutableList()
     set(list) {}
 

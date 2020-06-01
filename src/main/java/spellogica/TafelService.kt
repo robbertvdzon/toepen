@@ -126,10 +126,17 @@ object TafelService {
           }
           scores.add(SpelerScore(it.naam, it.scoreDezeRonde))
         }
-        SpelContext.spelData.uitslagen.add(Uitslag(
-          Date().toString(), tafel.tafelNr, scores
-        ))
-        println("#Uislagen:" + SpelContext.spelData.uitslagen.size)
+
+        SpelContext.updateSpelData(
+          SpelContext.spelData.copy(
+            uitslagen = SpelContext.spelData.uitslagen.plus(Uitslag(
+              Date().toString(), tafel.tafelNr, scores
+            ))
+          )
+        )
+
+
+        println("#Uitslagen:" + SpelContext.spelData.uitslagen.size)
       } else {// niet einde spel
         val huidigeSpeler = volgendeActieveSpeler(tafel, tafel.findSlagWinnaar())?.id
         val (newSpeldata,newTafel) = SpelContext.spelData.updateTafel(
