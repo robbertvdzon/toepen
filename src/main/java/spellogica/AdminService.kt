@@ -140,22 +140,20 @@ object AdminService {
 
   fun pauzeerTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
     var spelData = spelDataX
-    spelData.copy(
+    return spelData.copy(
         tafels = spelData.tafels.map {
           if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
         }.toMutableList()
     )
-    return spelData
   }
 
   fun startTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
     var spelData = spelDataX
-    spelData.copy(
+    return spelData.copy(
         tafels = spelData.tafels.map {
           if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
         }.toMutableList()
       )
-    return spelData
   }
 
 }

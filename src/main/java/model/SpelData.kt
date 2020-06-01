@@ -25,7 +25,7 @@ data class SpelData(
   fun updateGebruiker(gebruiker:Gebruiker): Pair<SpelData, Gebruiker>{
     val alleSpelers = alleSpelers.map {if (it.id==gebruiker.id) gebruiker else it}.toMutableList()
     val spelData = this.copy(
-      tafels = tafels
+      alleSpelers = alleSpelers
     )
     return Pair(spelData,gebruiker)
   }
