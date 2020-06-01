@@ -84,9 +84,6 @@ object ToepSpel {
     val tafel = SpelContext.spelData.tafels.find { it.spelers.any { it.id == speler.id } }
     if (tafel == null) return CommandResult(CommandStatus.FAILED, "Je zit niet aan een tafel")
     if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED, "De tafel is gepauzeerd")
-    if (tafel.toeper == null) return CommandResult(CommandStatus.FAILED, "Er is niet getoept")
-    if (tafel.huidigeSpeler != speler.id) return CommandResult(CommandStatus.FAILED, "Je bent nog niet aan de beurt om te passen")
-
 
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()

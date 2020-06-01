@@ -1,10 +1,7 @@
 package spellogica
 
 import io.vavr.control.Either
-import model.Kaart
-import model.Speler
-import model.Tafel
-import model.Toepkeuze
+import model.*
 
 object SpelerService {
 
@@ -74,12 +71,9 @@ object SpelerService {
     if (tafel.huidigeSpeler != speler.id) return Either.left("Je bent nog niet aan de beurt om mee te gaan")
     if (speler.toepKeuze != Toepkeuze.GEEN_KEUZE) return Either.left("Je hebt al een toepkeuze doorgegeven")
 
-    var ingezetteLucifers = tafel.inzet // TODO: kan dit in 1 stap met een val?
-    if (ingezetteLucifers > speler.totaalLucifers) ingezetteLucifers = speler.totaalLucifers
-
     return Either.right(
       speler.copy(
-        ingezetteLucifers = ingezetteLucifers,
+        ingezetteLucifers = if (tafel.inzet > speler.totaalLucifers) speler.totaalLucifers else tafel.inzet,
         toepKeuze = Toepkeuze.MEE
       )
     )
@@ -88,6 +82,8 @@ object SpelerService {
 
   fun pas(speler: Speler, tafel: Tafel): Either<String, Speler> {
     if (!speler.actiefInSpel) return Either.left("Je bent af")
+    if (tafel.toeper == null) return Either.left( "Er is niet getoept")
+    if (tafel.huidigeSpeler != speler.id) return Either.left( "Je bent nog niet aan de beurt om te passen")
     if (speler.toepKeuze != Toepkeuze.GEEN_KEUZE) return Either.left("Je hebt al een toepkeuze doorgegeven")
 
     return Either.right(
