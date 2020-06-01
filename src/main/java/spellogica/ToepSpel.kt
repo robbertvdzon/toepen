@@ -21,8 +21,7 @@ object ToepSpel {
     val result = Util.eitherBlock<String, SpelData> {
       val newSpelData = SpelerService.speelKaart(speler, kaart, tafel, spelData).bind()
       SpelContext.spelData = newSpelData
-      TafelService.vervolgSpel(spelData.findTafel(tafelNr))
-      SpelContext.spelData // hier eigen spelData terug geven
+      TafelService.vervolgSpel(spelData.findTafel(tafelNr),newSpelData)
     }
     return result
   }
@@ -33,7 +32,7 @@ object ToepSpel {
     if (tafel.gepauzeerd) return CommandResult(CommandStatus.FAILED, "De tafel is gepauzeerd")
     if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED, "Je bent af")
     if (tafel.slagWinnaar != speler.id) return CommandResult(CommandStatus.FAILED, "Je hebt deze slag niet gewonnen")
-    TafelService.eindeSlag(tafel)
+    TafelService.eindeSlag(tafel, SpelContext.spelData)
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
@@ -68,7 +67,7 @@ object ToepSpel {
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
       val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
       SpelContext.spelData = newSpelData
-      TafelService.vervolgSpel(updatedTafel)
+      TafelService.vervolgSpel(updatedTafel, newSpelData)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
     if (result.isLeft){
@@ -87,8 +86,8 @@ object ToepSpel {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()
       val updatedTafel = tafel.updateSpeler(updatedSpeler)
       val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
-      SpelContext.spelData = newSpelData
-      TafelService.vervolgSpel(updatedTafel)
+      val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
+      SpelContext.spelData = newnewSpelData
       CommandResult(CommandStatus.SUCCEDED, "")
     }
     if (result.isLeft){

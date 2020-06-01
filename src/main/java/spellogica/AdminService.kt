@@ -138,7 +138,7 @@ object AdminService {
 
   fun schopTafel(tafel: Tafel?): CommandResult {
     if (tafel != null) {
-      TafelService.vervolgSpel(tafel)
+      TafelService.vervolgSpel(tafel, SpelContext.spelData)
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
