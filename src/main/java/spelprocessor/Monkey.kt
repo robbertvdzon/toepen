@@ -42,7 +42,7 @@ object Monkey {
       while (true) {
         Thread.sleep(DELAY)
         echteSpelData = SpelContext.spelData
-        val spelData = objectMapper.readValue<SpelData>(CommandQueue.getLastSpeldataJson(), SpelData::class.java)
+        var spelData = CommandQueue.getLastSpelData()
 
         if (echteSpelData.automatischNieuweTafels == true) {
           val alleTafelsKlaar = spelData.tafels.all { it.tafelWinnaar != null }
@@ -50,13 +50,15 @@ object Monkey {
             val startScore = echteSpelData.aantalFishesNieuweTafels ?: 15
             val aantalTafels = echteSpelData.aantalAutomatischeNieuweTafels ?: spelData.tafels.size
             CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantalTafels, startScore))
+            spelData = CommandQueue.getLastSpelData()
             Toepen.broadcastMessage()
           }
         }
 
         spelData.tafels.filter { !it.gepauzeerd }.forEach {
-          val huidigeSpeler = it.findHuidigeSpeler(SpelContext.spelData)
-          val huidigeGebruiker = SpelContext.spelData.findGebruiker(it.huidigeSpeler)
+          spelData = CommandQueue.getLastSpelData()
+          val huidigeSpeler = it.findHuidigeSpeler(spelData)
+          val huidigeGebruiker = spelData.findGebruiker(it.huidigeSpeler)
           if (huidigeSpeler != null && huidigeGebruiker != null && huidigeGebruiker.isMonkey && !hasWaitingSpeler(huidigeSpeler.id)) {
             addWaitingSpeler(huidigeSpeler.id)
             val tasknew: TimerTask = TimerSchedulePeriod(it, huidigeSpeler)

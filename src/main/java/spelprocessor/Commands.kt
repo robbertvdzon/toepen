@@ -87,7 +87,7 @@ class LoadDataCommand() : Command() {
       return CommandResult(CommandStatus.FAILED, result.left)
     }
     SpelContext.spelData = result.get()
-    CommandQueue.setLastSpeldataJson(AdminService.objectMapper.writeValueAsString(SpelContext.spelData))
+    CommandQueue.setLastSpeldata(SpelContext.spelData)
     return CommandResult(CommandStatus.SUCCEDED, "")
 
   }

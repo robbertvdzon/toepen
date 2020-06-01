@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.plugin.rendering.vue.VueComponent
@@ -14,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 object Toepen {
+  private val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   private val log = LoggerFactory.getLogger("Toepen")
   private val userUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()// dit kan ook een list zijn!
   private val winnaarUsernameMap: MutableMap<WsConnectContext, String> = ConcurrentHashMap()// dit kan ook een list zijn!
@@ -113,7 +116,7 @@ object Toepen {
 
   fun broadcastMessage() {
     userUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
-      session.send(CommandQueue.getLastSpeldataJson())
+      session.send(objectMapper.writeValueAsString(SpelContext.spelData))
     }
   }
 
@@ -251,7 +254,7 @@ object Toepen {
   }
 
   private fun getSpeldata(ctx: Context) {
-    ctx.result(CommandQueue.getLastSpeldataJson())
+    ctx.result(objectMapper.writeValueAsString(SpelContext.spelData))
   }
 
   fun maakInitieleGebruiker(id: String, naam: String): Gebruiker {

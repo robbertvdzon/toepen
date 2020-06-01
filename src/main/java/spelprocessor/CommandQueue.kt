@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.CommandResult
 import model.CommandStatus
 import model.SpelContext
+import model.SpelData
 import java.io.File
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
@@ -27,7 +28,7 @@ object CommandQueue {
     logFile.writeText("")
   }
 
-  private var lastSpelDataJson: String = objectMapper.writeValueAsString(SpelContext.spelData)
+  private var lastSpelData: SpelData = SpelData()
   val unProcessedCommands: BlockingQueue<Command> = LinkedBlockingDeque<Command>(100)
 
   fun addNewCommand(command: Command): CommandResult {
@@ -47,12 +48,13 @@ object CommandQueue {
       while (true) {
         val command = unProcessedCommands.take()
         try {
-          val before = objectMapper.writeValueAsString(SpelContext.spelData)
+          val before = objectMapper.writeValueAsString(lastSpelData)
           command.result = command.process()
           if (command.result?.status?.equals(CommandStatus.SUCCEDED) ?: false && logCommands) {
             logFile.appendText("model.SpelData:" + before + "\n")
             logFile.appendText(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command) + "\n")
             println(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command))
+            lastSpelData = SpelContext.spelData
           }
           else{
 //            println("ongeldig command "+command.result)
@@ -61,7 +63,6 @@ object CommandQueue {
           command.result = CommandResult(CommandStatus.FAILED, e.message
             ?: "Unknown error")
         }
-        setLastSpeldataJson(objectMapper.writeValueAsString(SpelContext.spelData))
         synchronized(command.lock) {
           command.lock.notify()
         }
@@ -69,24 +70,11 @@ object CommandQueue {
     }
   }
 
-  fun setLastSpeldataJson(json: String) {
-    lock.lock()
-    try {
-      lastSpelDataJson = json
-    } finally {
-      lock.unlock()
-    }
+  fun setLastSpeldata(spelData: SpelData) {
+    lastSpelData = spelData
   }
 
-  fun getLastSpeldataJson(): String {
-    lock.lock()
-    try {
-      return lastSpelDataJson
-    } finally {
-      lock.unlock()
-    }
-  }
-
+  fun getLastSpelData() = lastSpelData
 
 }
 
