@@ -26,7 +26,7 @@ object AdminService {
 
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int): CommandResult {
     val spelData = SpelContext.spelData
-    val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
+    val spelersDieMeedoen = spelData.gebruikers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
     var tafels = (1..aantalTafels).map { Tafel(it) }
     while (spelersDieMeedoen.isNotEmpty()) {
@@ -53,7 +53,7 @@ object AdminService {
   fun updateGebruikers(gebruikers: List<Gebruiker>): CommandResult {
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
     val mutableGebruikersList = gebruikers.toMutableList()
-    SpelContext.spelData.alleSpelers.forEach {
+    SpelContext.spelData.gebruikers.forEach {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
@@ -68,7 +68,7 @@ object AdminService {
       }
     }
     mutableGebruikersList.forEach {
-      SpelContext.spelData.alleSpelers.add(it)
+      SpelContext.spelData.gebruikers.add(it)
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
@@ -79,7 +79,7 @@ object AdminService {
   }
 
   fun resetScore(): CommandResult {
-    SpelContext.spelData.alleSpelers.forEach {
+    SpelContext.spelData.gebruikers.forEach {
       SpelContext.spelData.updateGebruiker(
         it.copy(
           score = 0

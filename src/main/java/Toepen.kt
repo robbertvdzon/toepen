@@ -140,7 +140,7 @@ object Toepen {
 
   private fun saveData(ctx: Context) {
     val updatedSpelData = ctx.body<SpelData>()
-    val command = UpdateGebruikersCommand(updatedSpelData.alleSpelers)
+    val command = UpdateGebruikersCommand(updatedSpelData.gebruikers)
     val res = CommandQueue.addNewCommand(command)
     if (res.status == CommandStatus.FAILED) {
       ctx.json(res)
@@ -220,7 +220,7 @@ object Toepen {
   private fun speelkaart(ctx: Context) {
     val id = ctx.pathParam("id")
     val kaart = ctx.body<Kaart>()
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
+    val speler = SpelContext.spelData.gebruikers.firstOrNull { it.id == id }
     if (speler == null) {
       ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
       return
@@ -231,7 +231,7 @@ object Toepen {
 
   private fun pakSlag(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
+    val speler = SpelContext.spelData.gebruikers.firstOrNull { it.id == id }
     if (speler == null) {
       ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
       return
@@ -242,7 +242,7 @@ object Toepen {
 
   private fun toep(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
+    val speler = SpelContext.spelData.gebruikers.firstOrNull { it.id == id }
     if (speler == null) {
       ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
       return
@@ -253,7 +253,7 @@ object Toepen {
 
   private fun pas(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
+    val speler = SpelContext.spelData.gebruikers.firstOrNull { it.id == id }
     if (speler == null) {
       ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
       return
@@ -264,7 +264,7 @@ object Toepen {
 
   private fun gaMee(ctx: Context) {
     val id = ctx.pathParam("id")
-    val speler = SpelContext.spelData.alleSpelers.firstOrNull { it.id == id }
+    val speler = SpelContext.spelData.gebruikers.firstOrNull { it.id == id }
     if (speler == null) {
       ctx.json(CommandResult(CommandStatus.FAILED, "model.Speler niet gevonden"))
       return
