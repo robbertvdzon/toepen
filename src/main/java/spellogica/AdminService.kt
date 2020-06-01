@@ -47,8 +47,7 @@ object AdminService {
       )
     )
     SpelContext.spelData.tafels.forEach {
-      val updatedTafel = TafelService.nieuwSpel(it, startscore)
-      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(updatedTafel)
+      val newSpelData = TafelService.nieuwSpel(SpelContext.spelData, it, startscore)
       SpelContext.spelData = newSpelData
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
@@ -125,13 +124,12 @@ object AdminService {
 
   fun nieuwSpel(startscore: Int, tafel: Tafel?): CommandResult {
     if (tafel != null) {
-      val updatedTafel = TafelService.nieuwSpel(tafel, startscore)
-      val pauzedTafel = updatedTafel.copy(
-        gepauzeerd = SpelContext.spelData.nieuweTafelAutoPause == true
+      val newSpelData =  TafelService.nieuwSpel(SpelContext.spelData, tafel, startscore)
+      val pauzedTafel = newSpelData.findTafel(tafel.tafelNr).copy(
+        gepauzeerd = newSpelData.nieuweTafelAutoPause == true
       )
-      val (newSpelData,newTafel ) = SpelContext.spelData.updateTafel(pauzedTafel)
-      SpelContext.spelData = newSpelData
-
+      val (newSpelData2,_ ) = SpelContext.spelData.updateTafel(pauzedTafel)
+      SpelContext.spelData = newSpelData2
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
