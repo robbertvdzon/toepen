@@ -84,7 +84,6 @@ object Toepen {
     app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
     app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
     app.post("/api/schop/:tafelnr", { this.schopTafelAan(it) })
-    app.post("/api/dump/:tafelnr", { this.dump(it) })
     app.post("/api/allespauzeren", { this.allesPauzeren(it) })
     app.post("/api/allesstarten", { this.allesStarten(it) })
     app.post("/api/clearlog", { this.clearlog(it) })
@@ -216,15 +215,6 @@ object Toepen {
     val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
     ctx.json(CommandQueue.addNewCommand(SchopTafel(tafel!!.tafelNr)))
     broadcastMessage()
-  }
-
-  private fun dump(ctx: Context) {
-    val id = ctx.pathParam("tafelnr")
-    val tafel = SpelContext.spelData.tafels.firstOrNull { it.tafelNr.toString() == id }
-    tafel?.log?.forEach {
-      println(it)
-    }
-
   }
 
   private fun speelkaart(ctx: Context) {

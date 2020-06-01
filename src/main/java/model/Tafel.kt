@@ -2,8 +2,8 @@ package model
 
 data class Tafel(
   val tafelNr: Int,
-  var log: MutableList<String> = emptyList<String>().toMutableList(),
-  var spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
+//  var log: MutableList<String> = emptyList<String>().toMutableList(),
+  val spelers: MutableList<Speler> = emptyList<Speler>().toMutableList(),
   var spelersDieAfZijn: MutableList<String> = mutableListOf(),
   var opkomer: String? = null,
   var huidigeSpeler: String? = null,
@@ -19,9 +19,9 @@ data class Tafel(
   fun findToeper() = SpelContext.findSpeler(toeper)
   fun findSlagWinnaar() = SpelContext.findSpeler(slagWinnaar)
   fun findTafelWinnaar() = SpelContext.findSpeler(tafelWinnaar)
-  fun updateSpeler(speler:Speler) {
-    spelers = spelers.map {if (it.id==speler.id) speler else it}.toMutableList()
-
+  fun updateSpeler(speler:Speler):Tafel {
+    val spelers = spelers.map {if (it.id==speler.id) speler else it}.toMutableList()
+    return this.copy(spelers = spelers)
   }
 
 }

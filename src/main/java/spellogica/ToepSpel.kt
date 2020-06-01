@@ -16,9 +16,10 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.speelKaart(speler, kaart, tafel).bind()
-      tafel.updateSpeler(updatedSpeler)
-      TafelService.vervolgSpel(tafel)
-      tafel.log.add("assertThat(SpelerService.speelKaart(speler${speler.id}, model.Kaart(${kaart.symbool},${kaart.waarde}))).isEqualTo(model.CommandResult(model.CommandStatus.SUCCEDED, \"\"))")
+      val updatedTafel = tafel.updateSpeler(updatedSpeler)
+      SpelContext.spelData.updateTafel(updatedTafel)
+
+      TafelService.vervolgSpel(updatedTafel)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
 
@@ -35,7 +36,6 @@ object ToepSpel {
     if (!speler.actiefInSpel) return CommandResult(CommandStatus.FAILED, "Je bent af")
     if (tafel.slagWinnaar != speler.id) return CommandResult(CommandStatus.FAILED, "Je hebt deze slag niet gewonnen")
     TafelService.eindeSlag(tafel)
-    tafel.log.add("assertThat(SpelerService.pakSlag(speler${speler.id})).isEqualTo(model.CommandResult(model.CommandStatus.SUCCEDED, \"\"))")
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
@@ -47,10 +47,9 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.toep(speler, tafel, nieuweInzet).bind()
-      tafel.updateSpeler(updatedSpeler)
-      tafel.inzet = nieuweInzet
-      TafelService.toep(tafel, updatedSpeler)
-      tafel.log.add("assertThat(SpelerService.toep(speler${speler.id})).isEqualTo(model.CommandResult(model.CommandStatus.SUCCEDED, \"\"))")
+      val updatedTafel = tafel.updateSpeler(updatedSpeler).copy(inzet = nieuweInzet)
+      SpelContext.spelData.updateTafel(updatedTafel)
+      TafelService.toep(updatedTafel, updatedSpeler)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
 
@@ -67,9 +66,9 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.gaMeeMetToep(speler, tafel).bind()
-      tafel.updateSpeler(updatedSpeler)
-      TafelService.vervolgSpel(tafel)
-      tafel.log.add("assertThat(SpelerService.gaMeeMetToep(speler${speler.id})).isEqualTo(model.CommandResult(model.CommandStatus.SUCCEDED, \"\"))")
+      val updatedTafel = tafel.updateSpeler(updatedSpeler)
+      SpelContext.spelData.updateTafel(updatedTafel)
+      TafelService.vervolgSpel(updatedTafel)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
     if (result.isLeft){
@@ -89,9 +88,9 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, CommandResult> {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()
-      tafel.updateSpeler(updatedSpeler)
-      TafelService.vervolgSpel(tafel)
-      tafel.log.add("assertThat(SpelerService.pas(speler${speler.id})).isEqualTo(model.CommandResult(model.CommandStatus.SUCCEDED, \"\"))")
+      val updatedTafel = tafel.updateSpeler(updatedSpeler)
+      SpelContext.spelData.updateTafel(updatedTafel)
+      TafelService.vervolgSpel(updatedTafel)
       CommandResult(CommandStatus.SUCCEDED, "")
     }
     if (result.isLeft){

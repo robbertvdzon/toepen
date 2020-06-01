@@ -28,18 +28,26 @@ object AdminService {
     val spelData = SpelContext.spelData
     val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
-    val tafels = (1..aantalTafels).map { Tafel(it) }
+    var tafels = (1..aantalTafels).map { Tafel(it) }
     while (spelersDieMeedoen.isNotEmpty()) {
-      tafels.forEach {
+      tafels = tafels.map {
         if (spelersDieMeedoen.isNotEmpty()) {
           val gebruiker = spelersDieMeedoen.removeAt(0)
-          it.spelers.add(Speler(id = gebruiker.id, naam = gebruiker.naam))
+          val spelers = it.spelers.plus(Speler(id = gebruiker.id, naam = gebruiker.naam))
+          val tafel = it.copy(spelers = spelers.toMutableList())
+          tafel
+        }
+        else {
+          it
         }
       }
     }
 
     spelData.tafels = tafels.toMutableList()
-    spelData.tafels.forEach { TafelService.nieuwSpel(it, startscore) }
+    spelData.tafels.forEach {
+      val updatedTafel = TafelService.nieuwSpel(it, startscore)
+      SpelContext.spelData.updateTafel(updatedTafel)
+    }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
@@ -76,23 +84,22 @@ object AdminService {
 
 
   fun allesPauzeren(): CommandResult {
-    SpelContext.spelData.tafels.forEach {
-      it.gepauzeerd = true
-    }
+    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun allesStarten(): CommandResult {
-    SpelContext.spelData.tafels.forEach {
-      it.gepauzeerd = false
-    }
+    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map { it.copy(gepauzeerd = false) }.toMutableList()
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun nieuwSpel(startscore: Int, tafel: Tafel?): CommandResult {
     if (tafel != null) {
-      TafelService.nieuwSpel(tafel, startscore)
-      tafel.gepauzeerd = SpelContext.spelData.nieuweTafelAutoPause == true
+      val updatedTafel = TafelService.nieuwSpel(tafel, startscore)
+      val pauzedTafel = updatedTafel.copy(
+        gepauzeerd = SpelContext.spelData.nieuweTafelAutoPause == true
+      )
+      SpelContext.spelData.updateTafel(pauzedTafel)
     }
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
@@ -105,16 +112,16 @@ object AdminService {
   }
 
   fun pauzeerTafel(tafel: Tafel?): CommandResult {
-    if (tafel != null) {
-      tafel.gepauzeerd = true
-    }
+    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map {
+      if (it.tafelNr==tafel?.tafelNr) it.copy(gepauzeerd = true) else it
+    }.toMutableList()
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
   fun startTafel(tafel: Tafel?): CommandResult {
-    if (tafel != null) {
-      tafel.gepauzeerd = false
-    }
+    SpelContext.spelData.tafels = SpelContext.spelData.tafels.map {
+      if (it.tafelNr==tafel?.tafelNr) it.copy(gepauzeerd = false) else it
+    }.toMutableList()
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
