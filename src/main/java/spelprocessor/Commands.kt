@@ -102,17 +102,16 @@ class SaveDataCommand() : Command() {
 
 class MaakNieuweTafelsCommand(val aantal: Int, val startscore: Int) : Command() {
   override fun process(): CommandResult {
-    val result = AdminService.maakNieuweTafels(aantal, startscore, SpelContext.spelData)
-    if (result.isLeft){
-      return CommandResult(CommandStatus.FAILED, result.left)
-    }
-    SpelContext.spelData = result.get()
+    SpelContext.spelData = AdminService.maakNieuweTafels(aantal, startscore, SpelContext.spelData)
     return CommandResult(CommandStatus.SUCCEDED, "")
   }
 }
 
 class UpdateGebruikersCommand(val gebruikers: List<Gebruiker>) : Command() {
-  override fun process(): CommandResult = AdminService.updateGebruikers(gebruikers)
+  override fun process(): CommandResult {
+    SpelContext.spelData = AdminService.updateGebruikers(gebruikers, SpelContext.spelData)
+    return CommandResult(CommandStatus.SUCCEDED, "")
+  }
 }
 
 class ClearLog() : Command() {

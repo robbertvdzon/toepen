@@ -22,7 +22,7 @@ object AdminService {
     File("speldata.dat").writeText(json)
   }
 
-  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX:SpelData): Either<String, SpelData> {
+  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX:SpelData): SpelData {
     var spelData = spelDataX
     val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
@@ -50,17 +50,18 @@ object AdminService {
       val newSpelData = TafelService.nieuwSpel(spelData, it, startscore)
       spelData = newSpelData
     }
-    return Either.right(spelData)
+    return spelData
   }
 
-  fun updateGebruikers(gebruikers: List<Gebruiker>): CommandResult {
+  fun updateGebruikers(gebruikers: List<Gebruiker>, spelDataX:SpelData): SpelData  {
+    var spelData = spelDataX
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
     val mutableGebruikersList = gebruikers.toMutableList()
-    SpelContext.spelData.alleSpelers.forEach {
+    spelData.alleSpelers.forEach {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
-        val (updatedSpelData, _) = SpelContext.spelData.updateGebruiker(
+        val (updatedSpelData, _) = spelData.updateGebruiker(
           it.copy(
             naam = nieuweSpelerData.naam,
             score = nieuweSpelerData.score,
@@ -68,16 +69,15 @@ object AdminService {
             wilMeedoen = nieuweSpelerData.wilMeedoen
           )
         )
-       SpelContext.spelData = updatedSpelData
+       spelData = updatedSpelData
       }
     }
-    val nieuweSpelers = SpelContext.spelData.alleSpelers.plus(mutableGebruikersList)
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
+    val nieuweSpelers = spelData.alleSpelers.plus(mutableGebruikersList)
+    spelData = spelData.copy(
         alleSpelers = nieuweSpelers
       )
-    )
-    return CommandResult(CommandStatus.SUCCEDED, "")
+
+    return spelData
   }
 
   fun clearLog(): CommandResult {
