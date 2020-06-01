@@ -17,18 +17,18 @@ object AdminService {
     return Either.right(spelData)
   }
 
-  fun saveData(): CommandResult {
-    val json = objectMapper.writeValueAsString(SpelContext.spelData)
+  fun saveData(spelData:SpelData) {
+    val json = objectMapper.writeValueAsString(spelData)
     File("speldata.dat").writeText(json)
-    return CommandResult(CommandStatus.SUCCEDED, "")
   }
 
-  fun maakNieuweTafels(aantalTafels: Int, startscore: Int): CommandResult {
-    val spelersDieMeedoen = SpelContext.spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
+  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX:SpelData): Either<String, SpelData> {
+    var spelData = spelDataX
+    val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
     var tafels = (1..aantalTafels).map { Tafel(
       tafelNr = it,
-      gepauzeerd = SpelContext.spelData.nieuweTafelAutoPause == true
+      gepauzeerd = spelData.nieuweTafelAutoPause == true
     ) }
     while (spelersDieMeedoen.isNotEmpty()) {
       tafels = tafels.map {
@@ -43,16 +43,14 @@ object AdminService {
       }
     }
 
-    SpelContext.updateSpelData(
-      SpelContext.spelData.copy(
+    spelData = spelData.copy(
         tafels = tafels.toMutableList()
-      )
     )
-    SpelContext.spelData.tafels.forEach {
-      val newSpelData = TafelService.nieuwSpel(SpelContext.spelData, it, startscore)
-      SpelContext.spelData = newSpelData
+    spelData.tafels.forEach {
+      val newSpelData = TafelService.nieuwSpel(spelData, it, startscore)
+      spelData = newSpelData
     }
-    return CommandResult(CommandStatus.SUCCEDED, "")
+    return Either.right(spelData)
   }
 
   fun updateGebruikers(gebruikers: List<Gebruiker>): CommandResult {
