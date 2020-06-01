@@ -130,12 +130,16 @@ object TafelService {
     nieuweSpelersDieAfZijn.forEach {
       // laad de tafel opnieuw, die kan aangepast zijn
       val tafel3 = SpelContext.spelData.tafels.first { it.tafelNr==tafel.tafelNr }
-      tafel3.spelersDieAfZijn.add(it.id)
+      val nieuweSpelersDieAfZijn = tafel3.spelersDieAfZijn.plus(it.id)
+      var scoreDezeRonde = 0
       if (score > 0) {
-        val aangepasteSpeler = it.copy(scoreDezeRonde = score)
-        val updatedTafel = tafel3.updateSpeler(aangepasteSpeler)
-        SpelContext.spelData.updateTafel(updatedTafel)
+        scoreDezeRonde = score
       }
+      val aangepasteSpeler = it.copy(scoreDezeRonde = scoreDezeRonde)
+      val updatedTafel = tafel3.updateSpeler(aangepasteSpeler)
+      val updatedTafel2 = updatedTafel.copy(spelersDieAfZijn = nieuweSpelersDieAfZijn)
+      SpelContext.spelData.updateTafel(updatedTafel2)
+
     }
     if (aantalSpelersDieInSpelZittenCount == 1) {
       aantalSpelersDieInSpelZitten.forEach {
