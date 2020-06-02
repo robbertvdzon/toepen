@@ -17,18 +17,36 @@ object AdminService {
     var spelData = spelDataX
 
     // maak nieuwe lege tafels
-    var tafels = (1..aantalTafels).map {
-      Tafel(
-        tafelNr = it,
-        gepauzeerd = spelData.nieuweTafelAutoPause == true
-      )
-    }
+    var tafels = maakLegeTafels(aantalTafels, spelData)
 
     // verdeel spelers over tafels
+    tafels = verdeelSpelersOverTafels(spelData, tafels)
+
+    // tafels in spelData
+    spelData = spelData.copy(
+      tafels = tafels
+    )
+
+    // start nieuw spel in alle tafels
+    spelData = startNieuwSpelAlleTafels(spelData, startscore)
+    return spelData
+  }
+
+  private fun startNieuwSpelAlleTafels(spelData: SpelData, startscore: Int): SpelData {
+    var spelData1 = spelData
+    spelData1.tafels.forEach {
+      val newSpelData = TafelService.nieuwSpel(spelData1, it, startscore)
+      spelData1 = newSpelData
+      }
+    return spelData1
+  }
+
+  private fun verdeelSpelersOverTafels(spelData: SpelData, tafels: List<Tafel>): List<Tafel> {
+    var tafels1 = tafels
     val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
     Util.shuffleSpelers(spelersDieMeedoen)
     while (spelersDieMeedoen.isNotEmpty()) {
-      tafels = tafels.map {
+      tafels1 = tafels1.map {
         if (spelersDieMeedoen.isNotEmpty()) {
           val gebruiker = spelersDieMeedoen.removeAt(0)
           val spelers = it.spelers.plus(Speler(id = gebruiker.id, naam = gebruiker.naam))
@@ -38,19 +56,18 @@ object AdminService {
           it
         }
       }
-    }
+      }
+    return tafels1
+  }
 
-    // tafels in spelData
-    spelData = spelData.copy(
-      tafels = tafels
-    )
-
-    // start nieuw spel in alle tafels
-    spelData.tafels.forEach {
-      val newSpelData = TafelService.nieuwSpel(spelData, it, startscore)
-      spelData = newSpelData
-    }
-    return spelData
+  private fun maakLegeTafels(aantalTafels: Int, spelData: SpelData): List<Tafel> {
+    var tafels = (1..aantalTafels).map {
+      Tafel(
+        tafelNr = it,
+        gepauzeerd = spelData.nieuweTafelAutoPause == true
+      )
+      }
+    return tafels
   }
 
   fun updateGebruikers(gebruikers: List<Gebruiker>, spelDataX: SpelData): SpelData {
