@@ -90,7 +90,7 @@ object TafelService {
 
         if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar != it.id) {
           totaalLucifers -= it.ingezetteLucifers
-          if (it.totaalLucifers == 0) actiefInSpel = false
+          if (it.totaalLucifers <= 0) actiefInSpel = false
         }
         it.copy(
           actiefInSpel = actiefInSpel,
