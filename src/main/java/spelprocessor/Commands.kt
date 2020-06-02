@@ -141,14 +141,6 @@ class NieuwSpel(val startscore: Int, val tafelNr: Int?) : Command() {
   }
 }
 
-class SchopTafel(val tafelNr: Int) : Command() {
-  override fun process(spelData:SpelData): CommandResult {
-    val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
-    val newSpelData = AdminService.schopTafel(tafel, spelData)
-    return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
-  }
-}
-
 class PauzeerTafel(val tafelNr: Int) : Command() {
   override fun process(spelData:SpelData): CommandResult {
     val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }

@@ -87,7 +87,6 @@ object Toepen {
     app.post("/api/pauzeer/:tafelnr", { this.pauzeer(it) })
     app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
     app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
-    app.post("/api/schop/:tafelnr", { this.schopTafelAan(it) })
     app.post("/api/allespauzeren", { this.allesPauzeren(it) })
     app.post("/api/allesstarten", { this.allesStarten(it) })
     app.post("/api/clearlog", { this.clearlog(it) })
@@ -211,12 +210,6 @@ object Toepen {
     val tafelNr = ctx.pathParam("tafelnr").toInt()
     val lucifers = ctx.pathParam("lucifers").toInt()
     ctx.json(CommandQueue.addNewCommand(NieuwSpel(lucifers, tafelNr)))
-    broadcastMessage()
-  }
-
-  private fun schopTafelAan(ctx: Context) {
-    val tafelNr = ctx.pathParam("tafelnr").toInt()
-    ctx.json(CommandQueue.addNewCommand(SchopTafel(tafelNr)))
     broadcastMessage()
   }
 

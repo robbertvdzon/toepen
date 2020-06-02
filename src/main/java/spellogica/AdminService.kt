@@ -105,16 +105,6 @@ object AdminService {
     return newSpelData
   }
 
-  fun schopTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
-    if (tafel != null) {
-      val newnewSpelData = TafelService.vervolgSpel(tafel, spelData)
-      spelData = newnewSpelData
-
-    }
-    return spelData
-  }
-
   fun pauzeerTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     return spelData.copy(
