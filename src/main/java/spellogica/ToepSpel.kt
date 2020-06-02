@@ -40,8 +40,8 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, SpelData> {
       val updatedSpeler = SpelerService.toep(speler, tafel, nieuweInzet).bind()
-      val updatedTafel = tafel.updateSpeler(updatedSpeler).copy(inzet = nieuweInzet)
-      val (newSpelData,newTafel ) = spelData.updateTafel(updatedTafel)
+      val updatedTafel = tafel.changeSpeler(updatedSpeler).copy(inzet = nieuweInzet)
+      val (newSpelData,newTafel ) = spelData.changeTafel(updatedTafel)
       val newnewSpelData = TafelService.toep(newSpelData, newTafel, updatedSpeler)
       newnewSpelData
     }
@@ -56,8 +56,8 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, SpelData> {
       val updatedSpeler = SpelerService.gaMeeMetToep(speler, tafel).bind()
-      val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      val (newSpelData,newTafel ) = spelData.updateTafel(updatedTafel)
+      val updatedTafel = tafel.changeSpeler(updatedSpeler)
+      val (newSpelData,newTafel ) = spelData.changeTafel(updatedTafel)
       val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
       newnewSpelData
     }
@@ -71,8 +71,8 @@ object ToepSpel {
 
     val result = Util.eitherBlock<String, SpelData> {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()
-      val updatedTafel = tafel.updateSpeler(updatedSpeler)
-      val (newSpelData,newTafel ) = spelData.updateTafel(updatedTafel)
+      val updatedTafel = tafel.changeSpeler(updatedSpeler)
+      val (newSpelData,newTafel ) = spelData.changeTafel(updatedTafel)
       val newnewSpelData = TafelService.vervolgSpel(updatedTafel, newSpelData)
       newnewSpelData
     }

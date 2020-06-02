@@ -2,7 +2,6 @@ package spellogica
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.vavr.control.Either
 import model.*
 import util.Util
 import java.io.File
@@ -10,16 +9,9 @@ import java.io.File
 object AdminService {
   val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-  fun loadData(): SpelData {
-    val json = File("speldata.dat").readText(Charsets.UTF_8)
-    val spelData = objectMapper.readValue<SpelData>(json, SpelData::class.java)
-    return spelData
-  }
+  fun loadData(): SpelData = objectMapper.readValue(File("speldata.dat").readText(Charsets.UTF_8), SpelData::class.java)
 
-  fun saveData(spelData: SpelData) {
-    val json = objectMapper.writeValueAsString(spelData)
-    File("speldata.dat").writeText(json)
-  }
+  fun saveData(spelData: SpelData) = File("speldata.dat").writeText(objectMapper.writeValueAsString(spelData))
 
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
@@ -62,7 +54,7 @@ object AdminService {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
-        val (updatedSpelData, _) = spelData.updateGebruiker(
+        val (updatedSpelData, _) = spelData.changeGebruiker(
           it.copy(
             naam = nieuweSpelerData.naam,
             score = nieuweSpelerData.score,
@@ -81,54 +73,39 @@ object AdminService {
     return spelData
   }
 
-  fun clearLog(spelDataX: SpelData): SpelData {
-    return spelDataX.copy(
-      uitslagen = emptyList<Uitslag>().toMutableList()
-    )
-  }
+  fun clearLog(spelData: SpelData): SpelData = spelData.copy(uitslagen = emptyList<Uitslag>())
 
-  fun resetScore(spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
-    spelData.alleSpelers.forEach {
-      val (updatedSpelData, _) = spelData.updateGebruiker(
-        it.copy(
-          score = 0
-        )
-      )
-      spelData = updatedSpelData
+  fun resetScore(spelData: SpelData): SpelData {
+    var newSpelData = spelData
+    spelData.alleSpelers.forEach { gebruiker ->
+      val (updatedSpelData, _) = newSpelData.changeGebruiker(gebruiker.copy(score = 0))
+      newSpelData = updatedSpelData
     }
-    return spelData
+    return newSpelData
   }
 
-
-  fun allesPauzeren(spelDataX: SpelData): SpelData {
-    var spelData = spelDataX.copy(
-      tafels = spelDataX.tafels.map { it.copy(gepauzeerd = true) }.toMutableList()
+  fun allesPauzeren(spelData: SpelData) =
+    spelData.copy(
+      tafels = spelData.tafels.map { it.copy(gepauzeerd = true) }
     )
 
-    return spelData
-  }
+  fun allesStarten(spelData: SpelData): SpelData =
+     spelData.copy(
+      tafels = spelData.tafels.map { it.copy(gepauzeerd = false) }
+    )
 
-  fun allesStarten(spelDataX: SpelData): SpelData {
-    return spelDataX.copy(
-        tafels = spelDataX.tafels.map { it.copy(gepauzeerd = false) }.toMutableList()
-      )
-  }
-
-  fun nieuwSpel(startscore: Int, tafel: Tafel?,spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
+  fun nieuwSpel(startscore: Int, tafel: Tafel?, spelData: SpelData): SpelData {
+    var newSpelData = spelData
     if (tafel != null) {
-      val newSpelData = TafelService.nieuwSpel(spelData, tafel, startscore)
-      val pauzedTafel = newSpelData.findTafel(tafel.tafelNr).copy(
+      val gepauzeerdeTafel = tafel.copy(
         gepauzeerd = newSpelData.nieuweTafelAutoPause == true
       )
-      val (newSpelData2, _) = spelData.updateTafel(pauzedTafel)
-      spelData = newSpelData2
+      newSpelData = TafelService.nieuwSpel(newSpelData, gepauzeerdeTafel, startscore)
     }
-    return spelData
+    return newSpelData
   }
 
-  fun schopTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
+  fun schopTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     if (tafel != null) {
       val newnewSpelData = TafelService.vervolgSpel(tafel, spelData)
@@ -138,22 +115,22 @@ object AdminService {
     return spelData
   }
 
-  fun pauzeerTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
+  fun pauzeerTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     return spelData.copy(
-        tafels = spelData.tafels.map {
-          if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
-        }.toMutableList()
+      tafels = spelData.tafels.map {
+        if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
+      }.toMutableList()
     )
   }
 
-  fun startTafel(tafel: Tafel?,spelDataX: SpelData): SpelData {
+  fun startTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     return spelData.copy(
-        tafels = spelData.tafels.map {
-          if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
-        }.toMutableList()
-      )
+      tafels = spelData.tafels.map {
+        if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
+      }.toMutableList()
+    )
   }
 
 }
