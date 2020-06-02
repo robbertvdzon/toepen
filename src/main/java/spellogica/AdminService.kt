@@ -15,14 +15,18 @@ object AdminService {
 
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
-    val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
-    Util.shuffleSpelers(spelersDieMeedoen)
+
+    // maak nieuwe lege tafels
     var tafels = (1..aantalTafels).map {
       Tafel(
         tafelNr = it,
         gepauzeerd = spelData.nieuweTafelAutoPause == true
       )
     }
+
+    // verdeel spelers over tafels
+    val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
+    Util.shuffleSpelers(spelersDieMeedoen)
     while (spelersDieMeedoen.isNotEmpty()) {
       tafels = tafels.map {
         if (spelersDieMeedoen.isNotEmpty()) {
@@ -36,9 +40,12 @@ object AdminService {
       }
     }
 
+    // tafels in spelData
     spelData = spelData.copy(
-      tafels = tafels.toMutableList()
+      tafels = tafels
     )
+
+    // start nieuw spel in alle tafels
     spelData.tafels.forEach {
       val newSpelData = TafelService.nieuwSpel(spelData, it, startscore)
       spelData = newSpelData
@@ -84,33 +91,23 @@ object AdminService {
     return newSpelData
   }
 
-  fun allesPauzeren(spelData: SpelData) =
-    spelData.copy(
-      tafels = spelData.tafels.map { it.copy(gepauzeerd = true) }
-    )
+  fun allesPauzeren(spelData: SpelData): SpelData {
+    val gepauzeerdeTafels = spelData.tafels.map { it.copy(gepauzeerd = true) }
+    return spelData.copy(tafels = gepauzeerdeTafels)
+  }
 
-  fun allesStarten(spelData: SpelData): SpelData =
-    spelData.copy(
-      tafels = spelData.tafels.map { it.copy(gepauzeerd = false) }
-    )
+  fun allesStarten(spelData: SpelData): SpelData {
+    val gestartteTafels = spelData.tafels.map { it.copy(gepauzeerd = false) }
+    return spelData.copy(tafels = gestartteTafels)
+  }
 
   fun nieuwSpel(startscore: Int, tafel: Tafel, spelData: SpelData): SpelData {
     val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause == true)
     return TafelService.nieuwSpel(spelData, gepauzeerdeTafel, startscore)
   }
 
-  fun pauzeerTafel(tafel: Tafel, spelData: SpelData): SpelData =
-    spelData.copy(
-      tafels = spelData.tafels.map {oldTafel ->
-        if (oldTafel.tafelNr == tafel.tafelNr) oldTafel.copy(gepauzeerd = true) else oldTafel
-      }
-    )
+  fun pauzeerTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = true)).first
 
-  fun startTafel(tafel: Tafel, spelData: SpelData): SpelData =
-    spelData.copy(
-      tafels = spelData.tafels.map {oldTafel ->
-        if (oldTafel.tafelNr == tafel.tafelNr) oldTafel.copy(gepauzeerd = false) else oldTafel
-      }
-    )
+  fun startTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = false)).first
 
 }
