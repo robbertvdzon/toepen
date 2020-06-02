@@ -272,7 +272,7 @@ object TafelService {
     )
   }
 
-  fun nieuwSpel(spelData: SpelData, tafel: Tafel, startscore: Int): SpelData {
+  fun nieuwSpel(tafel: Tafel, startscore: Int): Tafel {
     val newTafel = tafel.copy(
       huidigeSpeler = tafel.spelers.firstOrNull()?.id,
       opkomer = tafel.spelers.firstOrNull()?.id,
@@ -282,8 +282,7 @@ object TafelService {
       spelersDieAfZijn = emptyList<String>().toMutableList()
     )
     val nieuweTafel = nieuweRonde(newTafel)
-    val (newSpelData, _) = spelData.changeTafel(nieuweTafel)
-    return newSpelData
+    return nieuweTafel
   }
 
 

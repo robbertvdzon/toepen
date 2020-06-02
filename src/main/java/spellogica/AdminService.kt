@@ -13,32 +13,18 @@ object AdminService {
 
   fun saveData(spelData: SpelData) = File("speldata.dat").writeText(objectMapper.writeValueAsString(spelData))
 
-  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
-
-    // maak nieuwe lege tafels
-    var tafels = maakLegeTafels(aantalTafels, spelData)
-
-    // verdeel spelers over tafels
-    tafels = verdeelSpelersOverTafels(spelData, tafels)
-
-    // tafels in spelData
-    spelData = spelData.copy(
-      tafels = tafels
-    )
-
-    // start nieuw spel in alle tafels
-    spelData = startNieuwSpelAlleTafels(spelData, startscore)
-    return spelData
+  fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelData: SpelData): SpelData {
+    val legeTafels = maakLegeTafels(aantalTafels, spelData)
+    val tafelsMetSpelers = verdeelSpelersOverTafels(spelData, legeTafels)
+    val gestarteTafels = startNieuwSpelAlleTafels(tafelsMetSpelers, startscore)
+    return spelData.copy(tafels = gestarteTafels)
   }
 
-  private fun startNieuwSpelAlleTafels(spelData: SpelData, startscore: Int): SpelData {
-    var spelData1 = spelData
-    spelData1.tafels.forEach {
-      val newSpelData = TafelService.nieuwSpel(spelData1, it, startscore)
-      spelData1 = newSpelData
-      }
-    return spelData1
+  private fun startNieuwSpelAlleTafels(tafels: List<Tafel>, startscore: Int): List<Tafel> {
+    val list = tafels.map {
+      TafelService.nieuwSpel(it, startscore)
+    }
+    return list
   }
 
   private fun verdeelSpelersOverTafels(spelData: SpelData, tafels: List<Tafel>): List<Tafel> {
@@ -120,7 +106,8 @@ object AdminService {
 
   fun nieuwSpel(startscore: Int, tafel: Tafel, spelData: SpelData): SpelData {
     val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause == true)
-    return TafelService.nieuwSpel(spelData, gepauzeerdeTafel, startscore)
+    val gestarteTafel = TafelService.nieuwSpel(gepauzeerdeTafel, startscore)
+    return spelData.changeTafel(gestarteTafel).first
   }
 
   fun pauzeerTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = true)).first
