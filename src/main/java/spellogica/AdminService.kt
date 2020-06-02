@@ -73,7 +73,7 @@ object AdminService {
     return spelData
   }
 
-  fun clearLog(spelData: SpelData): SpelData = spelData.copy(uitslagen = emptyList<Uitslag>())
+  fun clearLog(spelData: SpelData): SpelData = spelData.copy(uitslagen = emptyList())
 
   fun resetScore(spelData: SpelData): SpelData {
     var newSpelData = spelData
@@ -94,25 +94,22 @@ object AdminService {
       tafels = spelData.tafels.map { it.copy(gepauzeerd = false) }
     )
 
-  fun nieuwSpel(startscore: Int, tafel: Tafel?, spelData: SpelData): SpelData =
-    if (tafel != null) {
-      val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause == true)
-      val newSpelData = TafelService.nieuwSpel(spelData, gepauzeerdeTafel, startscore)
-      newSpelData
-    } else
-      spelData
+  fun nieuwSpel(startscore: Int, tafel: Tafel, spelData: SpelData): SpelData {
+    val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause == true)
+    return TafelService.nieuwSpel(spelData, gepauzeerdeTafel, startscore)
+  }
 
-  fun pauzeerTafel(tafel: Tafel?, spelData: SpelData): SpelData =
+  fun pauzeerTafel(tafel: Tafel, spelData: SpelData): SpelData =
     spelData.copy(
       tafels = spelData.tafels.map {oldTafel ->
-        if (oldTafel.tafelNr == tafel?.tafelNr) oldTafel.copy(gepauzeerd = true) else oldTafel
+        if (oldTafel.tafelNr == tafel.tafelNr) oldTafel.copy(gepauzeerd = true) else oldTafel
       }
     )
 
-  fun startTafel(tafel: Tafel?, spelData: SpelData): SpelData =
+  fun startTafel(tafel: Tafel, spelData: SpelData): SpelData =
     spelData.copy(
       tafels = spelData.tafels.map {oldTafel ->
-        if (oldTafel.tafelNr == tafel?.tafelNr) oldTafel.copy(gepauzeerd = false) else oldTafel
+        if (oldTafel.tafelNr == tafel.tafelNr) oldTafel.copy(gepauzeerd = false) else oldTafel
       }
     )
 

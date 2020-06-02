@@ -136,6 +136,7 @@ class AllesStarten() : Command() {
 class NieuwSpel(val startscore: Int, val tafelNr: Int?) : Command() {
   override fun process(spelData:SpelData): CommandResult {
     val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    if (tafel==null) return CommandResult(CommandStatus.FAILED, "Tafel niet gevonden")
     val newSpelData = AdminService.nieuwSpel(startscore, tafel, spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
@@ -144,6 +145,7 @@ class NieuwSpel(val startscore: Int, val tafelNr: Int?) : Command() {
 class PauzeerTafel(val tafelNr: Int) : Command() {
   override fun process(spelData:SpelData): CommandResult {
     val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    if (tafel==null) return CommandResult(CommandStatus.FAILED, "Tafel niet gevonden")
     val newSpelData = AdminService.pauzeerTafel(tafel, spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
@@ -152,6 +154,7 @@ class PauzeerTafel(val tafelNr: Int) : Command() {
 class StartTafel(val tafelNr: Int) : Command() {
   override fun process(spelData:SpelData): CommandResult {
     val tafel = spelData.tafels.firstOrNull { it.tafelNr == tafelNr }
+    if (tafel==null) return CommandResult(CommandStatus.FAILED, "Tafel niet gevonden")
     val newSpelData = AdminService.startTafel(tafel, spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
