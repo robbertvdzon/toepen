@@ -2,7 +2,13 @@ package spellogica
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import model.*
+import model.Gebruiker
+import model.SpelData
+import model.Speler
+import model.Tafel
+import spellogica.HelperFunctions.maakLegeTafels
+import spellogica.HelperFunctions.startNieuwSpelAlleTafels
+import spellogica.HelperFunctions.verdeelSpelersOverTafels
 import util.Util
 import java.io.File
 
@@ -20,41 +26,6 @@ object AdminService {
     return spelData.copy(tafels = gestarteTafels)
   }
 
-  private fun startNieuwSpelAlleTafels(tafels: List<Tafel>, startscore: Int): List<Tafel> {
-    val list = tafels.map {
-      TafelService.nieuwSpel(it, startscore)
-    }
-    return list
-  }
-
-  private fun verdeelSpelersOverTafels(spelData: SpelData, tafels: List<Tafel>): List<Tafel> {
-    var tafels1 = tafels
-    val spelersDieMeedoen = spelData.alleSpelers.filter { it.wilMeedoen }.toMutableList()
-    Util.shuffleSpelers(spelersDieMeedoen)
-    while (spelersDieMeedoen.isNotEmpty()) {
-      tafels1 = tafels1.map {
-        if (spelersDieMeedoen.isNotEmpty()) {
-          val gebruiker = spelersDieMeedoen.removeAt(0)
-          val spelers = it.spelers.plus(Speler(id = gebruiker.id, naam = gebruiker.naam))
-          val tafel = it.copy(spelers = spelers.toMutableList())
-          tafel
-        } else {
-          it
-        }
-      }
-      }
-    return tafels1
-  }
-
-  private fun maakLegeTafels(aantalTafels: Int, spelData: SpelData): List<Tafel> {
-    var tafels = (1..aantalTafels).map {
-      Tafel(
-        tafelNr = it,
-        gepauzeerd = spelData.nieuweTafelAutoPause == true
-      )
-      }
-    return tafels
-  }
 
   fun updateGebruikers(gebruikers: List<Gebruiker>, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
