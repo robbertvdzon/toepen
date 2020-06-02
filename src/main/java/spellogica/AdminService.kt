@@ -90,37 +90,30 @@ object AdminService {
     )
 
   fun allesStarten(spelData: SpelData): SpelData =
-     spelData.copy(
+    spelData.copy(
       tafels = spelData.tafels.map { it.copy(gepauzeerd = false) }
     )
 
-  fun nieuwSpel(startscore: Int, tafel: Tafel?, spelData: SpelData): SpelData {
-    var newSpelData = spelData
+  fun nieuwSpel(startscore: Int, tafel: Tafel?, spelData: SpelData): SpelData =
     if (tafel != null) {
-      val gepauzeerdeTafel = tafel.copy(
-        gepauzeerd = newSpelData.nieuweTafelAutoPause == true
-      )
-      newSpelData = TafelService.nieuwSpel(newSpelData, gepauzeerdeTafel, startscore)
-    }
-    return newSpelData
-  }
+      val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause == true)
+      val newSpelData = TafelService.nieuwSpel(spelData, gepauzeerdeTafel, startscore)
+      newSpelData
+    } else
+      spelData
 
-  fun pauzeerTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
-    return spelData.copy(
-      tafels = spelData.tafels.map {
-        if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = true) else it
-      }.toMutableList()
+  fun pauzeerTafel(tafel: Tafel?, spelData: SpelData): SpelData =
+    spelData.copy(
+      tafels = spelData.tafels.map {oldTafel ->
+        if (oldTafel.tafelNr == tafel?.tafelNr) oldTafel.copy(gepauzeerd = true) else oldTafel
+      }
     )
-  }
 
-  fun startTafel(tafel: Tafel?, spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
-    return spelData.copy(
-      tafels = spelData.tafels.map {
-        if (it.tafelNr == tafel?.tafelNr) it.copy(gepauzeerd = false) else it
-      }.toMutableList()
+  fun startTafel(tafel: Tafel?, spelData: SpelData): SpelData =
+    spelData.copy(
+      tafels = spelData.tafels.map {oldTafel ->
+        if (oldTafel.tafelNr == tafel?.tafelNr) oldTafel.copy(gepauzeerd = false) else oldTafel
+      }
     )
-  }
 
 }
