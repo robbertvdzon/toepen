@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import model.Gebruiker
 import model.SpelData
-import model.Speler
 import model.Tafel
 import spellogica.HelperFunctions.maakLegeTafels
 import spellogica.HelperFunctions.startNieuwSpelAlleTafels
 import spellogica.HelperFunctions.verdeelSpelersOverTafels
-import util.Util
 import java.io.File
 
 object AdminService {
@@ -27,42 +25,33 @@ object AdminService {
   }
 
 
-  fun updateGebruikers(gebruikers: List<Gebruiker>, spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
+  fun updateGebruikers(gebruikers: List<Gebruiker>, spelData: SpelData): SpelData {
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
     val mutableGebruikersList = gebruikers.toMutableList()
-    spelData.alleSpelers.forEach {
+    val aangepasteGebruikers = spelData.alleSpelers.map{
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         mutableGebruikersList.remove(nieuweSpelerData)
-        val (updatedSpelData, _) = spelData.changeGebruiker(
-          it.copy(
-            naam = nieuweSpelerData.naam,
-            score = nieuweSpelerData.score,
-            isMonkey = nieuweSpelerData.isMonkey,
-            wilMeedoen = nieuweSpelerData.wilMeedoen
-          )
+        it.copy(
+          naam = nieuweSpelerData.naam,
+          score = nieuweSpelerData.score,
+          isMonkey = nieuweSpelerData.isMonkey,
+          wilMeedoen = nieuweSpelerData.wilMeedoen
         )
-        spelData = updatedSpelData
       }
+      else it
     }
-    val nieuweSpelers = spelData.alleSpelers.plus(mutableGebruikersList)
-    spelData = spelData.copy(
-      alleSpelers = nieuweSpelers
-    )
-
-    return spelData
+    val alleGebruikers = aangepasteGebruikers.plus(mutableGebruikersList)
+    return spelData.copy(alleSpelers = alleGebruikers)
   }
 
   fun clearLog(spelData: SpelData): SpelData = spelData.copy(uitslagen = emptyList())
 
   fun resetScore(spelData: SpelData): SpelData {
-    var newSpelData = spelData
-    spelData.alleSpelers.forEach { gebruiker ->
-      val (updatedSpelData, _) = newSpelData.changeGebruiker(gebruiker.copy(score = 0))
-      newSpelData = updatedSpelData
+    val gebruikers = spelData.alleSpelers.map{
+      it.copy(score = 0)
     }
-    return newSpelData
+    return spelData.copy(alleSpelers = gebruikers)
   }
 
   fun allesPauzeren(spelData: SpelData): SpelData {
