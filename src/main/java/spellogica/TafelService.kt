@@ -120,28 +120,26 @@ object TafelService {
         tafel = newTafel
         spelData = newSpeldata
 
+        val scores = tafel.spelers.map {
+          SpelerScore(it.naam, it.scoreDezeRonde)
+        }
 
-        val scores: MutableList<SpelerScore> = emptyList<SpelerScore>().toMutableList()
-        tafel.spelers.forEach {
-          val gebruiker = spelData.findGebruiker(it.id)
-          if (gebruiker != null) {
-            val (updatedSpelData, _) = spelData.changeGebruiker(gebruiker.copy(
-              score = gebruiker.score + it.scoreDezeRonde
-            ))
-            spelData = updatedSpelData
+        val updatedGebruikers = spelData.alleSpelers.map { gebruiker ->
+          val speler = tafel.spelers.find { it.id == gebruiker.id }
+          if (speler!=null){
+            gebruiker.copy(
+              score = gebruiker.score + speler.scoreDezeRonde
+            )
           }
-          scores.add(SpelerScore(it.naam, it.scoreDezeRonde))
+          else gebruiker
         }
 
         spelData = spelData.copy(
           uitslagen = spelData.uitslagen.plus(Uitslag(
             Date().toString(), tafel.tafelNr, scores
-          ))
+          )),
+          alleSpelers = updatedGebruikers
         )
-
-
-
-        println("#Uitslagen:" + spelData.uitslagen.size)
       } else {// niet einde spel
         val huidigeSpeler = volgendeActieveSpeler(tafel, tafel.findSlagWinnaar(spelData))?.id
         val (newSpeldata, newTafel) = spelData.changeTafel(

@@ -13,9 +13,11 @@ import java.io.File
 object AdminService {
   val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-  fun loadData(): SpelData = objectMapper.readValue(File("speldata.dat").readText(Charsets.UTF_8), SpelData::class.java)
+  private const val DATA_FILE = "speldata.dat"
 
-  fun saveData(spelData: SpelData) = File("speldata.dat").writeText(objectMapper.writeValueAsString(spelData))
+  fun loadData(): SpelData = objectMapper.readValue(File(DATA_FILE).readText(Charsets.UTF_8), SpelData::class.java)
+
+  fun saveData(spelData: SpelData) = File(DATA_FILE).writeText(objectMapper.writeValueAsString(spelData))
 
   fun maakNieuweTafels(aantalTafels: Int, startscore: Int, spelData: SpelData): SpelData {
     val legeTafels = maakLegeTafels(aantalTafels, spelData)
@@ -23,7 +25,6 @@ object AdminService {
     val gestarteTafels = startNieuwSpelAlleTafels(tafelsMetSpelers, startscore)
     return spelData.copy(tafels = gestarteTafels)
   }
-
 
   fun updateGebruikers(gebruikers: List<Gebruiker>, spelData: SpelData): SpelData {
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()

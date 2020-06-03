@@ -19,14 +19,6 @@ data class SpelData(
     return Pair(spelData, tafel)
   }
 
-  fun changeGebruiker(gebruiker: Gebruiker): Pair<SpelData, Gebruiker> {
-    val alleSpelers = alleSpelers.map { if (it.id == gebruiker.id) gebruiker else it }
-    val spelData = this.copy(alleSpelers = alleSpelers)
-    return Pair(spelData, gebruiker)
-  }
-
-  fun changeGebruiker2(gebruiker: Gebruiker): List<Gebruiker>  = alleSpelers.map { if (it.id == gebruiker.id) gebruiker else it }
-
   fun findGebruiker(spelerId: String?) = this.alleSpelers.firstOrNull { it.id == spelerId }
   fun findSpeler(spelerId: String?) = this.tafels.firstOrNull { containsSpeler(it, spelerId ?: "") }?.spelers?.firstOrNull { it.id == spelerId }
   fun findTafel(tafelNr: Int): Tafel = this.tafels.first { it.tafelNr == tafelNr }
