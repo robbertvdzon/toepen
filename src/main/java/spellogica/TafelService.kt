@@ -31,7 +31,7 @@ object TafelService {
             slagWinnaar = tafel.spelers.firstOrNull { it.toepKeuze == Toepkeuze.TOEP }?.id,
             huidigeSpeler = tafel.slagWinnaar
           )
-          val (newSpeldata, _) = spelData.changeTafel(newTafel)
+          val newSpeldata = spelData.changeTafel(newTafel)
           tafel = newTafel
           spelData = newSpeldata
           spelData = eindeSlag(tafel, spelData)
@@ -40,7 +40,7 @@ object TafelService {
             huidigeSpeler = tafel.toeper,
             toeper = null
           )
-          val (newSpeldata, _) = spelData.changeTafel(newTafel)
+          val newSpeldata = spelData.changeTafel(newTafel)
           tafel = newTafel
           spelData = newSpeldata
 
@@ -49,7 +49,7 @@ object TafelService {
         val newTafel = tafel.copy(
           huidigeSpeler = volgendeSpelerDieMoetToepen(tafel, tafel.findHuidigeSpeler(spelData))?.id
         )
-        val (newSpeldata, _) = spelData.changeTafel(newTafel)
+        val newSpeldata = spelData.changeTafel(newTafel)
         tafel = newTafel
         spelData = newSpeldata
       }
@@ -62,14 +62,14 @@ object TafelService {
           slagWinnaar = slagWinnaar,
           huidigeSpeler = slagWinnaar
         )
-        val (newSpeldata, _) = spelData.changeTafel(newTafel)
+        val newSpeldata = spelData.changeTafel(newTafel)
         tafel = newTafel
         spelData = newSpeldata
       } else {
         val newTafel = tafel.copy(
           huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel, tafel.findHuidigeSpeler(spelData))?.id
         )
-        val (newSpeldata, _) = spelData.changeTafel(newTafel)
+        val newSpeldata = spelData.changeTafel(newTafel)
         tafel = newTafel
         spelData = newSpeldata
       }
@@ -110,7 +110,7 @@ object TafelService {
       val updatedTafel = tafel.copy(
         spelers = nieuweSpelers
       )
-      val (newSpeldata, _) = spelData.changeTafel(updatedTafel)
+      val newSpeldata = spelData.changeTafel(updatedTafel)
       tafel = updatedTafel
       spelData = newSpeldata
 
@@ -119,13 +119,14 @@ object TafelService {
       tafel = spelData.findTafel(tafel.tafelNr)
       if (eindeSpel) {// einde spel
         Toepen.broadcastSpelWinnaar(tafel)
-        val (newSpeldata, newTafel) = spelData.changeTafel(
-          tafel.copy(
-            tafelWinnaar = tafel.slagWinnaar,
-            huidigeSpeler = null,
-            slagWinnaar = null,
-            toeper = null
-          )
+        val newTafel = tafel.copy(
+          tafelWinnaar = tafel.slagWinnaar,
+          huidigeSpeler = null,
+          slagWinnaar = null,
+          toeper = null
+        )
+        val newSpeldata = spelData.changeTafel(
+          newTafel
         )
         tafel = newTafel
         spelData = newSpeldata
@@ -151,30 +152,32 @@ object TafelService {
         )
       } else {// niet einde spel
         val huidigeSpeler = volgendeActieveSpeler(tafel, tafel.findSlagWinnaar(spelData))?.id
-        val (newSpeldata, newTafel) = spelData.changeTafel(
-          tafel.copy(
-            huidigeSpeler = huidigeSpeler,
-            opkomer = huidigeSpeler,
-            slagWinnaar = null,
-            toeper = null
-          )
+        val newTafel = tafel.copy(
+          huidigeSpeler = huidigeSpeler,
+          opkomer = huidigeSpeler,
+          slagWinnaar = null,
+          toeper = null
+        )
+        val newSpeldata = spelData.changeTafel(
+          newTafel
         )
         tafel = newTafel
         spelData = newSpeldata
 
         val updatedTafel = nieuweRonde(tafel)
-        val (newSpeldata2, newTafel2) = spelData.changeTafel(updatedTafel)
-        tafel = newTafel2
+        val newSpeldata2 = spelData.changeTafel(updatedTafel)
+        tafel = updatedTafel
         spelData = newSpeldata2
       }
     } else { // niet de laatste slag
-      val (newSpeldata2, newTafel2) = spelData.changeTafel(
-        tafel.copy(
-          huidigeSpeler = tafel.slagWinnaar,
-          opkomer = tafel.slagWinnaar,
-          slagWinnaar = null,
-          toeper = null
-        )
+      val newTafel2 = tafel.copy(
+        huidigeSpeler = tafel.slagWinnaar,
+        opkomer = tafel.slagWinnaar,
+        slagWinnaar = null,
+        toeper = null
+      )
+      val newSpeldata2 = spelData.changeTafel(
+        newTafel2
       )
       tafel = newTafel2
       spelData = newSpeldata2
@@ -182,10 +185,8 @@ object TafelService {
       val updatedTafel = tafel.copy(
         spelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }
       )
-      val (newSpelData, newTafel) = spelData.changeTafel(updatedTafel)
+      val newSpelData = spelData.changeTafel(updatedTafel)
       spelData = newSpelData
-
-
     }
     return spelData
   }
@@ -213,7 +214,7 @@ object TafelService {
       val aangepasteSpeler = it.copy(scoreDezeRonde = scoreDezeRonde)
       tafel = tafel.changeSpeler(aangepasteSpeler)
       tafel = tafel.copy(spelersDieAfZijn = nieuweSpelersDieAfZijn)
-      val (newSpelData, _) = spelData.changeTafel(tafel)
+      val newSpelData = spelData.changeTafel(tafel)
       spelData = newSpelData
 
     }
@@ -223,7 +224,7 @@ object TafelService {
         // laad de tafel opnieuw, die kan aangepast zijn
         tafel = spelData.tafels.first { it.tafelNr == tafel.tafelNr }
         tafel = tafel.changeSpeler(aangepasteSpeler)
-        val (newSpelData, newTafel) = spelData.changeTafel(tafel)
+        val newSpelData = spelData.changeTafel(tafel)
         spelData = newSpelData
       }
     }
@@ -254,7 +255,7 @@ object TafelService {
       val newTafel = tafel.copy(
         toeper = speler.id // de eerste toeper bewaren
       )
-      val (newSpeldata, _) = spelData.changeTafel(
+      val newSpeldata = spelData.changeTafel(
         newTafel
       )
       tafel = newTafel
@@ -275,8 +276,8 @@ object TafelService {
         toepKeuze = Toepkeuze.MEE
       }
       val updatedTafel = tafel.changeSpeler(it.copy(toepKeuze = toepKeuze))
-      val (newSpeldata, newTafel) = spelData.changeTafel(updatedTafel)
-      tafel = newTafel
+      val newSpeldata = spelData.changeTafel(updatedTafel)
+      tafel = updatedTafel
       spelData = newSpeldata
 
 
@@ -287,13 +288,13 @@ object TafelService {
     // set toep keuze op toep voor de toeper
     val updatedSpeler = speler.copy(toepKeuze = Toepkeuze.TOEP)
     val updatedTafel = tafel2.changeSpeler(updatedSpeler)
-    val (newSpelData, newTafel) = spelData.changeTafel(updatedTafel)
+    val newSpelData = spelData.changeTafel(updatedTafel)
     spelData = newSpelData
 
     val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(updatedTafel, updatedSpeler)
     if (volgendeSpelerVoorToep == null) {
 
-      val (newSpelData, newTafel) = spelData.changeTafel(updatedTafel.copy(
+      val newSpelData = spelData.changeTafel(updatedTafel.copy(
         huidigeSpeler = updatedTafel.toeper,
         toeper = null
       ))
@@ -301,7 +302,7 @@ object TafelService {
 
 
     } else {
-      val (newSpelData, newTafel) = spelData.changeTafel(updatedTafel.copy(
+      val newSpelData = spelData.changeTafel(updatedTafel.copy(
         huidigeSpeler = volgendeSpelerVoorToep.id
       ))
       spelData = newSpelData

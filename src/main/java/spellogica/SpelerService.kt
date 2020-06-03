@@ -45,7 +45,7 @@ object SpelerService {
       kaarten = speler.kaarten.filter { it != kaart }
     )
     val newTafel = tafel.changeSpeler(newSpeler)
-    val newSpelData = spelData.changeTafel(newTafel).first
+    val newSpelData = spelData.changeTafel(newTafel)
     return Either.right(newSpelData)
   }
 

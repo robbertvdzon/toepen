@@ -67,11 +67,11 @@ object AdminService {
   fun nieuwSpel(startscore: Int, tafel: Tafel, spelData: SpelData): SpelData {
     val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause)
     val gestarteTafel = TafelService.nieuwSpel(gepauzeerdeTafel, startscore)
-    return spelData.changeTafel(gestarteTafel).first
+    return spelData.changeTafel(gestarteTafel)
   }
 
-  fun pauzeerTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = true)).first
+  fun pauzeerTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = true))
 
-  fun startTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = false)).first
+  fun startTafel(tafel: Tafel, spelData: SpelData): SpelData = spelData.changeTafel(tafel.copy(gepauzeerd = false))
 
 }
