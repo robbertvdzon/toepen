@@ -13,6 +13,9 @@ data class SpelData(
   val scorelijst: List<Gebruiker>
     get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed()
 
+  /*
+  TODO: alleen spelData terug geven
+   */
   fun changeTafel(tafel: Tafel): Pair<SpelData, Tafel> {
     val tafels = tafels.map { if (it.tafelNr == tafel.tafelNr) tafel else it }
     val spelData = this.copy(tafels = tafels)
