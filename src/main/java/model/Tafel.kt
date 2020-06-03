@@ -16,7 +16,7 @@ data class Tafel(
   fun findHuidigeSpeler(spelData: SpelData) = spelData.findSpeler(huidigeSpeler)
   fun findSlagWinnaar(spelData: SpelData) = spelData.findSpeler(slagWinnaar)
   fun changeSpeler(speler: Speler): Tafel {
-    val spelers = spelers.map { if (it.id == speler.id) speler else it }.toMutableList()
+    val spelers = spelers.map { if (it.id == speler.id) speler else it }
     return this.copy(spelers = spelers)
   }
 

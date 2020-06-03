@@ -49,11 +49,11 @@ object CommandQueue {
           command.result = command.process(lastSpelData)
           logCommand(command, spelDataBefore)
           val commandResult = command.result
-          if (commandResult?.newSpelData!=null) {
+          if (commandResult?.newSpelData != null) {
             lastSpelData = commandResult.newSpelData
           }
         } catch (e: Exception) { // TODO: try/catch verwijderen
-          command.result = CommandResult(CommandStatus.FAILED, e.message?: "Unknown error")
+          command.result = CommandResult(CommandStatus.FAILED, e.message ?: "Unknown error")
         }
         synchronized(command.lock) {
           command.lock.notify()

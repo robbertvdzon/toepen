@@ -7,7 +7,9 @@ import java.util.*
 
 object TafelService {
 
-
+  /*
+  TODO: deze functie kan vast mooier
+   */
   fun vervolgSpel(tafelX: Tafel, spelDataX: SpelData): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
@@ -71,6 +73,9 @@ object TafelService {
     return spelData
   }
 
+  /*
+  TODO: deze functie kan vast mooier
+   */
   fun eindeSlag(tafelX: Tafel, spelDataX: SpelData): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
@@ -96,7 +101,7 @@ object TafelService {
           actiefInSpel = actiefInSpel,
           totaalLucifers = totaalLucifers
         )
-      }.toMutableList()
+      }
       val updatedTafel = tafel.copy(
         spelers = nieuweSpelers
       )
@@ -126,12 +131,11 @@ object TafelService {
 
         val updatedGebruikers = spelData.alleSpelers.map { gebruiker ->
           val speler = tafel.spelers.find { it.id == gebruiker.id }
-          if (speler!=null){
+          if (speler != null) {
             gebruiker.copy(
               score = gebruiker.score + speler.scoreDezeRonde
             )
-          }
-          else gebruiker
+          } else gebruiker
         }
 
         spelData = spelData.copy(
@@ -171,7 +175,7 @@ object TafelService {
       spelData = newSpeldata2
 
       val updatedTafel = tafel.copy(
-        spelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }.toMutableList()
+        spelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }
       )
       val (newSpelData, newTafel) = spelData.changeTafel(updatedTafel)
       spelData = newSpelData
@@ -181,6 +185,9 @@ object TafelService {
     return spelData
   }
 
+  /*
+  TODO: deze functie kan vast mooier
+   */
   private fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
@@ -218,72 +225,22 @@ object TafelService {
     return spelData
   }
 
-  private fun zoekSlagWinnaar(tafel: Tafel, spelData: SpelData): Speler? {
-    val startKaart = tafel.findOpkomer(spelData)?.gespeeldeKaart
-    if (startKaart == null) return null
-    val winnaar = tafel.spelers.filter { it.actiefInSpel && !it.gepast }.maxBy { it.berekenScore(startKaart) }
-    if (winnaar?.gepast ?: false) {
-      // oei, diegene die gepast heeft, heeft gewonnen!
-      // laat nu de eerste speler winnen die nog in het spel zit
-      return tafel.spelers.firstOrNull() { it.actiefInSpel && !it.gepast }
-    }
-    return winnaar
-  }
-
-
-  private fun volgendeActieveSpeler(tafel: Tafel, speler: Speler?): Speler? {
-    val actieveSpelers = tafel.spelers.filter { it.actiefInSpel || it == speler }
-    if (speler == null) return actieveSpelers.firstOrNull()
-    if (!actieveSpelers.contains(speler)) return null
-    if (actieveSpelers.last() == speler) return actieveSpelers.firstOrNull()
-    val index = actieveSpelers.indexOf(speler)
-    return actieveSpelers.get(index + 1)
-  }
-
-  private fun volgendeSpelerDieMoetToepen(tafel: Tafel, speler: Speler?): Speler? {
-    val spelersDieMoetenToepen = tafel.spelers.filter { it.toepKeuze == Toepkeuze.GEEN_KEUZE || it == speler }
-    if (spelersDieMoetenToepen.size == 1) return null // er zit maar 1 iemand in, dat is de speler zelf. Geeft dus null terum om aan te geven dat iedereen getoept heeft
-    if (speler == null) return spelersDieMoetenToepen.firstOrNull()
-    if (!spelersDieMoetenToepen.contains(speler)) return null
-    if (spelersDieMoetenToepen.last() == speler) return spelersDieMoetenToepen.firstOrNull()
-    val index = spelersDieMoetenToepen.indexOf(speler)
-    return spelersDieMoetenToepen.get(index + 1)
-  }
-
-  private fun volgendeSpelerDieMoetSpelen(tafel: Tafel, speler: Speler?): Speler? {
-    val spelersDieMoetenSpelen = tafel.spelers.filter { (it.gespeeldeKaart == null && it.gepast == false && it.actiefInSpel) || it == speler }
-    if (speler == null) return spelersDieMoetenSpelen.firstOrNull()
-    if (!spelersDieMoetenSpelen.contains(speler)) return null
-    if (spelersDieMoetenSpelen.last() == speler) return spelersDieMoetenSpelen.firstOrNull()
-    val index = spelersDieMoetenSpelen.indexOf(speler)
-    return spelersDieMoetenSpelen.get(index + 1)
-  }
-
-  private fun nieuweRonde(tafel: Tafel): Tafel {
-    val kaarten = Util.getGeschutKaartenDeck()
-    return tafel.copy(
-      spelers = tafel.spelers.map { speler: Speler ->
-        val handKaarten = (1..4).map { kaarten.removeAt(0) }
-        SpelerService.nieuweRonde(speler, handKaarten)
-      }.toMutableList(),
-      inzet = 1
-    )
-  }
-
   fun nieuwSpel(tafel: Tafel, startscore: Int): Tafel {
     val newTafel = tafel.copy(
       huidigeSpeler = tafel.spelers.firstOrNull()?.id,
       opkomer = tafel.spelers.firstOrNull()?.id,
       tafelWinnaar = null,
       slagWinnaar = null,
-      spelers = tafel.spelers.map { SpelerService.nieuwSpel(it, startscore) }.toMutableList(),
-      spelersDieAfZijn = emptyList<String>().toMutableList()
+      spelers = tafel.spelers.map { SpelerService.nieuwSpel(it, startscore) },
+      spelersDieAfZijn = emptyList<String>()
     )
     val nieuweTafel = nieuweRonde(newTafel)
     return nieuweTafel
   }
 
-
+  /*
+  TODO: deze functie kan vast mooier
+   */
   fun toep(spelDataX: SpelData, tafelX: Tafel, speler: Speler): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
@@ -346,4 +303,56 @@ object TafelService {
 
     return spelData
   }
+
+  private fun zoekSlagWinnaar(tafel: Tafel, spelData: SpelData): Speler? {
+    val startKaart = tafel.findOpkomer(spelData)?.gespeeldeKaart
+    if (startKaart == null) return null
+    val winnaar = tafel.spelers.filter { it.actiefInSpel && !it.gepast }.maxBy { it.berekenScore(startKaart) }
+    if (winnaar?.gepast ?: false) {
+      // oei, diegene die gepast heeft, heeft gewonnen!
+      // laat nu de eerste speler winnen die nog in het spel zit
+      return tafel.spelers.firstOrNull() { it.actiefInSpel && !it.gepast }
+    }
+    return winnaar
+  }
+
+  private fun volgendeActieveSpeler(tafel: Tafel, speler: Speler?): Speler? {
+    val actieveSpelers = tafel.spelers.filter { it.actiefInSpel || it == speler }
+    if (speler == null) return actieveSpelers.firstOrNull()
+    if (!actieveSpelers.contains(speler)) return null
+    if (actieveSpelers.last() == speler) return actieveSpelers.firstOrNull()
+    val index = actieveSpelers.indexOf(speler)
+    return actieveSpelers.get(index + 1)
+  }
+
+  private fun volgendeSpelerDieMoetToepen(tafel: Tafel, speler: Speler?): Speler? {
+    val spelersDieMoetenToepen = tafel.spelers.filter { it.toepKeuze == Toepkeuze.GEEN_KEUZE || it == speler }
+    if (spelersDieMoetenToepen.size == 1) return null // er zit maar 1 iemand in, dat is de speler zelf. Geeft dus null terum om aan te geven dat iedereen getoept heeft
+    if (speler == null) return spelersDieMoetenToepen.firstOrNull()
+    if (!spelersDieMoetenToepen.contains(speler)) return null
+    if (spelersDieMoetenToepen.last() == speler) return spelersDieMoetenToepen.firstOrNull()
+    val index = spelersDieMoetenToepen.indexOf(speler)
+    return spelersDieMoetenToepen.get(index + 1)
+  }
+
+  private fun volgendeSpelerDieMoetSpelen(tafel: Tafel, speler: Speler?): Speler? {
+    val spelersDieMoetenSpelen = tafel.spelers.filter { (it.gespeeldeKaart == null && it.gepast == false && it.actiefInSpel) || it == speler }
+    if (speler == null) return spelersDieMoetenSpelen.firstOrNull()
+    if (!spelersDieMoetenSpelen.contains(speler)) return null
+    if (spelersDieMoetenSpelen.last() == speler) return spelersDieMoetenSpelen.firstOrNull()
+    val index = spelersDieMoetenSpelen.indexOf(speler)
+    return spelersDieMoetenSpelen.get(index + 1)
+  }
+
+  private fun nieuweRonde(tafel: Tafel): Tafel {
+    val kaarten = Util.getGeschutKaartenDeck()
+    return tafel.copy(
+      spelers = tafel.spelers.map { speler: Speler ->
+        val handKaarten = (1..4).map { kaarten.removeAt(0) }
+        SpelerService.nieuweRonde(speler, handKaarten)
+      },
+      inzet = 1
+    )
+  }
+
 }

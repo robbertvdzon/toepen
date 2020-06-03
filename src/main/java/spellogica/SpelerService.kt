@@ -20,7 +20,7 @@ object SpelerService {
     gespeeldeKaart = null,
     gepast = false,
     toepKeuze = Toepkeuze.GEEN_KEUZE,
-    kaarten = if (speler.actiefInSpel) kaarten.toMutableList() else speler.kaarten,
+    kaarten = if (speler.actiefInSpel) kaarten else speler.kaarten,
     ingezetteLucifers = if (speler.actiefInSpel) 1 else speler.ingezetteLucifers
   )
 
@@ -83,13 +83,13 @@ object SpelerService {
 
   fun pas(speler: Speler, tafel: Tafel): Either<String, Speler> {
     if (!speler.actiefInSpel) return Either.left("Je bent af")
-    if (tafel.toeper == null) return Either.left( "Er is niet getoept")
-    if (tafel.huidigeSpeler != speler.id) return Either.left( "Je bent nog niet aan de beurt om te passen")
+    if (tafel.toeper == null) return Either.left("Er is niet getoept")
+    if (tafel.huidigeSpeler != speler.id) return Either.left("Je bent nog niet aan de beurt om te passen")
     if (speler.toepKeuze != Toepkeuze.GEEN_KEUZE) return Either.left("Je hebt al een toepkeuze doorgegeven")
 
     return Either.right(
       speler.copy(
-        totaalLucifers  = speler.totaalLucifers-speler.ingezetteLucifers,
+        totaalLucifers = speler.totaalLucifers - speler.ingezetteLucifers,
         ingezetteLucifers = 0,
         toepKeuze = Toepkeuze.PAS,
         gepast = true

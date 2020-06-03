@@ -22,7 +22,7 @@ object HelperFunctions {
         if (spelersDieMeedoen.isNotEmpty()) {
           val gebruiker = spelersDieMeedoen.removeAt(0)
           val spelers = tafel.spelers.plus(Speler(id = gebruiker.id, naam = gebruiker.naam))
-          tafel.copy(spelers = spelers.toMutableList())
+          tafel.copy(spelers = spelers)
         } else {
           tafel
         }

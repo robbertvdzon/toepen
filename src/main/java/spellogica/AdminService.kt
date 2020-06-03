@@ -29,7 +29,7 @@ object AdminService {
   fun updateGebruikers(gebruikers: List<Gebruiker>, spelData: SpelData): SpelData {
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
     val remainingGebruikers = gebruikers.toMutableList()
-    val aangepasteGebruikers = spelData.alleSpelers.map{
+    val aangepasteGebruikers = spelData.alleSpelers.map {
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
         remainingGebruikers.remove(nieuweSpelerData)
@@ -39,8 +39,7 @@ object AdminService {
           isMonkey = nieuweSpelerData.isMonkey,
           wilMeedoen = nieuweSpelerData.wilMeedoen
         )
-      }
-      else it
+      } else it
     }
     val alleGebruikers = aangepasteGebruikers.plus(remainingGebruikers)
     return spelData.copy(alleSpelers = alleGebruikers)
@@ -49,7 +48,7 @@ object AdminService {
   fun clearLog(spelData: SpelData): SpelData = spelData.copy(uitslagen = emptyList())
 
   fun resetScore(spelData: SpelData): SpelData {
-    val gebruikers = spelData.alleSpelers.map{
+    val gebruikers = spelData.alleSpelers.map {
       it.copy(score = 0)
     }
     return spelData.copy(alleSpelers = gebruikers)

@@ -3,7 +3,9 @@ package spelprocessor
 import Toepen
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import model.*
+import model.CommandStatus
+import model.Speler
+import model.Tafel
 import util.Util
 import java.util.*
 import kotlin.collections.HashSet
