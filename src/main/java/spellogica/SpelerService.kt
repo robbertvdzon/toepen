@@ -34,13 +34,10 @@ object SpelerService {
     if (tafel.huidigeSpeler != speler.id) return Either.left("Je bent nog niet aan de beurt om een kaart te spelen")
     if (speler.gespeeldeKaart != null) return Either.left("Je hebt al een kaart gespeeld")
     if (!speler.kaarten.contains(kaart)) return Either.left("Deze kaart zit niet in de hand")
-
     if (tafel.opkomer != speler.id) {
-      val kanBekennen = speler.kaarten.any { it.symbool == tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool }
-      val zelfdeSymbool = tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool == kaart.symbool
-      if (kanBekennen && !zelfdeSymbool) {
-        return Either.left("Je moet bekennen")
-      }
+      val spelerKanBekennen = spelerKanBekennen(speler, tafel, spelData)
+      val kaartHeeftAnderSymbool = !kaartHeeftZelfdeSymbool(tafel, spelData, kaart)
+      if (spelerKanBekennen && kaartHeeftAnderSymbool) return Either.left("Je moet bekennen")
     }
 
     val newSpeler = speler.copy(
@@ -52,18 +49,22 @@ object SpelerService {
     return Either.right(newSpelData)
   }
 
+  private fun kaartHeeftZelfdeSymbool(tafel: Tafel, spelData: SpelData, kaart: Kaart) = tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool == kaart.symbool
+
+  private fun spelerKanBekennen(speler: Speler, tafel: Tafel, spelData: SpelData) = speler.kaarten.any { it.symbool == tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool }
+
   fun toep(speler: Speler, tafel: Tafel, inzet: Int): Either<String, Speler> {
     if (!speler.actiefInSpel) return Either.left("Je bent af")
     if (tafel.huidigeSpeler != speler.id) return Either.left("Je bent nog niet aan de beurt om te toepen")
     if (speler.toepKeuze == Toepkeuze.TOEP) return Either.left("Je hebt al getoept")
     if (speler.totaalLucifers <= tafel.inzet) return Either.left("Je hebt te weinig lucifers om te toepen")
+
     return Either.right(
       speler.copy(
         ingezetteLucifers = inzet,
         toepKeuze = Toepkeuze.TOEP
       )
     )
-
   }
 
   fun gaMeeMetToep(speler: Speler, tafel: Tafel): Either<String, Speler> {
@@ -78,7 +79,6 @@ object SpelerService {
         toepKeuze = Toepkeuze.MEE
       )
     )
-
   }
 
   fun pas(speler: Speler, tafel: Tafel): Either<String, Speler> {
@@ -95,8 +95,6 @@ object SpelerService {
         gepast = true
       )
     )
-
   }
-
 
 }

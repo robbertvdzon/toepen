@@ -28,11 +28,11 @@ object AdminService {
 
   fun updateGebruikers(gebruikers: List<Gebruiker>, spelData: SpelData): SpelData {
     val gebruikersMap = gebruikers.map { it.id to it }.toMap()
-    val mutableGebruikersList = gebruikers.toMutableList()
+    val remainingGebruikers = gebruikers.toMutableList()
     val aangepasteGebruikers = spelData.alleSpelers.map{
       val nieuweSpelerData = gebruikersMap[it.id]
       if (nieuweSpelerData != null) {
-        mutableGebruikersList.remove(nieuweSpelerData)
+        remainingGebruikers.remove(nieuweSpelerData)
         it.copy(
           naam = nieuweSpelerData.naam,
           score = nieuweSpelerData.score,
@@ -42,7 +42,7 @@ object AdminService {
       }
       else it
     }
-    val alleGebruikers = aangepasteGebruikers.plus(mutableGebruikersList)
+    val alleGebruikers = aangepasteGebruikers.plus(remainingGebruikers)
     return spelData.copy(alleSpelers = alleGebruikers)
   }
 
@@ -66,7 +66,7 @@ object AdminService {
   }
 
   fun nieuwSpel(startscore: Int, tafel: Tafel, spelData: SpelData): SpelData {
-    val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause == true)
+    val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause)
     val gestarteTafel = TafelService.nieuwSpel(gepauzeerdeTafel, startscore)
     return spelData.changeTafel(gestarteTafel).first
   }
