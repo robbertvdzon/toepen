@@ -7,75 +7,79 @@ import java.util.*
 
 object TafelService {
 
-  /*
-  TODO: deze functie kan vast mooier
-   */
-  fun vervolgSpel(tafelX: Tafel, spelDataX: SpelData): SpelData {
-    var tafel = tafelX
-    var spelData = spelDataX
-    spelData = werkScoreBij(tafel, spelData)
+  fun vervolgSpel(tafelNr: Int, spelData: SpelData): SpelData {
+    val tafel = spelData.findTafel(tafelNr)
+    val eindeSpel = tafel.tafelWinnaar != null
+    val toepRonde = tafel.toeper != null
 
-    tafel = spelData.findTafel(tafel.tafelNr)
-
-    if (tafel.tafelWinnaar != null) {
-      return spelData
+    return if (eindeSpel){
+      spelData
     }
-    if (tafel.toeper != null) {
-      // verwerk toep
-      val alleSpelersHebbenToepkeuzeGemaakt = tafel.spelers.all { it.toepKeuze != Toepkeuze.GEEN_KEUZE }
-      if (alleSpelersHebbenToepkeuzeGemaakt) {
-        val iedereenGepast = tafel.spelers.none { it.toepKeuze == Toepkeuze.MEE }
-        if (iedereenGepast) {
-          // einde deze ronde!
-          val newTafel = tafel.copy(
-            slagWinnaar = tafel.spelers.firstOrNull { it.toepKeuze == Toepkeuze.TOEP }?.id,
-            huidigeSpeler = tafel.slagWinnaar
-          )
-          val newSpeldata = spelData.changeTafel(newTafel)
-          tafel = newTafel
-          spelData = newSpeldata
-          spelData = eindeSlag(tafel, spelData)
-        } else {
-          val newTafel = tafel.copy(
-            huidigeSpeler = tafel.toeper,
-            toeper = null
-          )
-          val newSpeldata = spelData.changeTafel(newTafel)
-          tafel = newTafel
-          spelData = newSpeldata
+    else if (toepRonde) {
+      vervolgToepRonde(tafel, spelData)
+    }
+    else vervolgSlagRonde(tafel, spelData)
+  }
 
-        }
+  private fun vervolgSlagRonde(tafel: Tafel, spelData: SpelData): SpelData {
+    var tafel1 = tafel
+    var spelData1 = spelData
+    val alleSpelersHebbenKaartIngezet = tafel1.spelers.all { it.gespeeldeKaart != null || !it.actiefInSpel || it.gepast }
+    if (alleSpelersHebbenKaartIngezet) {
+      val slagWinnaar = zoekSlagWinnaar(tafel1, spelData1)?.id
+      val newTafel = tafel1.copy(
+        slagWinnaar = slagWinnaar,
+        huidigeSpeler = slagWinnaar
+      )
+      val newSpeldata = spelData1.changeTafel(newTafel)
+      tafel1 = newTafel
+      spelData1 = newSpeldata
       } else {
-        val newTafel = tafel.copy(
-          huidigeSpeler = volgendeSpelerDieMoetToepen(tafel, tafel.findHuidigeSpeler(spelData))?.id
+      val newTafel = tafel1.copy(
+        huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel1, tafel1.findHuidigeSpeler(spelData1))?.id
+      )
+      val newSpeldata = spelData1.changeTafel(newTafel)
+      tafel1 = newTafel
+      spelData1 = newSpeldata
+      }
+    return spelData1
+  }
+
+  private fun vervolgToepRonde(tafel: Tafel, spelData: SpelData): SpelData {
+    var tafel1 = tafel
+    var spelData1 = spelData
+    val alleSpelersHebbenToepkeuzeGemaakt = tafel1.spelers.all { it.toepKeuze != Toepkeuze.GEEN_KEUZE }
+    if (alleSpelersHebbenToepkeuzeGemaakt) {
+      val iedereenGepast = tafel1.spelers.none { it.toepKeuze == Toepkeuze.MEE }
+      if (iedereenGepast) {
+        // einde deze ronde!
+        val newTafel = tafel1.copy(
+          slagWinnaar = tafel1.spelers.firstOrNull { it.toepKeuze == Toepkeuze.TOEP }?.id,
+          huidigeSpeler = tafel1.slagWinnaar
         )
-        val newSpeldata = spelData.changeTafel(newTafel)
-        tafel = newTafel
-        spelData = newSpeldata
+        val newSpeldata = spelData1.changeTafel(newTafel)
+        tafel1 = newTafel
+        spelData1 = newSpeldata
+        spelData1 = eindeSlag(tafel1, spelData1)
+      } else {
+        val newTafel = tafel1.copy(
+          huidigeSpeler = tafel1.toeper,
+          toeper = null
+        )
+        val newSpeldata = spelData1.changeTafel(newTafel)
+        tafel1 = newTafel
+        spelData1 = newSpeldata
+
       }
     } else {
-      // verwerk slag
-      val alleSpelersHebbenKaartIngezet = tafel.spelers.all { it.gespeeldeKaart != null || !it.actiefInSpel || it.gepast }
-      if (alleSpelersHebbenKaartIngezet) {
-        val slagWinnaar = zoekSlagWinnaar(tafel, spelData)?.id
-        val newTafel = tafel.copy(
-          slagWinnaar = slagWinnaar,
-          huidigeSpeler = slagWinnaar
-        )
-        val newSpeldata = spelData.changeTafel(newTafel)
-        tafel = newTafel
-        spelData = newSpeldata
-      } else {
-        val newTafel = tafel.copy(
-          huidigeSpeler = volgendeSpelerDieMoetSpelen(tafel, tafel.findHuidigeSpeler(spelData))?.id
-        )
-        val newSpeldata = spelData.changeTafel(newTafel)
-        tafel = newTafel
-        spelData = newSpeldata
-      }
-
+      val newTafel = tafel1.copy(
+        huidigeSpeler = volgendeSpelerDieMoetToepen(tafel1, tafel1.findHuidigeSpeler(spelData1))?.id
+      )
+      val newSpeldata = spelData1.changeTafel(newTafel)
+      tafel1 = newTafel
+      spelData1 = newSpeldata
     }
-    return spelData
+    return spelData1
   }
 
   /*
@@ -194,7 +198,7 @@ object TafelService {
   /*
   TODO: deze functie kan vast mooier
    */
-  private fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
+  fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
 

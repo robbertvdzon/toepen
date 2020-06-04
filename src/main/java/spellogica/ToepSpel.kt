@@ -17,7 +17,9 @@ object ToepSpel {
 
     return Util.eitherBlock {
       val newSpelData = SpelerService.speelKaart(speler, kaart, tafel, spelData).bind()
-      TafelService.vervolgSpel(spelData.findTafel(tafelNr), newSpelData)
+      val tafel = spelData.findTafel(tafelNr)
+      val spelDataMetNieuweScore = TafelService.werkScoreBij(tafel, newSpelData)
+      TafelService.vervolgSpel(tafelNr, spelDataMetNieuweScore)
     }
   }
 
@@ -52,7 +54,8 @@ object ToepSpel {
       val updatedSpeler = SpelerService.gaMeeMetToep(speler, tafel).bind()
       val updatedTafel = tafel.changeSpeler(updatedSpeler)
       val updatedSpelData = spelData.changeTafel(updatedTafel)
-      TafelService.vervolgSpel(updatedTafel, updatedSpelData)
+      val spelDataMetNieuweScore = TafelService.werkScoreBij(updatedTafel, updatedSpelData)
+      TafelService.vervolgSpel(tafel.tafelNr, spelDataMetNieuweScore)
     }
   }
 
@@ -64,7 +67,8 @@ object ToepSpel {
       val updatedSpeler = SpelerService.pas(speler, tafel).bind()
       val updatedTafel = tafel.changeSpeler(updatedSpeler)
       val updatedSpelData = spelData.changeTafel(updatedTafel)
-      TafelService.vervolgSpel(updatedTafel, updatedSpelData)
+      val spelDataMetNieuweScore = TafelService.werkScoreBij(updatedTafel, updatedSpelData)
+      TafelService.vervolgSpel(tafel.tafelNr, spelDataMetNieuweScore)
     }
   }
 
