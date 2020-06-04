@@ -8,8 +8,8 @@ import model.KaartSymbool
 import kotlin.random.Random
 
 object Util {
-  private var random: Random = Random(0)
-  private var kaartenDeckRandom: Random = Random(0)
+  private var random: Random = Random(0)// vaste seed, zodat de tests voorspelbaar zijn
+  private var kaartenDeckRandom: Random = Random(0)// vaste seed, zodat de tests voorspelbaar zijn
 
   fun getGeschutKaartenDeck(): MutableList<Kaart> {
     val kaarten: MutableList<Kaart> = getKaartenDeck().toMutableList()

@@ -13,10 +13,9 @@ import kotlin.concurrent.thread
 
 
 object Monkey {
-  val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   const val DELAY: Long = 10
   var echteSpelData = CommandQueue.lastSpelData
-  var waitingSpelers: MutableSet<String> = HashSet<String>()
+  val waitingSpelers: MutableSet<String> = HashSet<String>()
   val lock = Object()
 
   fun addWaitingSpeler(spelerId: String) {
@@ -44,13 +43,16 @@ object Monkey {
       while (true) {
         Thread.sleep(DELAY)
         echteSpelData = CommandQueue.lastSpelData
-        var spelData = CommandQueue.lastSpelData
+        var spelData = CommandQueue.lastSpelData // TODO: maak hier een val
 
+        /*
+        TODO: Dit niet in de Monkey class, maar in een eigen class
+         */
         if (echteSpelData.automatischNieuweTafels == true) {
           val alleTafelsKlaar = spelData.tafels.all { it.tafelWinnaar != null }
           if (alleTafelsKlaar) {
-            val startScore = echteSpelData.aantalFishesNieuweTafels ?: 15
-            val aantalTafels = echteSpelData.aantalAutomatischeNieuweTafels ?: spelData.tafels.size
+            val startScore = echteSpelData.aantalFishesNieuweTafels
+            val aantalTafels = echteSpelData.aantalAutomatischeNieuweTafels
             CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantalTafels, startScore))
             spelData = CommandQueue.lastSpelData
             Toepen.broadcastMessage()
