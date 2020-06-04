@@ -17,8 +17,10 @@ object Util {
     return kaarten
   }
 
-  fun shuffleSpelers(spelersDieMeedoen: MutableList<Gebruiker>) {
-    spelersDieMeedoen.shuffle(kaartenDeckRandom)
+  fun shuffleSpelers(spelersDieMeedoen: List<Gebruiker>): List<Gebruiker> {
+    val result :MutableList<Gebruiker> = spelersDieMeedoen.toMutableList()
+    result.shuffle(kaartenDeckRandom)
+    return result.toList()
   }
 
 

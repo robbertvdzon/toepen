@@ -36,6 +36,9 @@ object Monkey {
     }
   }
 
+  /*
+  TODO: deze functie kan vast mooier
+   */
   fun start() {
     val timer = Timer()
 
@@ -75,6 +78,9 @@ object Monkey {
   }
 
 
+  /*
+  TODO: deze functie kan vast mooier
+   */
   private fun speelMonkey(tafel: Tafel, speler: Speler) {
 
     var aantalPogingen = 0
