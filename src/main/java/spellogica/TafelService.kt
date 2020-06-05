@@ -118,24 +118,16 @@ object TafelService {
 
   private fun werkLucifersSpelersBij(tafel: Tafel): Tafel {
     val nieuweSpelers = tafel.spelers.map {
-      // als je nog in het spel zat, en niet gepast had en niet de winnaar bent, dan ben je lucifers kwijt!
-      var totaalLucifers = it.totaalLucifers
-      var actiefInSpel = it.actiefInSpel
-
+      // als je nog in het spel zat, en niet gepast had en niet de winnaar bent, dan ben je lucifers kwijt
       if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar != it.id) {
-        totaalLucifers -= it.ingezetteLucifers
-        if (it.totaalLucifers <= 0) actiefInSpel = false
+        it.copy(
+          actiefInSpel = it.actiefInSpel && (it.totaalLucifers > 0),
+          totaalLucifers = it.totaalLucifers- it.ingezetteLucifers
+        )
       }
-      it.copy(
-        actiefInSpel = actiefInSpel,
-        totaalLucifers = totaalLucifers
-      )
+      else it
     }
-    val
-      updatedTafel = tafel.copy(
-      spelers = nieuweSpelers
-    )
-    return updatedTafel
+    return tafel.copy(spelers = nieuweSpelers)
   }
 
   private fun verwerkEindeSpel(tafel: Tafel, spelData: SpelData): SpelData {
