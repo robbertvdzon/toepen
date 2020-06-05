@@ -77,11 +77,11 @@ object TafelService {
     return if (laatsteSlag || aantalSpelersDezeRonde < 2) {
       verwerktLaatsteSlag(aangepasteTafel, spelData)
     } else {
-      verwerkVolgendeSlag(aangepasteTafel, spelData)
+      nieuweSpelerNaEindeSlag(aangepasteTafel, spelData)
     }
   }
 
-  private fun verwerkVolgendeSlag(tafel: Tafel, spelData: SpelData): SpelData {
+  private fun nieuweSpelerNaEindeSlag(tafel: Tafel, spelData: SpelData): SpelData {
     val nieuweSpelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }
     return spelData.changeTafel(
       tafel.copy(
@@ -94,29 +94,19 @@ object TafelService {
     )
   }
 
-  /*
-  TODO: deze functie kan vast mooier
-   */
   private fun verwerktLaatsteSlag(tafel: Tafel, spelData: SpelData): SpelData {
-    /*
-      Laatste slag
-       */
     var tafel1 = tafel
     var spelData1 = spelData
     Toepen.broadcastRondeWinnaar(tafel1)
     tafel1 = werkLucifersSpelersBij(tafel1)
     spelData1 = spelData1.changeTafel(tafel1)
     spelData1 = werkScoreBij(tafel1, spelData1)
-
     tafel1 = spelData1.findTafel(tafel1.tafelNr)
     val eindeSpel = tafel1.spelers.filter { it.actiefInSpel }.size == 1
 
-    if (eindeSpel) {// einde spel
-      spelData1 = verwerkEindeSpel(tafel1, spelData1)
+    return if (eindeSpel) {// einde spel
+      verwerkEindeSpel(tafel1, spelData1)
     } else {// niet einde spel
-      /*
-         */
-
       val huidigeSpeler = volgendeActieveSpeler(tafel1, tafel1.findSlagWinnaar(spelData1))?.id
       val newTafel = tafel1.copy(
         huidigeSpeler = huidigeSpeler,
@@ -127,15 +117,9 @@ object TafelService {
       val newSpeldata = spelData1.changeTafel(
         newTafel
       )
-      tafel1 = newTafel
-      spelData1 = newSpeldata
-
-      val updatedTafel = nieuweRonde(tafel1)
-      val newSpeldata2 = spelData1.changeTafel(updatedTafel)
-      tafel1 = updatedTafel
-      spelData1 = newSpeldata2
+      val updatedTafel = nieuweRonde(newTafel)
+      newSpeldata.changeTafel(updatedTafel)
     }
-    return spelData1
   }
 
   private fun werkLucifersSpelersBij(tafel: Tafel): Tafel {
@@ -197,6 +181,7 @@ object TafelService {
     )
     return spelData1
   }
+
 
   /*
   TODO: deze functie kan vast mooier
