@@ -16,7 +16,7 @@ object CommandQueue {
   private val objectMapper = jacksonObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   private val logFile = File("log.txt")
   private var logCommands = true
-  private val unProcessedCommands: BlockingQueue<Command> = LinkedBlockingDeque<Command>(100)
+  private val unProcessedCommands: BlockingQueue<Command> = LinkedBlockingDeque(100)
   var lastSpelData: SpelData = SpelData()
 
   fun disableLog() {
@@ -63,8 +63,8 @@ object CommandQueue {
   }
 
   private fun logCommand(command: Command, spelDataBefore: String?) {
-    if (command.result?.status?.equals(CommandStatus.SUCCEDED) ?: false && logCommands) {
-      logFile.appendText("model.SpelData:" + spelDataBefore + "\n")
+    if (command.result?.status?.equals(CommandStatus.SUCCEDED) == true && logCommands) {
+      logFile.appendText("model.SpelData: $spelDataBefore \n")
       logFile.appendText(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command) + "\n")
       println(command.javaClass.simpleName + ":" + jacksonObjectMapper().writeValueAsString(command))
     }

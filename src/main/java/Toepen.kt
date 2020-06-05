@@ -26,9 +26,73 @@ object Toepen {
   @JvmStatic
   fun main(args: Array<String>) {
     CommandQueue.processCommands()
+    loadInitialPlayers()
+    CommandQueue.initLogfile()
+    CommandQueue.addNewCommand(SetRandomSeed(0)) // vaste seed, zodat de tests voorspelbaar zijn
+    Monkey.start()
+    AutoPlay.start()
+    configRest()
+  }
+
+  private fun configRest() {
+    val app = configJavalin()
+    // config vue components
+    app.get("/", VueComponent("<home></home>"))
+    app.get("/speler/:id", VueComponent("<speler></speler>"))
+    app.get("/toepking", VueComponent("<admin></admin>"))
+    app.get("/toepkingspelers", VueComponent("<spelers></spelers>"))
+    app.get("/overzicht", VueComponent("<overzicht></overzicht>"))
+
+    // config rest call's
+    app.get("/api/speldata", { this.getSpeldata(it) })
+    app.post("/api/load", { this.loadData(it) })
+    app.post("/api/save", { this.saveData(it) })
+    app.post("/api/savesettings", { this.saveSettings(it) })
+    app.post("/api/maaktafels/:aantaltafels/:startscore", { this.maakTafels(it) })
+    app.post("/api/speelkaart/:id", { this.speelkaart(it) })
+    app.post("/api/pakslag/:id", { this.pakSlag(it) })
+    app.post("/api/toep/:id", { this.toep(it) })
+    app.post("/api/gamee/:id", { this.gaMee(it) })
+    app.post("/api/pas/:id", { this.pas(it) })
+    app.post("/api/pauzeer/:tafelnr", { this.pauzeer(it) })
+    app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
+    app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
+    app.post("/api/allespauzeren", { this.allesPauzeren(it) })
+    app.post("/api/allesstarten", { this.allesStarten(it) })
+    app.post("/api/clearlog", { this.clearlog(it) })
+    app.post("/api/resetscore", { this.resetScore(it) })
+
+    // config websockets
+    app.ws("/game") { ws: WsHandler ->
+      ws.onConnect { ctx: WsConnectContext ->
+        val username = "User" + nextUserNumber++
+        userUsernameMap.put(ctx, username)
+      }
+      ws.onClose { ctx: WsCloseContext -> }
+      ws.onMessage { ctx: WsMessageContext -> }
+      }
+    app.ws("/winnaar") { ws: WsHandler ->
+      ws.onConnect { ctx: WsConnectContext ->
+        val username = "User" + nextUserNumber++
+        winnaarUsernameMap.put(ctx, username)
+      }
+      ws.onClose { ctx: WsCloseContext ->
+      }
+      ws.onMessage { ctx: WsMessageContext -> }
+      }
+  }
+
+  private fun configJavalin(): Javalin {
+    return Javalin.create { config ->
+      config.enableWebjars()
+      config.addStaticFiles("/html")
+    }.start(7000)
+  }
+
+  private fun loadInitialPlayers() {
     try {
       CommandQueue.lastSpelData = AdminService.loadData()
-    } catch (e: Exception) {
+      } catch (e: Exception) {
       val spelers = listOf(
         maakInitieleGebruiker("27331", "Robbert"),
         maakInitieleGebruiker("80785", "Bol"),
@@ -55,61 +119,7 @@ object Toepen {
       val res = CommandQueue.addNewCommand(command)
       log.info(res.toString())
 
-    }
-//    CommandQueue.setLastSpeldata(SpelContext.spelData)
-    CommandQueue.initLogfile()
-//        spelprocessor.CommandQueue.addNewCommand(spelprocessor.SetRandomSeed(System.currentTimeMillis()))
-    CommandQueue.addNewCommand(SetRandomSeed(0))
-    Monkey.start()
-    AutoPlay.start()
-
-
-    val app = Javalin.create { config ->
-      config.enableWebjars()
-      config.addStaticFiles("/html")
-
-    }.start(7000)
-
-    app.get("/", VueComponent("<home></home>"))
-    app.get("/speler/:id", VueComponent("<speler></speler>"))
-    app.get("/toepking", VueComponent("<admin></admin>"))
-    app.get("/toepkingspelers", VueComponent("<spelers></spelers>"))
-    app.get("/overzicht", VueComponent("<overzicht></overzicht>"))
-    app.get("/api/speldata", { this.getSpeldata(it) })
-    app.post("/api/load", { this.loadData(it) })
-    app.post("/api/save", { this.saveData(it) })
-    app.post("/api/savesettings", { this.saveSettings(it) })
-    app.post("/api/maaktafels/:aantaltafels/:startscore", { this.maakTafels(it) })
-    app.post("/api/speelkaart/:id", { this.speelkaart(it) })
-    app.post("/api/pakslag/:id", { this.pakSlag(it) })
-    app.post("/api/toep/:id", { this.toep(it) })
-    app.post("/api/gamee/:id", { this.gaMee(it) })
-    app.post("/api/pas/:id", { this.pas(it) })
-    app.post("/api/pauzeer/:tafelnr", { this.pauzeer(it) })
-    app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
-    app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
-    app.post("/api/allespauzeren", { this.allesPauzeren(it) })
-    app.post("/api/allesstarten", { this.allesStarten(it) })
-    app.post("/api/clearlog", { this.clearlog(it) })
-    app.post("/api/resetscore", { this.resetScore(it) })
-
-    app.ws("/game") { ws: WsHandler ->
-      ws.onConnect { ctx: WsConnectContext ->
-        val username = "User" + nextUserNumber++
-        userUsernameMap.put(ctx, username)
       }
-      ws.onClose { ctx: WsCloseContext -> }
-      ws.onMessage { ctx: WsMessageContext -> }
-    }
-    app.ws("/winnaar") { ws: WsHandler ->
-      ws.onConnect { ctx: WsConnectContext ->
-        val username = "User" + nextUserNumber++
-        winnaarUsernameMap.put(ctx, username)
-      }
-      ws.onClose { ctx: WsCloseContext ->
-      }
-      ws.onMessage { ctx: WsMessageContext -> }
-    }
   }
 
   fun broadcastMessage() {
@@ -135,7 +145,6 @@ object Toepen {
       session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
-
 
   private fun loadData(ctx: Context) {
     ctx.json(CommandQueue.addNewCommand(LoadDataCommand()))

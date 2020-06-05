@@ -18,13 +18,13 @@ object Util {
   }
 
   fun shuffleSpelers(spelersDieMeedoen: List<Gebruiker>): List<Gebruiker> {
-    val result :MutableList<Gebruiker> = spelersDieMeedoen.toMutableList()
+    val result: MutableList<Gebruiker> = spelersDieMeedoen.toMutableList()
     result.shuffle(kaartenDeckRandom)
     return result.toList()
   }
 
 
-  fun getKaartenDeck(): List<Kaart> =
+  private fun getKaartenDeck(): List<Kaart> =
     (7..14).flatMap {
       listOf(
         Kaart(KaartSymbool.HARTEN, it),
@@ -34,23 +34,20 @@ object Util {
       )
     }
 
-
   fun setSeed(seed: Long) {
     random = Random(seed)
   }
 
   fun nextInt(min: Int, max: Int) = (min..max).random(random)
 
-  fun <A, B> eitherBlock(c: suspend () -> B): Either<A, B> {
+  fun <A, B> eitherBlock(c: suspend () -> B): Either<A, B> =
     try {
-      return Either.right(runBlocking { c.invoke() })
+      Either.right(runBlocking { c.invoke() })
     } catch (e: EitherBlockException) {
-      return Either.left(e.left as A)
+      Either.left(e.left as A)
     }
-  }
 
-  suspend fun <A, B> Either<A, B>.bind(): B =
-    this.getOrElseThrow { e -> EitherBlockException(this.left as Any) }  // suspend, om te forceren dat hij alleen maar binnen de eitherBlock draait
+  suspend fun <A, B> Either<A, B>.bind(): B = this.getOrElseThrow { _ -> EitherBlockException(this.left as Any) }  // suspend, om te forceren dat hij alleen maar binnen de eitherBlock draait
 
   class EitherBlockException(val left: Any) : Exception()
 

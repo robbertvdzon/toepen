@@ -11,27 +11,9 @@ import kotlin.concurrent.thread
 
 
 object Monkey {
-  const val DELAY: Long = 10
-  val waitingSpelers: MutableSet<String> = HashSet()
-  val lock = Object()
-
-  fun addWaitingSpeler(spelerId: String) {
-    synchronized(lock) {
-      waitingSpelers.add(spelerId)
-    }
-  }
-
-  fun removeWaitingSpeler(spelerId: String) {
-    synchronized(lock) {
-      waitingSpelers.remove(spelerId)
-    }
-  }
-
-  fun hasWaitingSpeler(spelerId: String): Boolean {
-    synchronized(lock) {
-      return waitingSpelers.contains(spelerId)
-    }
-  }
+  private const val DELAY: Long = 10
+  private val waitingSpelers: MutableSet<String> = HashSet()
+  private val lock = Object()
 
   fun start() {
     val timer = Timer()
@@ -46,7 +28,7 @@ object Monkey {
           if (huidigeSpeler != null && huidigeGebruiker != null && huidigeGebruiker.isMonkey && !hasWaitingSpeler(huidigeSpeler.id)) {
             addWaitingSpeler(huidigeSpeler.id)
             val tasknew: TimerTask = TimerSchedulePeriod(it, huidigeSpeler)
-            val delay: Long = spelData.monkeyDelayMsec ?: 3000
+            val delay: Long = spelData.monkeyDelayMsec
             timer.schedule(tasknew, delay)
           }
         }
@@ -95,6 +77,24 @@ object Monkey {
       }
     }
     removeWaitingSpeler(speler.id)
+  }
+
+  private fun addWaitingSpeler(spelerId: String) {
+    synchronized(lock) {
+      waitingSpelers.add(spelerId)
+    }
+  }
+
+  private fun removeWaitingSpeler(spelerId: String) {
+    synchronized(lock) {
+      waitingSpelers.remove(spelerId)
+    }
+  }
+
+  private fun hasWaitingSpeler(spelerId: String): Boolean {
+    synchronized(lock) {
+      return waitingSpelers.contains(spelerId)
+    }
   }
 
   class TimerSchedulePeriod(val tafel: Tafel, val speler: Speler) : TimerTask() {

@@ -29,6 +29,6 @@ object HelperFunctions {
   }
 
   fun maakLegeTafels(aantalTafels: Int, spelData: SpelData): List<Tafel> =
-    (1..aantalTafels).map {tafelNr -> Tafel(tafelNr = tafelNr,gepauzeerd = spelData.nieuweTafelAutoPause)}
+    (1..aantalTafels).map { tafelNr -> Tafel(tafelNr = tafelNr, gepauzeerd = spelData.nieuweTafelAutoPause) }
 
 }

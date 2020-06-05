@@ -9,7 +9,7 @@ data class Speler(
   val ingezetteLucifers: Int = 0,
   val gepast: Boolean = false,
   val toepKeuze: Toepkeuze = Toepkeuze.GEEN_KEUZE,
-  val actiefInSpel: Boolean = true, // zit nog in het spel (is niet af)
+  val actiefInSpel: Boolean = true,
   val scoreDezeRonde: Int = 0
 ) {
   fun berekenScore(startKaart: Kaart): Int {

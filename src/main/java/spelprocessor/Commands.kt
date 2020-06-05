@@ -75,7 +75,7 @@ class PasCommand(val spelerId: String) : Command() {
   }
 }
 
-class LoadDataCommand() : Command() {
+class LoadDataCommand : Command() {
   override fun process(spelData: SpelData): CommandResult {
     val newSpelData = AdminService.loadData()
     CommandQueue.lastSpelData = newSpelData
@@ -84,7 +84,7 @@ class LoadDataCommand() : Command() {
   }
 }
 
-class SaveDataCommand() : Command() {
+class SaveDataCommand : Command() {
   override fun process(spelData: SpelData): CommandResult {
     AdminService.saveData(spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", spelData)
@@ -105,28 +105,28 @@ class UpdateGebruikersCommand(val gebruikers: List<Gebruiker>) : Command() {
   }
 }
 
-class ClearLog() : Command() {
+class ClearLog : Command() {
   override fun process(spelData: SpelData): CommandResult {
     val newSpelData = AdminService.clearLog(spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
-class ResetScore() : Command() {
+class ResetScore : Command() {
   override fun process(spelData: SpelData): CommandResult {
     val newSpelData = AdminService.resetScore(spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
-class AllesPauzeren() : Command() {
+class AllesPauzeren : Command() {
   override fun process(spelData: SpelData): CommandResult {
     val newSpelData = AdminService.allesPauzeren(spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)
   }
 }
 
-class AllesStarten() : Command() {
+class AllesStarten : Command() {
   override fun process(spelData: SpelData): CommandResult {
     val newSpelData = AdminService.allesStarten(spelData)
     return CommandResult(CommandStatus.SUCCEDED, "", newSpelData)

@@ -10,7 +10,7 @@ data class SpelData(
   val aantalFishesNieuweTafels: Int = 10,
   val monkeyDelayMsec: Long = 5000
 ) {
-  val scorelijst: List<Gebruiker>
+  val scorelijst: List<Gebruiker> // wordt gebruikt in de frontend
     get() = alleSpelers.filter { it.wilMeedoen }.sortedBy { it.score }.reversed()
 
   fun changeTafel(tafel: Tafel): SpelData {
