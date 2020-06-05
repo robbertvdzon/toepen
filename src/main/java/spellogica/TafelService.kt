@@ -159,41 +159,30 @@ object TafelService {
     return spelData.copy(alleSpelers = updatedGebruikers)
   }
 
-  fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
-    var tafel = tafelX
-    var spelData = spelDataX
-
+  fun werkScoreBij(tafel: Tafel, spelData: SpelData): SpelData {
     val spelersDieAfZijn = tafel.spelers.filter { it.actiefInSpel == false }
     val aantalSpelersDieInSpelZitten = tafel.spelers.filter { it.actiefInSpel == true }
     val aantalSpelersDieInSpelZittenCount = aantalSpelersDieInSpelZitten.size
     val nieuweSpelersDieAfZijn = spelersDieAfZijn.filter { !tafel.spelersDieAfZijn.contains(it.id) }
-    val score = 4 - aantalSpelersDieInSpelZittenCount
-    nieuweSpelersDieAfZijn.forEach {
-      // laad de tafel opnieuw, die kan aangepast zijn
-      tafel = spelData.tafels.first { it.tafelNr == tafel.tafelNr }
-      val nieuweSpelersDieAfZijn = tafel.spelersDieAfZijn.plus(it.id)
-      var scoreDezeRonde = 0
-      if (score > 0) {
-        scoreDezeRonde = score
-      }
-      val aangepasteSpeler = it.copy(scoreDezeRonde = scoreDezeRonde)
-      tafel = tafel.changeSpeler(aangepasteSpeler)
-      tafel = tafel.copy(spelersDieAfZijn = nieuweSpelersDieAfZijn)
-      val newSpelData = spelData.changeTafel(tafel)
-      spelData = newSpelData
-
-    }
-    if (aantalSpelersDieInSpelZittenCount == 1) {
-      aantalSpelersDieInSpelZitten.forEach {
-        val aangepasteSpeler = it.copy(scoreDezeRonde = 5)
-        // laad de tafel opnieuw, die kan aangepast zijn
-        tafel = spelData.tafels.first { it.tafelNr == tafel.tafelNr }
-        tafel = tafel.changeSpeler(aangepasteSpeler)
-        val newSpelData = spelData.changeTafel(tafel)
-        spelData = newSpelData
+    val score1 = 4 - aantalSpelersDieInSpelZittenCount
+    val score = if (score1 > 0) score1 else 0
+    val spelersMetNieuweScore = tafel.spelers.map {
+      if (nieuweSpelersDieAfZijn.contains(it)) {
+        it.copy(scoreDezeRonde = score)
+      } else if (aantalSpelersDieInSpelZittenCount == 1 && aantalSpelersDieInSpelZitten.contains(it)) {
+        // winnaar
+        it.copy(scoreDezeRonde = 5)
+      } else {
+        it
       }
     }
-    return spelData
+    val spelersDieAfZijn1 = tafel.spelersDieAfZijn.plus(nieuweSpelersDieAfZijn.map { it.id })
+    return spelData.changeTafel(
+      tafel.copy(
+        spelers = spelersMetNieuweScore,
+        spelersDieAfZijn = spelersDieAfZijn1
+      )
+    )
   }
 
   fun nieuwSpel(tafel: Tafel, startscore: Int): Tafel {
@@ -245,7 +234,7 @@ object TafelService {
     val startKaart = tafel.findOpkomer(spelData)?.gespeeldeKaart
     if (startKaart == null) return null
     val winnaar = tafel.spelers.filter { it.actiefInSpel && !it.gepast }.maxBy { it.berekenScore(startKaart) }
-    if (winnaar?.gepast ?: false) {
+    if (winnaar?.gepast == true) {
       // oei, diegene die gepast heeft, heeft gewonnen!
       // laat nu de eerste speler winnen die nog in het spel zit
       return tafel.spelers.firstOrNull() { it.actiefInSpel && !it.gepast }
