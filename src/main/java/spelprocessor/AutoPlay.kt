@@ -5,7 +5,7 @@ import kotlin.concurrent.thread
 
 
 object AutoPlay {
-  const val DELAY: Long = 10
+  private const val DELAY: Long = 10
 
   fun start() {
     thread(start = true) {

@@ -44,23 +44,23 @@ object Toepen {
     app.get("/overzicht", VueComponent("<overzicht></overzicht>"))
 
     // config rest call's
-    app.get("/api/speldata", { this.getSpeldata(it) })
-    app.post("/api/load", { this.loadData(it) })
-    app.post("/api/save", { this.saveData(it) })
-    app.post("/api/savesettings", { this.saveSettings(it) })
-    app.post("/api/maaktafels/:aantaltafels/:startscore", { this.maakTafels(it) })
-    app.post("/api/speelkaart/:id", { this.speelkaart(it) })
-    app.post("/api/pakslag/:id", { this.pakSlag(it) })
-    app.post("/api/toep/:id", { this.toep(it) })
-    app.post("/api/gamee/:id", { this.gaMee(it) })
-    app.post("/api/pas/:id", { this.pas(it) })
-    app.post("/api/pauzeer/:tafelnr", { this.pauzeer(it) })
-    app.post("/api/gadoor/:tafelnr", { this.gadoor(it) })
-    app.post("/api/nieuwspel/:tafelnr/:lucifers", { this.nieuwSpel(it) })
-    app.post("/api/allespauzeren", { this.allesPauzeren(it) })
-    app.post("/api/allesstarten", { this.allesStarten(it) })
-    app.post("/api/clearlog", { this.clearlog(it) })
-    app.post("/api/resetscore", { this.resetScore(it) })
+    app.get("/api/speldata") { this.getSpeldata(it) }
+    app.post("/api/load") { this.loadData(it) }
+    app.post("/api/save", this::saveData)
+    app.post("/api/savesettings") { this.saveSettings(it) }
+    app.post("/api/maaktafels/:aantaltafels/:startscore") { this.maakTafels(it) }
+    app.post("/api/speelkaart/:id") { this.speelkaart(it) }
+    app.post("/api/pakslag/:id") { this.pakSlag(it) }
+    app.post("/api/toep/:id") { this.toep(it) }
+    app.post("/api/gamee/:id") { this.gaMee(it) }
+    app.post("/api/pas/:id") { this.pas(it) }
+    app.post("/api/pauzeer/:tafelnr") { this.pauzeer(it) }
+    app.post("/api/gadoor/:tafelnr") { this.gadoor(it) }
+    app.post("/api/nieuwspel/:tafelnr/:lucifers") { this.nieuwSpel(it) }
+    app.post("/api/allespauzeren") { this.allesPauzeren(it) }
+    app.post("/api/allesstarten") { this.allesStarten(it) }
+    app.post("/api/clearlog") { this.clearlog(it) }
+    app.post("/api/resetscore") { this.resetScore(it) }
 
     // config websockets
     app.ws("/game") { ws: WsHandler ->
@@ -68,18 +68,13 @@ object Toepen {
         val username = "User" + nextUserNumber++
         userUsernameMap.put(ctx, username)
       }
-      ws.onClose { ctx: WsCloseContext -> }
-      ws.onMessage { ctx: WsMessageContext -> }
-      }
+    }
     app.ws("/winnaar") { ws: WsHandler ->
       ws.onConnect { ctx: WsConnectContext ->
         val username = "User" + nextUserNumber++
         winnaarUsernameMap.put(ctx, username)
       }
-      ws.onClose { ctx: WsCloseContext ->
-      }
-      ws.onMessage { ctx: WsMessageContext -> }
-      }
+    }
   }
 
   private fun configJavalin(): Javalin {
@@ -92,7 +87,7 @@ object Toepen {
   private fun loadInitialPlayers() {
     try {
       CommandQueue.lastSpelData = AdminService.loadData()
-      } catch (e: Exception) {
+    } catch (e: Exception) {
       val spelers = listOf(
         maakInitieleGebruiker("27331", "Robbert"),
         maakInitieleGebruiker("80785", "Bol"),
@@ -119,29 +114,29 @@ object Toepen {
       val res = CommandQueue.addNewCommand(command)
       log.info(res.toString())
 
-      }
+    }
   }
 
   fun broadcastMessage() {
-    userUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+    userUsernameMap.keys.stream().filter { it.session.isOpen }.forEach { session: WsConnectContext ->
       session.send(objectMapper.writeValueAsString(CommandQueue.lastSpelData))
     }
   }
 
   fun broadcastSpelWinnaar(tafel: Tafel) {
-    winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+    winnaarUsernameMap.keys.stream().filter { it.session.isOpen }.forEach { session: WsConnectContext ->
       session.send(Winnaar(SPEL, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
 
   fun broadcastRondeWinnaar(tafel: Tafel) {
-    winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+    winnaarUsernameMap.keys.stream().filter { it.session.isOpen }.forEach { session: WsConnectContext ->
       session.send(Winnaar(RONDE, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
 
   fun broadcastSlagWinnaar(tafel: Tafel) {
-    winnaarUsernameMap.keys.stream().filter { it.session.isOpen() }.forEach { session: WsConnectContext ->
+    winnaarUsernameMap.keys.stream().filter { it.session.isOpen }.forEach { session: WsConnectContext ->
       session.send(Winnaar(SLAG, tafel.tafelNr, tafel.findSlagWinnaar(CommandQueue.lastSpelData)?.naam ?: "?"))
     }
   }
@@ -258,15 +253,12 @@ object Toepen {
     ctx.result(objectMapper.writeValueAsString(CommandQueue.lastSpelData))
   }
 
-  fun maakInitieleGebruiker(id: String, naam: String): Gebruiker {
-    val gebruiker = Gebruiker(
+  private fun maakInitieleGebruiker(id: String, naam: String): Gebruiker =
+    Gebruiker(
       id = id,
       naam = naam,
       isMonkey = true,
       wilMeedoen = true
     )
-    return gebruiker
-  }
-
 
 }

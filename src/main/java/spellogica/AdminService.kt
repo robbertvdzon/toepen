@@ -66,7 +66,7 @@ object AdminService {
 
   fun nieuwSpel(startscore: Int, tafel: Tafel, spelData: SpelData): SpelData {
     val gepauzeerdeTafel = tafel.copy(gepauzeerd = spelData.nieuweTafelAutoPause)
-    val gestarteTafel = TafelService.nieuwSpel(gepauzeerdeTafel, startscore)
+    val gestarteTafel = HelperFunctions.nieuwSpel(gepauzeerdeTafel, startscore)
     return spelData.changeTafel(gestarteTafel)
   }
 
