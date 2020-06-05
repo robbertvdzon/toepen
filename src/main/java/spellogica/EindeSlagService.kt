@@ -100,8 +100,4 @@ object EindeSlagService {
     return spelData.copy(alleSpelers = updatedGebruikers)
   }
 
-
-
-
-
 }
