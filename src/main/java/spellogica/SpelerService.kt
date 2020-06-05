@@ -49,10 +49,6 @@ object SpelerService {
     return Either.right(newSpelData)
   }
 
-  private fun kaartHeeftZelfdeSymbool(tafel: Tafel, spelData: SpelData, kaart: Kaart) = tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool == kaart.symbool
-
-  private fun spelerKanBekennen(speler: Speler, tafel: Tafel, spelData: SpelData) = speler.kaarten.any { it.symbool == tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool }
-
   fun toep(speler: Speler, tafel: Tafel, inzet: Int): Either<String, Speler> {
     if (!speler.actiefInSpel) return Either.left("Je bent af")
     if (tafel.huidigeSpeler != speler.id) return Either.left("Je bent nog niet aan de beurt om te toepen")
@@ -96,5 +92,9 @@ object SpelerService {
       )
     )
   }
+
+  private fun kaartHeeftZelfdeSymbool(tafel: Tafel, spelData: SpelData, kaart: Kaart) = tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool == kaart.symbool
+
+  private fun spelerKanBekennen(speler: Speler, tafel: Tafel, spelData: SpelData) = speler.kaarten.any { it.symbool == tafel.findOpkomer(spelData)?.gespeeldeKaart?.symbool }
 
 }
