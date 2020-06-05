@@ -57,12 +57,11 @@ object TafelService {
       )
     }
 
-    val updatedSpelData = spelData.changeTafel(newTafel)
-
     return if (alleSpelersHebbenToepkeuzeGemaakt && iedereenGepast) {
+      val updatedSpelData = spelData.changeTafel(newTafel)
       eindeSlag(newTafel, updatedSpelData)
     } else {
-      updatedSpelData
+      spelData.changeTafel(newTafel)
     }
   }
 
@@ -95,30 +94,25 @@ object TafelService {
   }
 
   private fun verwerktLaatsteSlag(tafel: Tafel, spelData: SpelData): SpelData {
-    var tafel1 = tafel
-    var spelData1 = spelData
-    Toepen.broadcastRondeWinnaar(tafel1)
-    tafel1 = werkLucifersSpelersBij(tafel1)
-    spelData1 = spelData1.changeTafel(tafel1)
-    spelData1 = werkScoreBij(tafel1, spelData1)
-    tafel1 = spelData1.findTafel(tafel1.tafelNr)
-    val eindeSpel = tafel1.spelers.filter { it.actiefInSpel }.size == 1
+    Toepen.broadcastRondeWinnaar(tafel)
+    val tafelMetGeupdateSpelers = werkLucifersSpelersBij(tafel)
+    val spelDataMetBijgewerkteScore = werkScoreBij(tafelMetGeupdateSpelers, spelData.changeTafel(tafelMetGeupdateSpelers))
+    val tafelMetBijgewerkteScore = spelDataMetBijgewerkteScore.findTafel(tafelMetGeupdateSpelers.tafelNr)
+    val eindeSpel = tafelMetBijgewerkteScore.spelers.filter { it.actiefInSpel }.size == 1
 
-    return if (eindeSpel) {// einde spel
-      verwerkEindeSpel(tafel1, spelData1)
-    } else {// niet einde spel
-      val huidigeSpeler = volgendeActieveSpeler(tafel1, tafel1.findSlagWinnaar(spelData1))?.id
-      val newTafel = tafel1.copy(
-        huidigeSpeler = huidigeSpeler,
-        opkomer = huidigeSpeler,
-        slagWinnaar = null,
-        toeper = null
+    return if (eindeSpel) {
+      verwerkEindeSpel(tafelMetBijgewerkteScore, spelDataMetBijgewerkteScore)
+    } else {
+      val huidigeSpeler = volgendeActieveSpeler(tafelMetBijgewerkteScore, tafelMetBijgewerkteScore.findSlagWinnaar(spelDataMetBijgewerkteScore))?.id
+      val updatedTafel = nieuweRonde(
+        tafelMetBijgewerkteScore.copy(
+          huidigeSpeler = huidigeSpeler,
+          opkomer = huidigeSpeler,
+          slagWinnaar = null,
+          toeper = null
+        )
       )
-      val newSpeldata = spelData1.changeTafel(
-        newTafel
-      )
-      val updatedTafel = nieuweRonde(newTafel)
-      newSpeldata.changeTafel(updatedTafel)
+      spelDataMetBijgewerkteScore.changeTafel(updatedTafel)
     }
   }
 
