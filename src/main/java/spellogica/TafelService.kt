@@ -53,7 +53,7 @@ object TafelService {
       )
     } else {  // volgende speler moet toepen
       tafel.copy(
-        huidigeSpeler = volgendeSpelerDieMoetToepen(tafel, tafel.findHuidigeSpeler(spelData))?.id
+        huidigeSpeler = volgendeSpelerDieMoetToepen(tafel.spelers, tafel.findHuidigeSpeler(spelData))?.id
       )
     }
 
@@ -209,71 +209,36 @@ object TafelService {
     return nieuweTafel
   }
 
-  /*
-  TODO: deze functie kan vast mooier
-   */
-  fun toep(spelDataX: SpelData, tafelX: Tafel, speler: Speler): SpelData {
-    var tafel = tafelX
-    var spelData = spelDataX
-
-    if (tafel.toeper == null) {
-      val newTafel = tafel.copy(
-        toeper = speler.id // de eerste toeper bewaren
-      )
-      val newSpeldata = spelData.changeTafel(
-        newTafel
-      )
-      tafel = newTafel
-      spelData = newSpeldata
-
+  fun toep(spelData: SpelData, tafel: Tafel, speler: Speler): SpelData {
+    // set automatische toep keuze voor alle spelers die geen keuze hebben
+    val spelersMetToepKeuze = tafel.spelers.map {
+      val toepKeuze =
+        if (it.id == speler.id) {
+          Toepkeuze.TOEP
+        } else if (it.totaalLucifers == it.ingezetteLucifers) {
+          Toepkeuze.MEE
+        } else if (it.gepast) {
+          Toepkeuze.PAS
+        } else if (!it.actiefInSpel) {
+          Toepkeuze.PAS
+        } else Toepkeuze.GEEN_KEUZE
+      it.copy(toepKeuze = toepKeuze)
     }
 
-    // set toep keuze voor alle spelers
-    tafel.spelers.forEach {
-      var toepKeuze = Toepkeuze.GEEN_KEUZE
-      if (!it.actiefInSpel) {
-        toepKeuze = Toepkeuze.PAS
-      }
-      if (it.gepast) {
-        toepKeuze = Toepkeuze.PAS
-      }
-      if (it.totaalLucifers == it.ingezetteLucifers) {
-        toepKeuze = Toepkeuze.MEE
-      }
-      val updatedTafel = tafel.changeSpeler(it.copy(toepKeuze = toepKeuze))
-      val newSpeldata = spelData.changeTafel(updatedTafel)
-      tafel = updatedTafel
-      spelData = newSpeldata
-
-
-    }
-    // laad de tafel opnieuw, die kan aangepast zijn
-    val tafel2 = spelData.tafels.first { it.tafelNr == tafel.tafelNr }
-
-    // set toep keuze op toep voor de toeper
-    val updatedSpeler = speler.copy(toepKeuze = Toepkeuze.TOEP)
-    val updatedTafel = tafel2.changeSpeler(updatedSpeler)
-    val newSpelData = spelData.changeTafel(updatedTafel)
-    spelData = newSpelData
-
-    val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(updatedTafel, updatedSpeler)
-    if (volgendeSpelerVoorToep == null) {
-
-      val newSpelData = spelData.changeTafel(updatedTafel.copy(
-        huidigeSpeler = updatedTafel.toeper,
+    val volgendeSpelerVoorToep = volgendeSpelerDieMoetToepen(spelersMetToepKeuze, spelersMetToepKeuze.first { it.id == speler.id })
+    return if (volgendeSpelerVoorToep == null) {
+      spelData.changeTafel(tafel.copy(
+        huidigeSpeler = tafel.toeper,
+        spelers = spelersMetToepKeuze,
         toeper = null
       ))
-      spelData = newSpelData
-
-
     } else {
-      val newSpelData = spelData.changeTafel(updatedTafel.copy(
-        huidigeSpeler = volgendeSpelerVoorToep.id
+      return spelData.changeTafel(tafel.copy(
+        huidigeSpeler = volgendeSpelerVoorToep.id,
+        spelers = spelersMetToepKeuze,
+        toeper = if (tafel.toeper != null) tafel.toeper else speler.id
       ))
-      spelData = newSpelData
     }
-
-    return spelData
   }
 
   private fun zoekSlagWinnaar(tafel: Tafel, spelData: SpelData): Speler? {
@@ -297,8 +262,8 @@ object TafelService {
     return actieveSpelers.get(index + 1)
   }
 
-  private fun volgendeSpelerDieMoetToepen(tafel: Tafel, speler: Speler?): Speler? {
-    val spelersDieMoetenToepen = tafel.spelers.filter { it.toepKeuze == Toepkeuze.GEEN_KEUZE || it == speler }
+  private fun volgendeSpelerDieMoetToepen(spelers: List<Speler>, speler: Speler?): Speler? {
+    val spelersDieMoetenToepen = spelers.filter { it.toepKeuze == Toepkeuze.GEEN_KEUZE || it == speler }
     if (spelersDieMoetenToepen.size == 1) return null // er zit maar 1 iemand in, dat is de speler zelf. Geeft dus null terum om aan te geven dat iedereen getoept heeft
     if (speler == null) return spelersDieMoetenToepen.firstOrNull()
     if (!spelersDieMoetenToepen.contains(speler)) return null
