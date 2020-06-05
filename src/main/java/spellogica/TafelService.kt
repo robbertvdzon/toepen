@@ -61,123 +61,141 @@ object TafelService {
 
     return if (alleSpelersHebbenToepkeuzeGemaakt && iedereenGepast) {
       eindeSlag(newTafel, updatedSpelData)
-    }
-    else {
+    } else {
       updatedSpelData
     }
   }
 
-  /*
-  TODO: deze functie kan vast mooier
-   */
-  fun eindeSlag(tafelX: Tafel, spelDataX: SpelData): SpelData {
-    var tafel = tafelX
+  fun eindeSlag(tafel: Tafel, spelDataX: SpelData): SpelData {
     var spelData = spelDataX
     Toepen.broadcastSlagWinnaar(tafel)
     spelData = werkScoreBij(tafel, spelData)
-    tafel = spelData.findTafel(tafel.tafelNr)
+    val aangepasteTafel = spelData.findTafel(tafel.tafelNr)
 
-    val laatsteSlag = tafel.spelers.firstOrNull { it.gepast == false && it.actiefInSpel }?.kaarten?.size ?: 0 == 0
-    val aantalSpelersDezeRonde = tafel.spelers.filter { it.gepast == false && it.actiefInSpel }.size
-    if (laatsteSlag || aantalSpelersDezeRonde < 2) {
-      Toepen.broadcastRondeWinnaar(tafel)
+    val laatsteSlag = aangepasteTafel.spelers.firstOrNull { it.gepast == false && it.actiefInSpel }?.kaarten?.size ?: 0 == 0
+    val aantalSpelersDezeRonde = aangepasteTafel.spelers.filter { it.gepast == false && it.actiefInSpel }.size
+    return if (laatsteSlag || aantalSpelersDezeRonde < 2) {
+      verwerktLaatsteSlag(aangepasteTafel, spelData)
+    } else {
+      verwerkVolgendeSlag(aangepasteTafel, spelData)
+    }
+  }
 
-      val nieuweSpelers = tafel.spelers.map {
-        // als je nog in het spel zat, en niet gepast had en niet de winnaar bent, dan ben je lucifers kwijt!
-        var totaalLucifers = it.totaalLucifers
-        var actiefInSpel = it.actiefInSpel
-
-        if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar != it.id) {
-          totaalLucifers -= it.ingezetteLucifers
-          if (it.totaalLucifers <= 0) actiefInSpel = false
-        }
-        it.copy(
-          actiefInSpel = actiefInSpel,
-          totaalLucifers = totaalLucifers
-        )
-      }
-      val updatedTafel = tafel.copy(
-        spelers = nieuweSpelers
-      )
-      val newSpeldata = spelData.changeTafel(updatedTafel)
-      tafel = updatedTafel
-      spelData = newSpeldata
-
-      val eindeSpel = tafel.spelers.filter { it.actiefInSpel }.size == 1
-      spelData = werkScoreBij(tafel, spelData)
-      tafel = spelData.findTafel(tafel.tafelNr)
-      if (eindeSpel) {// einde spel
-        Toepen.broadcastSpelWinnaar(tafel)
-        val newTafel = tafel.copy(
-          tafelWinnaar = tafel.slagWinnaar,
-          huidigeSpeler = null,
-          slagWinnaar = null,
-          toeper = null
-        )
-        val newSpeldata = spelData.changeTafel(
-          newTafel
-        )
-        tafel = newTafel
-        spelData = newSpeldata
-
-        val scores = tafel.spelers.map {
-          SpelerScore(it.naam, it.scoreDezeRonde)
-        }
-
-        val updatedGebruikers = spelData.alleSpelers.map { gebruiker ->
-          val speler = tafel.spelers.find { it.id == gebruiker.id }
-          if (speler != null) {
-            gebruiker.copy(
-              score = gebruiker.score + speler.scoreDezeRonde
-            )
-          } else gebruiker
-        }
-
-        spelData = spelData.copy(
-          uitslagen = spelData.uitslagen.plus(Uitslag(
-            Date().toString(), tafel.tafelNr, scores
-          )),
-          alleSpelers = updatedGebruikers
-        )
-      } else {// niet einde spel
-        val huidigeSpeler = volgendeActieveSpeler(tafel, tafel.findSlagWinnaar(spelData))?.id
-        val newTafel = tafel.copy(
-          huidigeSpeler = huidigeSpeler,
-          opkomer = huidigeSpeler,
-          slagWinnaar = null,
-          toeper = null
-        )
-        val newSpeldata = spelData.changeTafel(
-          newTafel
-        )
-        tafel = newTafel
-        spelData = newSpeldata
-
-        val updatedTafel = nieuweRonde(tafel)
-        val newSpeldata2 = spelData.changeTafel(updatedTafel)
-        tafel = updatedTafel
-        spelData = newSpeldata2
-      }
-    } else { // niet de laatste slag
-      val newTafel2 = tafel.copy(
+  private fun verwerkVolgendeSlag(tafel: Tafel, spelData: SpelData): SpelData {
+    val nieuweSpelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }
+    return spelData.changeTafel(
+      tafel.copy(
+        spelers = nieuweSpelers,
         huidigeSpeler = tafel.slagWinnaar,
         opkomer = tafel.slagWinnaar,
         slagWinnaar = null,
         toeper = null
       )
-      val newSpeldata2 = spelData.changeTafel(
-        newTafel2
-      )
-      tafel = newTafel2
-      spelData = newSpeldata2
+    )
+  }
 
-      val updatedTafel = tafel.copy(
-        spelers = tafel.spelers.map { if (it.actiefInSpel) SpelerService.nieuweSlag(it) else it }
+  /*
+  TODO: deze functie kan vast mooier
+   */
+  private fun verwerktLaatsteSlag(tafel: Tafel, spelData: SpelData): SpelData {
+    /*
+      Laatste slag
+       */
+    var tafel1 = tafel
+    var spelData1 = spelData
+    Toepen.broadcastRondeWinnaar(tafel1)
+    tafel1 = werkLucifersSpelersBij(tafel1)
+    spelData1 = spelData1.changeTafel(tafel1)
+    spelData1 = werkScoreBij(tafel1, spelData1)
+
+    tafel1 = spelData1.findTafel(tafel1.tafelNr)
+    val eindeSpel = tafel1.spelers.filter { it.actiefInSpel }.size == 1
+
+    if (eindeSpel) {// einde spel
+      spelData1 = verwerkEindeSpel(tafel1, spelData1)
+    } else {// niet einde spel
+      /*
+         */
+
+      val huidigeSpeler = volgendeActieveSpeler(tafel1, tafel1.findSlagWinnaar(spelData1))?.id
+      val newTafel = tafel1.copy(
+        huidigeSpeler = huidigeSpeler,
+        opkomer = huidigeSpeler,
+        slagWinnaar = null,
+        toeper = null
       )
-      val newSpelData = spelData.changeTafel(updatedTafel)
-      spelData = newSpelData
+      val newSpeldata = spelData1.changeTafel(
+        newTafel
+      )
+      tafel1 = newTafel
+      spelData1 = newSpeldata
+
+      val updatedTafel = nieuweRonde(tafel1)
+      val newSpeldata2 = spelData1.changeTafel(updatedTafel)
+      tafel1 = updatedTafel
+      spelData1 = newSpeldata2
     }
-    return spelData
+    return spelData1
+  }
+
+  private fun werkLucifersSpelersBij(tafel: Tafel): Tafel {
+    val nieuweSpelers = tafel.spelers.map {
+      // als je nog in het spel zat, en niet gepast had en niet de winnaar bent, dan ben je lucifers kwijt!
+      var totaalLucifers = it.totaalLucifers
+      var actiefInSpel = it.actiefInSpel
+
+      if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar != it.id) {
+        totaalLucifers -= it.ingezetteLucifers
+        if (it.totaalLucifers <= 0) actiefInSpel = false
+      }
+      it.copy(
+        actiefInSpel = actiefInSpel,
+        totaalLucifers = totaalLucifers
+      )
+    }
+    val
+      updatedTafel = tafel.copy(
+      spelers = nieuweSpelers
+    )
+    return updatedTafel
+  }
+
+  private fun verwerkEindeSpel(tafel: Tafel, spelData: SpelData): SpelData {
+    var tafel1 = tafel
+    var spelData1 = spelData
+    Toepen.broadcastSpelWinnaar(tafel1)
+    val newTafel = tafel1.copy(
+      tafelWinnaar = tafel1.slagWinnaar,
+      huidigeSpeler = null,
+      slagWinnaar = null,
+      toeper = null
+    )
+    val newSpeldata = spelData1.changeTafel(
+      newTafel
+    )
+    tafel1 = newTafel
+    spelData1 = newSpeldata
+
+    val scores = tafel1.spelers.map {
+      SpelerScore(it.naam, it.scoreDezeRonde)
+    }
+
+    val updatedGebruikers = spelData1.alleSpelers.map { gebruiker ->
+      val speler = tafel1.spelers.find { it.id == gebruiker.id }
+      if (speler != null) {
+        gebruiker.copy(
+          score = gebruiker.score + speler.scoreDezeRonde
+        )
+      } else gebruiker
+    }
+
+    spelData1 = spelData1.copy(
+      uitslagen = spelData1.uitslagen.plus(Uitslag(
+        Date().toString(), tafel1.tafelNr, scores
+      )),
+      alleSpelers = updatedGebruikers
+    )
+    return spelData1
   }
 
   /*
