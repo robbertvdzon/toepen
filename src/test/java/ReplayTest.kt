@@ -15,16 +15,7 @@ class ReplayTest {
     testFromLog("log_1_tafel.txt")
   }
 
-    /*
-    TODO: deze test fixen
-     */
-//  @Test
-//  fun test2Tafels() {
-//    testFromLog("log_2_tafels.txt")
-//  }
-
-
-  fun testFromLog(logfile:String) {
+  fun testFromLog(logfile: String) {
     CommandQueue.processCommands()
     CommandQueue.disableLog()
     var playSynced = false
@@ -35,7 +26,7 @@ class ReplayTest {
         val json = regel.substring(splitPos + 1)
         if (cmd == "model.SpelData") {
           val spelData = objectMapper.readValue(json, SpelData::class.java)
-          if (playSynced){
+          if (playSynced) {
             testSpeldata(spelData)
           }
           CommandQueue.lastSpelData = spelData
@@ -106,10 +97,6 @@ class ReplayTest {
   }
 
   private fun testSpeldata(spelData: SpelData) {
-    // remove uitslagen van de check
-//    spelData.uitslagen = mutableListOf<Uitslag>()
-//    SpelContext.spelData.uitslagen = mutableListOf<Uitslag>()
-    // complare 2 data
     val ownSpelData = objectMapper.writeValueAsString(CommandQueue.lastSpelData)
     val correctSpelData = objectMapper.writeValueAsString(spelData)
     if (ownSpelData != correctSpelData) {
