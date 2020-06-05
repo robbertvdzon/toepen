@@ -61,6 +61,7 @@ object Toepen {
 //        spelprocessor.CommandQueue.addNewCommand(spelprocessor.SetRandomSeed(System.currentTimeMillis()))
     CommandQueue.addNewCommand(SetRandomSeed(0))
     Monkey.start()
+    AutoPlay.start()
 
 
     val app = Javalin.create { config ->

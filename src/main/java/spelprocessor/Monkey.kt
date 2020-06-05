@@ -48,20 +48,6 @@ object Monkey {
         echteSpelData = CommandQueue.lastSpelData
         var spelData = CommandQueue.lastSpelData // TODO: maak hier een val
 
-        /*
-        TODO: Dit niet in de Monkey class, maar in een eigen class
-         */
-        if (echteSpelData.automatischNieuweTafels == true) {
-          val alleTafelsKlaar = spelData.tafels.all { it.tafelWinnaar != null }
-          if (alleTafelsKlaar) {
-            val startScore = echteSpelData.aantalFishesNieuweTafels
-            val aantalTafels = echteSpelData.aantalAutomatischeNieuweTafels
-            CommandQueue.addNewCommand(MaakNieuweTafelsCommand(aantalTafels, startScore))
-            spelData = CommandQueue.lastSpelData
-            Toepen.broadcastMessage()
-          }
-        }
-
         spelData.tafels.filter { !it.gepauzeerd }.forEach {
           spelData = CommandQueue.lastSpelData
           val huidigeSpeler = it.findHuidigeSpeler(spelData)
