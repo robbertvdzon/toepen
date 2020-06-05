@@ -120,59 +120,45 @@ object TafelService {
       if (it.actiefInSpel && !it.gepast && tafel.slagWinnaar != it.id) {
         it.copy(
           actiefInSpel = it.actiefInSpel && (it.totaalLucifers > 0),
-          totaalLucifers = it.totaalLucifers- it.ingezetteLucifers
+          totaalLucifers = it.totaalLucifers - it.ingezetteLucifers
         )
-      }
-      else it
+      } else it
     }
     return tafel.copy(spelers = nieuweSpelers)
   }
 
-  /*
-  TODO: deze functie kan vast mooier
-   */
   private fun verwerkEindeSpel(tafel: Tafel, spelData: SpelData): SpelData {
-    var tafel1 = tafel
-    var spelData1 = spelData
-    Toepen.broadcastSpelWinnaar(tafel1)
-    val newTafel = tafel1.copy(
-      tafelWinnaar = tafel1.slagWinnaar,
+    Toepen.broadcastSpelWinnaar(tafel)
+    val newTafel = tafel.copy(
+      tafelWinnaar = tafel.slagWinnaar,
       huidigeSpeler = null,
       slagWinnaar = null,
       toeper = null
     )
-    val newSpeldata = spelData1.changeTafel(
-      newTafel
-    )
-    tafel1 = newTafel
-    spelData1 = newSpeldata
-
-    val scores = tafel1.spelers.map {
-      SpelerScore(it.naam, it.scoreDezeRonde)
-    }
-
-    val updatedGebruikers = spelData1.alleSpelers.map { gebruiker ->
-      val speler = tafel1.spelers.find { it.id == gebruiker.id }
-      if (speler != null) {
-        gebruiker.copy(
-          score = gebruiker.score + speler.scoreDezeRonde
-        )
-      } else gebruiker
-    }
-
-    spelData1 = spelData1.copy(
-      uitslagen = spelData1.uitslagen.plus(Uitslag(
-        Date().toString(), tafel1.tafelNr, scores
-      )),
-      alleSpelers = updatedGebruikers
-    )
-    return spelData1
+    val spelDataMetNieuweTafel = spelData.changeTafel(newTafel)
+    val spelDataNieuweGebruikers = updateGebruikersScore(spelDataMetNieuweTafel, newTafel)
+    return updateUitslagen(newTafel, spelDataNieuweGebruikers)
   }
 
+  private fun updateUitslagen(tafel: Tafel, spelData: SpelData): SpelData {
+    val scores = tafel.spelers.map {
+      SpelerScore(it.naam, it.scoreDezeRonde)
+    }
+    return spelData.copy(
+      uitslagen = spelData.uitslagen.plus(Uitslag(Date().toString(), tafel.tafelNr, scores))
+    )
+  }
 
-  /*
-  TODO: deze functie kan vast mooier
-   */
+  private fun updateGebruikersScore(spelData: SpelData, tafel: Tafel): SpelData {
+    val updatedGebruikers = spelData.alleSpelers.map { gebruiker ->
+      val speler = tafel.spelers.find { it.id == gebruiker.id }
+      if (speler != null) {
+        gebruiker.copy(score = gebruiker.score + speler.scoreDezeRonde)
+      } else gebruiker
+    }
+    return spelData.copy(alleSpelers = updatedGebruikers)
+  }
+
   fun werkScoreBij(tafelX: Tafel, spelDataX: SpelData): SpelData {
     var tafel = tafelX
     var spelData = spelDataX
