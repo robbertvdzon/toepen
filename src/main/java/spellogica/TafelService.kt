@@ -65,18 +65,16 @@ object TafelService {
     }
   }
 
-  fun eindeSlag(tafel: Tafel, spelDataX: SpelData): SpelData {
-    var spelData = spelDataX
+  fun eindeSlag(tafel: Tafel, spelData: SpelData): SpelData {
     Toepen.broadcastSlagWinnaar(tafel)
-    spelData = werkScoreBij(tafel, spelData)
-    val aangepasteTafel = spelData.findTafel(tafel.tafelNr)
-
+    val bijgewerkteSpelData = werkScoreBij(tafel, spelData)
+    val aangepasteTafel = bijgewerkteSpelData.findTafel(tafel.tafelNr)
     val laatsteSlag = aangepasteTafel.spelers.firstOrNull { it.gepast == false && it.actiefInSpel }?.kaarten?.size ?: 0 == 0
     val aantalSpelersDezeRonde = aangepasteTafel.spelers.filter { it.gepast == false && it.actiefInSpel }.size
     return if (laatsteSlag || aantalSpelersDezeRonde < 2) {
-      verwerktLaatsteSlag(aangepasteTafel, spelData)
+      verwerktLaatsteSlag(aangepasteTafel, bijgewerkteSpelData)
     } else {
-      nieuweSpelerNaEindeSlag(aangepasteTafel, spelData)
+      nieuweSpelerNaEindeSlag(aangepasteTafel, bijgewerkteSpelData)
     }
   }
 
@@ -130,6 +128,9 @@ object TafelService {
     return tafel.copy(spelers = nieuweSpelers)
   }
 
+  /*
+  TODO: deze functie kan vast mooier
+   */
   private fun verwerkEindeSpel(tafel: Tafel, spelData: SpelData): SpelData {
     var tafel1 = tafel
     var spelData1 = spelData

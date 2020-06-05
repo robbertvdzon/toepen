@@ -16,6 +16,9 @@ class ReplayTest {
   }
 
   @Test
+    /*
+    TODO: deze test fixen
+     */
   fun test2Tafels() {
     testFromLog("log_2_tafels.txt")
   }
